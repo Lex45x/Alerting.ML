@@ -1,0 +1,169 @@
+﻿<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Alerting.ML.App.App"
+             RequestedThemeVariant="Dark">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <Application.Resources>
+        <!-- ===== DARK THEME ONLY ===== -->
+        <!-- Font sizes -->
+        <x:Double x:Key="Text.Base">12</x:Double>
+        <x:Double x:Key="Text.Lg">16</x:Double>
+        <x:Double x:Key="Text.Xl">20</x:Double>
+        <x:Double x:Key="Text.2Xl">24</x:Double>
+        <x:Double x:Key="Text.3Xl">28</x:Double>
+
+        <!-- Radii (from your tokens) -->
+        <CornerRadius x:Key="Radius.Sm">6</CornerRadius>
+        <CornerRadius x:Key="Radius.Md">8</CornerRadius>
+        <CornerRadius x:Key="Radius.Lg">10</CornerRadius>
+        <CornerRadius x:Key="Radius.Xl">14</CornerRadius>
+
+        <!-- Colors (OKLCH approximated to sRGB) -->
+        <SolidColorBrush x:Key="Color.Background" Color="#242424" />  <!-- oklch(0.145 0 0) -->
+        <SolidColorBrush x:Key="Color.Foreground" Color="#FBFBFB" />  <!-- oklch(0.985 0 0) -->
+        <SolidColorBrush x:Key="Color.Card" Color="#242424" />
+        <SolidColorBrush x:Key="Color.CardForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.Popover" Color="#242424" />
+        <SolidColorBrush x:Key="Color.PopoverForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.Primary" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.PrimaryForeground" Color="#343434" />  <!-- oklch(0.205 0 0) -->
+        <SolidColorBrush x:Key="Color.Secondary" Color="#444444" />  <!-- oklch(0.269 0 0) -->
+        <SolidColorBrush x:Key="Color.SecondaryForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.Muted" Color="#444444" />
+        <SolidColorBrush x:Key="Color.MutedForeground" Color="#B5B5B5" />  <!-- oklch(0.708 0 0) -->
+        <SolidColorBrush x:Key="Color.Accent" Color="#444444" />
+        <SolidColorBrush x:Key="Color.AccentForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.Destructive" Color="#A23C22" />  <!-- ≈ oklch(0.396 0.141 25.723) -->
+        <SolidColorBrush x:Key="Color.DestructiveForeground" Color="#F2B593" />  <!-- ≈ oklch(0.637 0.237 25.331) -->
+        <SolidColorBrush x:Key="Color.Border" Color="#444444" />
+        <SolidColorBrush x:Key="Color.Input" Color="#444444" />
+        <SolidColorBrush x:Key="Color.InputBackground" Color="#3A3A3A" />
+        <SolidColorBrush x:Key="Color.SwitchBackground" Color="#70757D" />  <!-- ≈ your dark switch bg intent -->
+        <SolidColorBrush x:Key="Color.Ring" Color="#707070" />  <!-- oklch(0.439 0 0) -->
+        <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280"/>
+
+        <!-- Charts (approx) -->
+        <SolidColorBrush x:Key="Color.Chart1" Color="#6A7DE8" />
+        <SolidColorBrush x:Key="Color.Chart2" Color="#62D9B6" />
+        <SolidColorBrush x:Key="Color.Chart3" Color="#E3B25C" />
+        <SolidColorBrush x:Key="Color.Chart4" Color="#9E6BFF" />
+        <SolidColorBrush x:Key="Color.Chart5" Color="#FF9A6E" />
+
+        <!-- Sidebar -->
+        <SolidColorBrush x:Key="Color.Sidebar" Color="#343434" />  <!-- oklch(0.205 0 0) -->
+        <SolidColorBrush x:Key="Color.SidebarForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.SidebarPrimary" Color="#6A7DE8" />
+        <SolidColorBrush x:Key="Color.SidebarPrimaryForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.SidebarAccent" Color="#444444" />
+        <SolidColorBrush x:Key="Color.SidebarAccentForeground" Color="#FBFBFB" />
+        <SolidColorBrush x:Key="Color.SidebarBorder" Color="#444444" />
+        <SolidColorBrush x:Key="Color.SidebarRing" Color="#707070" />
+
+        <!-- Weights -->
+        <FontWeight x:Key="Weight.Medium">Medium</FontWeight>
+        <FontWeight x:Key="Weight.Normal">Normal</FontWeight>
+    </Application.Resources>
+
+    <!-- =========================
+       GLOBAL BASE STYLES
+       ========================= -->
+    <Application.Styles>
+        <!-- Body (Window) background + default text -->
+        <Style Selector="Window">
+            <Setter Property="Background" Value="{StaticResource Color.Background}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Normal}" />
+        </Style>
+
+        <!-- Base typography (mirrors your :where(...) block) -->
+        <Style Selector="TextBlock.h1">
+            <Setter Property="FontSize" Value="{StaticResource Text.2Xl}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+        </Style>
+        <Style Selector="TextBlock.h2">
+            <Setter Property="FontSize" Value="{StaticResource Text.Xl}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+        </Style>
+        <Style Selector="TextBlock.h3">
+            <Setter Property="FontSize" Value="{StaticResource Text.Lg}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+        </Style>
+        <Style Selector="TextBlock.h4">
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+        </Style>
+        <Style Selector="TextBlock.p">
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Normal}" />
+        </Style>
+        <Style Selector="Label">
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+            <Setter Property="Background" Value="{StaticResource Color.Primary}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.PrimaryForeground}" />
+            <Setter Property="Padding" Value="8,10" />
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Opacity" Value="0.95" />
+        </Style>
+        <Style Selector="Button:disabled">
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <!-- Inputs (TextBox) to reflect border/input colors -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.Md}" />
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Normal}" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
+        </Style>
+        <Style Selector="TextBox:focus">
+            <!-- “Ring” approximation -->
+            <Setter Property="BorderBrush" Value="{StaticResource Color.Ring}" />
+        </Style>
+
+        <Style Selector="ProgressBar">
+            <Setter Property="Foreground" Value="Green"/>
+        </Style>
+
+        <!-- Utility classes for containers -->
+        <Style Selector=":is(UserControl).card">
+            <Setter Property="Background" Value="{StaticResource Color.Card}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+        <Style Selector=":is(UserControl).accent">
+            <Setter Property="Background" Value="{StaticResource Color.Accent}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.AccentForeground}" />
+        </Style>
+        <Style Selector=":is(UserControl).secondary">
+            <Setter Property="Background" Value="{StaticResource Color.Secondary}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.SecondaryForeground}" />
+        </Style>
+        <Style Selector=":is(UserControl).destructive">
+            <Setter Property="Background" Value="{StaticResource Color.Destructive}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.DestructiveForeground}" />
+        </Style>
+
+        <!-- Sidebar helpers -->
+        <Style Selector=":is(UserControl).sidebar">
+            <Setter Property="Background" Value="{StaticResource Color.Sidebar}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.SidebarForeground}" />
+        </Style>
+        <Style Selector=":is(UserControl).sidebar-primary">
+            <Setter Property="Background" Value="{StaticResource Color.SidebarPrimary}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.SidebarPrimaryForeground}" />
+        </Style>
+    </Application.Styles>
+</Application>
