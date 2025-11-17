@@ -3,12 +3,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Alerting.ML.App.Components.Overview"
+             xmlns:progressBar="clr-namespace:Alerting.ML.App.Converters.ProgressBar"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.Overview.TrainingCard"
              x:DataType="vm:TrainingCardViewModel">
     <Design.DataContext>
         <vm:TrainingCardViewModelDesignTime />
     </Design.DataContext>
+    <UserControl.Resources>
+        <progressBar:ProgressBarColorConverter x:Key="ColorConverter"/>
+    </UserControl.Resources>
     <Border Padding="24" CornerRadius="12" Classes="card">
         <StackPanel Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
@@ -29,7 +33,7 @@
                     <TextBlock FontSize="{StaticResource Text.3Xl}" Text="{Binding HighestScore}" VerticalAlignment="Bottom"/>
                     <TextBlock Classes="P" Text="Best Score" VerticalAlignment="Bottom"/>
                 </StackPanel>
-                <ProgressBar Minimum="0" Maximum="1" Value="{Binding LatestProgress}" />
+                <ProgressBar Height="8" Minimum="0" Maximum="1" Value="{Binding LatestProgress}" Foreground="{Binding LatestProgress, Converter={StaticResource ColorConverter}}"/>
             </StackPanel>
             <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Grid.Column="0" Classes="P"  Text="{Binding GenerationsCounter, StringFormat='Generations: {0}'}" />

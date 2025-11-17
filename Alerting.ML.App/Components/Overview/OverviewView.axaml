@@ -1,10 +1,103 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:overview="clr-namespace:Alerting.ML.App.Components.Overview"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.Overview.OverviewView">
-  <Grid>
+    <Design.DataContext>
+        <overview:OverviewViewModelDesignTime />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto, Auto, *" Margin="28, 0">
+        <!-- HEADER -->
+        <Border Grid.Row="0">
+            <Grid Margin="24, 16" ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8"
+                            VerticalAlignment="Center">
+                    <Border>
+                        <Svg Path="../../Assets/main-icon.svg" />
+                    </Border>
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="h3" Text="Monitoring Optimization Studio" FontWeight="SemiBold" />
+                        <TextBlock Classes="p" Text="Fine-tune alert detection rules" />
+                    </StackPanel>
+                </StackPanel>
+                <Button Grid.Column="1" HorizontalAlignment="Right" Content="⚙" />
+            </Grid>
+        </Border>
+        <!-- Filters -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="24, 16">
+            <WrapPanel Orientation="Horizontal"
+                       ItemSpacing="12" LineSpacing="10"
+                       VerticalAlignment="Center">
+                <TextBox Width="300"
+                         VerticalAlignment="Center"
+                         Watermark="Search optimization runs..."
+                         Text="{Binding SearchText}">
+                    <TextBox.InnerLeftContent>
+                        <Svg Path="../../Assets/search-icon.svg" />
+                    </TextBox.InnerLeftContent>
+                </TextBox>
 
-  </Grid>
+                <Button Classes="selected filter" Content="All" MinWidth="40" />
+
+                <Button Classes="filter" MinWidth="60">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Svg Path="../../Assets/azure-icon.svg" />
+                        <TextBlock Text="Azure" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="filter" MinWidth="60">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="☁" />
+                        <TextBlock Text="AWS" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="filter" MinWidth="60">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="☁" />
+                        <TextBlock Text="GCP" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="filter" MinWidth="60">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="📄" />
+                        <TextBlock Text="CSV" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
+
+            <Button Grid.Column="1"
+                    Classes="primary filter"
+                    VerticalAlignment="Top"
+                    VerticalContentAlignment="Center">
+                <TextBlock Text="+ New Optimization" />
+            </Button>
+        </Grid>
+
+        <!-- MAIN CONTENT -->
+        <ListBox Grid.Row="2" Margin="24, 16" 
+                 ItemsSource="{Binding Cards}" Classes="cardsContainer">
+            <Interaction.Behaviors>
+                <SizeChangedTrigger>
+                    <InvokeCommandAction Command="{Binding WindowSizeChangedCommand}" PassEventArgsToCommand="True" />
+                </SizeChangedTrigger>
+            </Interaction.Behaviors>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <overview:TrainingCard />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="{Binding CardsColumns}" Rows="{Binding CardsRows}" ColumnSpacing="24" RowSpacing="24" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+
+    </Grid>
 </UserControl>

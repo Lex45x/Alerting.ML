@@ -18,6 +18,6 @@ public class TrainingCardViewModelDesignTime : TrainingCardViewModel
     public override string TrainingSessionName => "Azure Scheduled Query Rule";
     public override string TrainingDate => DateTime.UtcNow.ToString("d");
     public override double HighestScore => 0.9;
-    public override double LatestProgress => 0.7;
+    public override double LatestProgress { get; } = Random.Shared.NextDouble();
     public override int GenerationsCounter => 121;
 }

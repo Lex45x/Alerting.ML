@@ -40,7 +40,7 @@
         <SolidColorBrush x:Key="Color.InputBackground" Color="#3A3A3A" />
         <SolidColorBrush x:Key="Color.SwitchBackground" Color="#70757D" />  <!-- ≈ your dark switch bg intent -->
         <SolidColorBrush x:Key="Color.Ring" Color="#707070" />  <!-- oklch(0.439 0 0) -->
-        <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280"/>
+        <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280" />
 
         <!-- Charts (approx) -->
         <SolidColorBrush x:Key="Color.Chart1" Color="#6A7DE8" />
@@ -62,12 +62,24 @@
         <!-- Weights -->
         <FontWeight x:Key="Weight.Medium">Medium</FontWeight>
         <FontWeight x:Key="Weight.Normal">Normal</FontWeight>
+
+        <!-- Accent gradient -->
+        <LinearGradientBrush x:Key="Color.AccentGradient" StartPoint="0%,0%"
+                             EndPoint="100%,100%">
+            <GradientStop Color="#3B82F6" Offset="0" />
+            <GradientStop Color="#8B5CF6" Offset="1" />
+        </LinearGradientBrush>
+
+        <!-- Progress Bar -->
+        
+
     </Application.Resources>
 
     <!-- =========================
        GLOBAL BASE STYLES
        ========================= -->
     <Application.Styles>
+        
         <!-- Body (Window) background + default text -->
         <Style Selector="Window">
             <Setter Property="Background" Value="{StaticResource Color.Background}" />
@@ -102,19 +114,49 @@
             <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
             <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
         </Style>
-        <Style Selector="Button">
+        <Style Selector="Button.selected">
             <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
             <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
             <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
             <Setter Property="Background" Value="{StaticResource Color.Primary}" />
             <Setter Property="Foreground" Value="{StaticResource Color.PrimaryForeground}" />
-            <Setter Property="Padding" Value="8,10" />
+            <Setter Property="Padding" Value="12, 2" />
+        </Style>
+        <Style Selector="Button.filter">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="12, 6" />
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource Color.AccentGradient}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.AccentForeground}" />
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+            <Setter Property="FontWeight" Value="{StaticResource Weight.Medium}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+            <Setter Property="Background" Value="{StaticResource Color.Secondary}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.SecondaryForeground}" />
+            <Setter Property="Padding" Value="10, 2" />
         </Style>
         <Style Selector="Button:pointerover">
             <Setter Property="Opacity" Value="0.95" />
         </Style>
         <Style Selector="Button:disabled">
             <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <Style Selector="ListBox.cardsContainer">
+            <Setter Property="Background" Value="{StaticResource Color.Background}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.cardsContainer > ListBoxItem">
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
         </Style>
 
         <!-- Inputs (TextBox) to reflect border/input colors -->
@@ -132,38 +174,35 @@
             <!-- “Ring” approximation -->
             <Setter Property="BorderBrush" Value="{StaticResource Color.Ring}" />
         </Style>
-
-        <Style Selector="ProgressBar">
-            <Setter Property="Foreground" Value="Green"/>
-        </Style>
-
+        
         <!-- Utility classes for containers -->
-        <Style Selector=":is(UserControl).card">
+        <Style Selector=":is(ContentControl).card">
             <Setter Property="Background" Value="{StaticResource Color.Card}" />
             <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
             <Setter Property="Padding" Value="16" />
         </Style>
-        <Style Selector=":is(UserControl).accent">
+        <Style Selector=":is(ContentControl).accent">
             <Setter Property="Background" Value="{StaticResource Color.Accent}" />
             <Setter Property="Foreground" Value="{StaticResource Color.AccentForeground}" />
         </Style>
-        <Style Selector=":is(UserControl).secondary">
+        <Style Selector=":is(ContentControl).secondary">
             <Setter Property="Background" Value="{StaticResource Color.Secondary}" />
             <Setter Property="Foreground" Value="{StaticResource Color.SecondaryForeground}" />
         </Style>
-        <Style Selector=":is(UserControl).destructive">
+        <Style Selector=":is(ContentControl).destructive">
             <Setter Property="Background" Value="{StaticResource Color.Destructive}" />
             <Setter Property="Foreground" Value="{StaticResource Color.DestructiveForeground}" />
         </Style>
 
         <!-- Sidebar helpers -->
-        <Style Selector=":is(UserControl).sidebar">
+        <Style Selector=":is(ContentControl).sidebar">
             <Setter Property="Background" Value="{StaticResource Color.Sidebar}" />
             <Setter Property="Foreground" Value="{StaticResource Color.SidebarForeground}" />
         </Style>
-        <Style Selector=":is(UserControl).sidebar-primary">
+        <Style Selector=":is(ContentControl).sidebar-primary">
             <Setter Property="Background" Value="{StaticResource Color.SidebarPrimary}" />
             <Setter Property="Foreground" Value="{StaticResource Color.SidebarPrimaryForeground}" />
         </Style>
+        <FluentTheme />
     </Application.Styles>
 </Application>

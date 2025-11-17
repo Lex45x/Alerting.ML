@@ -1,4 +1,5 @@
-﻿using Alerting.ML.App.ViewModels;
+﻿using Alerting.ML.App.Components.Overview;
+using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views;
 
 using Avalonia;
@@ -20,7 +21,7 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = new OverviewViewModelDesignTime()
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
