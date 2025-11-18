@@ -3,14 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:overview="clr-namespace:Alerting.ML.App.Components.Overview"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.Overview.OverviewView">
     <Design.DataContext>
         <overview:OverviewViewModelDesignTime />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto, Auto, *" Margin="28, 0">
+    <Grid RowDefinitions="Auto, Auto, *">
         <!-- HEADER -->
-        <Border Grid.Row="0">
+        <Border Grid.Row="0" Classes="header">
             <Grid Margin="24, 16" ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal"
                             Spacing="8"
@@ -23,7 +23,7 @@
                         <TextBlock Classes="p" Text="Fine-tune alert detection rules" />
                     </StackPanel>
                 </StackPanel>
-                <Button Grid.Column="1" HorizontalAlignment="Right" Content="⚙" />
+                <Button Grid.Column="1" HorizontalAlignment="Right" Width="36" Height="36" Content="⚙" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0"/>
             </Grid>
         </Border>
         <!-- Filters -->
@@ -31,12 +31,11 @@
             <WrapPanel Orientation="Horizontal"
                        ItemSpacing="12" LineSpacing="10"
                        VerticalAlignment="Center">
-                <TextBox Width="300"
-                         VerticalAlignment="Center"
-                         Watermark="Search optimization runs..."
-                         Text="{Binding SearchText}">
+                <TextBox Width="300" 
+                         VerticalAlignment="Center" Classes="search"
+                         Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="../../Assets/search-icon.svg" />
+                        <Svg Path="../../Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0"/>
                     </TextBox.InnerLeftContent>
                 </TextBox>
 
@@ -44,21 +43,21 @@
 
                 <Button Classes="filter" MinWidth="60">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/azure-icon.svg" />
+                        <Svg Path="../../Assets/azure-icon.svg" Width="16" Height="16"/>
                         <TextBlock Text="Azure" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
 
                 <Button Classes="filter" MinWidth="60">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <TextBlock Text="☁" />
+                        <Svg Path="../../Assets/aws-icon.svg" Width="16" Height="16"/>
                         <TextBlock Text="AWS" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
 
                 <Button Classes="filter" MinWidth="60">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <TextBlock Text="☁" />
+                        <Svg Path="../../Assets/gcp-icon.svg" Width="16" Height="16"/>
                         <TextBlock Text="GCP" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
@@ -80,7 +79,7 @@
         </Grid>
 
         <!-- MAIN CONTENT -->
-        <ListBox Grid.Row="2" Margin="24, 16" 
+        <ListBox Grid.Row="2" Margin="24, 16"
                  ItemsSource="{Binding Cards}" Classes="cardsContainer">
             <Interaction.Behaviors>
                 <SizeChangedTrigger>
@@ -94,7 +93,8 @@
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="{Binding CardsColumns}" Rows="{Binding CardsRows}" ColumnSpacing="24" RowSpacing="24" />
+                    <UniformGrid Columns="{Binding CardsColumns}" Rows="{Binding CardsRows}" ColumnSpacing="24"
+                                 RowSpacing="24" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
