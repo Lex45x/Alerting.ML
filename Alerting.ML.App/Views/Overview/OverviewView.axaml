@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:overview="clr-namespace:Alerting.ML.App.Components.Overview"
+             xmlns:overview="clr-namespace:Alerting.ML.App.Views.Overview"
+             xmlns:components="clr-namespace:Alerting.ML.App.Components.Overview"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
-             x:Class="Alerting.ML.App.Components.Overview.OverviewView">
+             x:Class="Alerting.ML.App.Views.Overview.OverviewView">
     <Design.DataContext>
         <overview:OverviewViewModelDesignTime />
     </Design.DataContext>
@@ -20,7 +21,7 @@
                     </Border>
                     <StackPanel Spacing="2">
                         <TextBlock Classes="h3" Text="Monitoring Optimization Studio" FontWeight="SemiBold" />
-                        <TextBlock Classes="p" Text="Fine-tune alert detection rules" />
+                        <Label Content="Fine-tune alert detection rules" />
                     </StackPanel>
                 </StackPanel>
                 <Button Grid.Column="1" HorizontalAlignment="Right" Width="36" Height="36" Content="⚙" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0"/>
@@ -73,8 +74,9 @@
             <Button Grid.Column="1"
                     Classes="primary filter"
                     VerticalAlignment="Top"
-                    VerticalContentAlignment="Center">
-                <TextBlock Text="+ New Optimization" />
+                    VerticalContentAlignment="Center"
+                    Command="{Binding NewOptimizationCommand}">
+                <TextBlock Text="+ New Training" />
             </Button>
         </Grid>
 
@@ -88,7 +90,7 @@
             </Interaction.Behaviors>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <overview:TrainingCard />
+                    <components:TrainingCard />
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>

@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Components\Overview\OverviewView.axaml.cs">
+    <Compile Update="Views\Overview\OverviewView.axaml.cs">
       <DependentUpon>OverviewView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Components\Overview\TrainingCard.axaml.cs">

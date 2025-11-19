@@ -68,13 +68,17 @@
         <FontWeight x:Key="Weight.Normal">Normal</FontWeight>
 
         <!-- Accent gradient -->
+        <LinearGradientBrush x:Key="Color.AccentGradientDark" StartPoint="0%,0%"
+                             EndPoint="100%,100%">
+            <GradientStop Color="#2C5FCC" Offset="0" />  
+            <GradientStop Color="#6C43CC" Offset="1" />  
+        </LinearGradientBrush>
         <LinearGradientBrush x:Key="Color.AccentGradient" StartPoint="0%,0%"
                              EndPoint="100%,100%">
             <GradientStop Color="#3B82F6" Offset="0" />
             <GradientStop Color="#8B5CF6" Offset="1" />
         </LinearGradientBrush>
 		
-
     </Application.Resources>
 
     <!-- =========================
@@ -130,6 +134,10 @@
         </Style>
         <Style Selector="Button.primary">
             <Setter Property="Background" Value="{StaticResource Color.AccentGradient}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.AccentForeground}" />
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Color.AccentGradientDark}" />
             <Setter Property="Foreground" Value="{StaticResource Color.AccentForeground}" />
         </Style>
         <Style Selector="Button">

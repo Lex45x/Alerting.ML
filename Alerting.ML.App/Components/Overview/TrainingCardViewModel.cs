@@ -1,4 +1,5 @@
 ﻿using System;
+using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 
 namespace Alerting.ML.App.Components.Overview;
@@ -9,8 +10,8 @@ public class TrainingCardViewModel : ViewModelBase
     public virtual string TrainingDate { get; }
     public virtual double HighestScore { get; }
     public virtual double LatestProgress { get; }
-
     public virtual int GenerationsCounter { get; }
+    public virtual CloudProvider CloudProvider { get; }
 }
 
 public class TrainingCardViewModelDesignTime : TrainingCardViewModel
@@ -20,4 +21,5 @@ public class TrainingCardViewModelDesignTime : TrainingCardViewModel
     public override double HighestScore => 0.9;
     public override double LatestProgress { get; } = Random.Shared.NextDouble();
     public override int GenerationsCounter => 121;
+    public override CloudProvider CloudProvider { get; } = (CloudProvider) Random.Shared.Next(0, 3);
 }

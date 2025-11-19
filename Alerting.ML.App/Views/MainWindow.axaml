@@ -4,10 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Alerting.ML.App.Views"
-        xmlns:overview="clr-namespace:Alerting.ML.App.Components.Overview"
+        xmlns:avalonia="http://reactiveui.net"
+        xmlns:routing="clr-namespace:Alerting.ML.App.Routing"
+        xmlns:overview="clr-namespace:Alerting.ML.App.Views.Overview"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Alerting.ML.App.Views.MainWindow"
         Title="Alerting.ML.App"
         WindowState="Maximized">
-        <overview:OverviewView />
+    <avalonia:RoutedViewHost Router="{Binding Router}">
+        <avalonia:RoutedViewHost.DefaultContent>
+            <TextBlock Text="If you see this then something is VERY broken"/>
+        </avalonia:RoutedViewHost.DefaultContent>
+        <avalonia:RoutedViewHost.ViewLocator>
+            <routing:AppViewLocator />
+        </avalonia:RoutedViewHost.ViewLocator>
+    </avalonia:RoutedViewHost>
 </Window>
