@@ -3,37 +3,58 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Alerting.ML.App.Components.Overview"
+             xmlns:progressBar="clr-namespace:Alerting.ML.App.Converters.ProgressBar"
+             xmlns:cloudProvider="clr-namespace:Alerting.ML.App.Converters.CloudProvider"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.Overview.TrainingCard"
-             x:DataType="vm:TrainingCardViewModel">
+             x:DataType="vm:TrainingCardViewModel" Classes="card">
     <Design.DataContext>
         <vm:TrainingCardViewModelDesignTime />
     </Design.DataContext>
-    <Border Padding="24" CornerRadius="12" Classes="card">
+    <UserControl.Resources>
+        <progressBar:ProgressBarColorConverter x:Key="ColorConverter"/>
+        <cloudProvider:CloudProviderToIconConverter x:Key="IconConverter"/>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Border.card">
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{StaticResource Color.Card}" />
+            <Setter Property="Padding" Value="24" />
+        </Style>
+        <Style Selector="vm|TrainingCard:pointerover Border.card">
+            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}"/>
+        </Style>
+        <Style Selector="vm|TrainingCard:pointerover TextBlock.title">
+            <Setter Property="Foreground" Value="{StaticResource Color.HoverText}"/>
+        </Style>
+    </UserControl.Styles>
+    <Border Classes="card">
         <StackPanel Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Border Padding="8"
+                    <Border Padding="8" Width="36" Height="36"
                             CornerRadius="8"
                             VerticalAlignment="Top" Background="{StaticResource Color.Pill}">
-                        <Svg Path="../../Assets/azure-icon.svg" />
+                        <Svg Path="{Binding CloudProvider, Converter={StaticResource IconConverter}}" />
                     </Border>
                     <StackPanel Spacing="2">
-                        <TextBlock Classes="h3" Text="{Binding TrainingSessionName}" />
-                        <TextBlock Classes="p" Text="{Binding TrainingDate}" />
+                        <TextBlock Classes="h3 title" Text="{Binding TrainingSessionName}" />
+                        <Label Content="{Binding TrainingDate}" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
             <StackPanel Spacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock FontSize="{StaticResource Text.3Xl}" Text="{Binding HighestScore}" VerticalAlignment="Bottom"/>
-                    <TextBlock Classes="P" Text="Best Score" VerticalAlignment="Bottom"/>
+                    <Label Content="Best Score" VerticalAlignment="Bottom"/>
                 </StackPanel>
-                <ProgressBar Minimum="0" Maximum="1" Value="{Binding LatestProgress}" />
+                <ProgressBar Height="8" Minimum="0" Maximum="1" Value="{Binding LatestProgress}" Foreground="{Binding LatestProgress, Converter={StaticResource ColorConverter}}"/>
             </StackPanel>
             <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Grid.Column="0" Classes="P"  Text="{Binding GenerationsCounter, StringFormat='Generations: {0}'}" />
-                <TextBlock Grid.Column="1" Classes="P"  Text="{Binding LatestProgress, StringFormat='\{0:P\}'}" />
+                <Label Grid.Column="0" Content="{Binding GenerationsCounter, StringFormat='Generations: {0}'}" />
+                <Label Grid.Column="1" Content="{Binding LatestProgress, StringFormat='\{0:P\}'}" />
             </Grid>
         </StackPanel>
     </Border>

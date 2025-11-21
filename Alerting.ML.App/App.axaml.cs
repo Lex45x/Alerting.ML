@@ -1,4 +1,5 @@
-﻿using Alerting.ML.App.ViewModels;
+﻿using Alerting.ML.App.Components.Overview;
+using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views;
 
 using Avalonia;
@@ -12,6 +13,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        this.AttachDeveloperTools();
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -20,14 +22,7 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
-            };
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
+                DataContext = new MainWindowViewModel()
             };
         }
 
