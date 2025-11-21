@@ -11,7 +11,6 @@
     </Design.DataContext>
     <UserControl.Resources>
         <SolidColorBrush x:Key="FollowingStepBackground" Color="#1E2939"/>
-        <SolidColorBrush x:Key="CompletedStepBackground" Color="#2B7fff"/>
         <SolidColorBrush x:Key="CurrentStepBackground" Color="#155DFC"/>
         <SolidColorBrush x:Key="CurrentStepBorder" Color="#112449"/>
     </UserControl.Resources>
@@ -37,7 +36,7 @@
         </Style>
 
         <Style Selector="local|TrainingCreationStepIndicator.completed Border">
-            <Setter Property="Background" Value="{StaticResource CompletedStepBackground}"/>
+            <Setter Property="Background" Value="{StaticResource Color.ButtonAccent}"/>
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.current Border">
             <Setter Property="Background" Value="{StaticResource CurrentStepBackground}"/>
