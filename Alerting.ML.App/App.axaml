@@ -45,6 +45,9 @@
         <SolidColorBrush x:Key="Color.SwitchBackground" Color="#70757D" />  <!-- ≈ your dark switch bg intent -->
         <SolidColorBrush x:Key="Color.Ring" Color="#707070" />  <!-- oklch(0.439 0 0) -->
         <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280" />
+        <SolidColorBrush x:Key="Color.RadioButton" Color="#161B22"/>
+        <SolidColorBrush x:Key="Color.RadioButtonChecked" Color="#0E1623"/>
+        <SolidColorBrush x:Key="Color.ButtonAccent" Color="#2B7fff"/>
 
         <!-- Charts (approx) -->
         <SolidColorBrush x:Key="Color.Chart1" Color="#6A7DE8" />
@@ -114,6 +117,7 @@
         <Style Selector="TextBlock.p">
             <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
             <Setter Property="FontWeight" Value="{StaticResource Weight.Normal}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.MutedForeground}" />
         </Style>
         <Style Selector="Label">
             <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
