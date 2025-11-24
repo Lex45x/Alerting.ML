@@ -1,0 +1,51 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <RadioButton Theme="{StaticResource FilterRadioButton}" GroupName="1" Content="Some Text" />
+                <RadioButton Theme="{StaticResource FilterRadioButton}" GroupName="1" Content="Some Text" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <SolidColorBrush x:Key="Color.FilterRadioButtonBackground" Color="#FAFAFA" />
+    <SolidColorBrush x:Key="Color.FilterRadioButtonBackgroundPointerOver" Color="#E2E2E4" />
+    <SolidColorBrush x:Key="Color.FilterRadioButtonBorder" Color="#252525" />
+    <SolidColorBrush x:Key="Color.FilterRadioButtonCheckedForeground" Color="#252525" />
+    <ControlTheme TargetType="RadioButton" x:Key="FilterRadioButton">
+        <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="10 0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="{StaticResource Color.FilterRadioButtonBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource Color.Button}" />
+        </Style>
+        <Style Selector="^:pointerover:checked">
+            <Setter Property="Background" Value="{StaticResource Color.FilterRadioButtonBackgroundPointerOver}" />
+        </Style>
+        <Style Selector="^:checked">
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="{StaticResource Color.FilterRadioButtonBackground}" />
+            <Setter Property="Foreground" Value="{StaticResource Color.FilterRadioButtonCheckedForeground}" />
+        </Style>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="RadioButton">
+                <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

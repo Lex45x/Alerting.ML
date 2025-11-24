@@ -1,0 +1,97 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <Button Theme="{StaticResource ArrowButton}" Content="Some Text" />
+                <Button Classes="left" Theme="{StaticResource ArrowButton}" Content="Some Text" />
+                <Button Classes="right" Theme="{StaticResource ArrowButton}" Content="Some Text" />
+                <Button Classes="accent left" Theme="{StaticResource ArrowButton}" Content="Some Text" />
+                <Button Classes="accent right" Theme="{StaticResource ArrowButton}" Content="Some Text" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <SolidColorBrush x:Key="Color.ArrowButtonBorder" Color="#262626" />
+    <SolidColorBrush x:Key="Color.ArrowButtonAccentBackground" Color="#155DFC" />
+    <SolidColorBrush x:Key="Color.ArrowButtonAccentHoverBackground" Color="#1447E6" />
+    <SolidColorBrush x:Key="Color.ArrowButtonForeground" Color="#FAFAFA" />
+    <ControlTheme x:Key="ArrowButton" TargetType="Button">
+        <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Padding" Value="12, 8" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource Color.ArrowButtonBorder}" />
+        <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource Color.ArrowButtonForeground}" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="RootBorder" Background="{TemplateBinding Background}"
+                         BorderBrush="{TemplateBinding BorderBrush}"
+                         BorderThickness="{TemplateBinding BorderThickness}"
+                         CornerRadius="{TemplateBinding CornerRadius}">
+                    <StackPanel Orientation="Horizontal" Margin="{TemplateBinding Padding}" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Svg x:Name="PART_ArrowLeft" Width="16" Height="16" Path="../../Assets/goback-icon.svg" Css=".lucide { stroke: #FAFAFA; }"/>
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <Svg x:Name="PART_ArrowRight" Width="16" Height="16" Path="../../Assets/goback-icon.svg" Css=".lucide { stroke: #FAFAFA; }">
+                            <Svg.RenderTransform>
+                                <RotateTransform Angle="180"/>
+                            </Svg.RenderTransform>
+                        </Svg>
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^.accent">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{StaticResource Color.ArrowButtonAccentBackground}" />
+        </Style>
+
+        <Style Selector="^.left /template/ Svg#PART_ArrowLeft">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <Style Selector="^.right /template/ Svg#PART_ArrowRight">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <Style Selector="^ /template/ Svg">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="RecognizesAccessKey" Value="True" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource Color.Button}" />
+        </Style>
+
+        <Style Selector="^.accent:pointerover">
+            <Setter Property="Background" Value="{StaticResource Color.ArrowButtonAccentHoverBackground}" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+            <Setter Property="Background" Value="{StaticResource Color.Button}" />
+        </Style>
+
+        <Style Selector="^.accent:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+            <Setter Property="Background" Value="{StaticResource Color.ArrowButtonAccentHoverBackground}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundDisabled}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
