@@ -24,7 +24,9 @@
                         <Label Content="Fine-tune alert detection rules" />
                     </StackPanel>
                 </StackPanel>
-                <Button Grid.Column="1" HorizontalAlignment="Right" Width="36" Height="36" Content="⚙" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0"/>
+                <Button Grid.Column="1" Theme="{StaticResource TransparentButton}" HorizontalAlignment="Right"
+                        Width="36" Height="36" Content="⚙" VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center" Padding="0" />
             </Grid>
         </Border>
         <!-- Filters -->
@@ -32,47 +34,50 @@
             <WrapPanel Orientation="Horizontal"
                        ItemSpacing="12" LineSpacing="10"
                        VerticalAlignment="Center">
-                <TextBox Width="300" 
-                         VerticalAlignment="Center" Classes="search"
+                <TextBox Width="300"
+                         VerticalAlignment="Center" 
+                         VerticalContentAlignment="Center"
+                         Theme="{StaticResource SearchBox}"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="../../Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0"/>
+                        <Svg Path="../../Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
 
-                <Button Classes="selected filter" Content="All" MinWidth="40" />
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}" Content="All" MinWidth="40"
+                             IsChecked="True" />
 
-                <Button Classes="filter" MinWidth="60">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/azure-icon.svg" Width="16" Height="16"/>
+                        <Svg Path="../../Assets/azure-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="Azure" VerticalAlignment="Center" />
                     </StackPanel>
-                </Button>
+                </RadioButton>
 
-                <Button Classes="filter" MinWidth="60">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/aws-icon.svg" Width="16" Height="16"/>
+                        <Svg Path="../../Assets/aws-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="AWS" VerticalAlignment="Center" />
                     </StackPanel>
-                </Button>
+                </RadioButton>
 
-                <Button Classes="filter" MinWidth="60">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/gcp-icon.svg" Width="16" Height="16"/>
+                        <Svg Path="../../Assets/gcp-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="GCP" VerticalAlignment="Center" />
                     </StackPanel>
-                </Button>
+                </RadioButton>
 
-                <Button Classes="filter" MinWidth="60">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <TextBlock Text="📄" />
                         <TextBlock Text="CSV" VerticalAlignment="Center" />
                     </StackPanel>
-                </Button>
+                </RadioButton>
             </WrapPanel>
 
             <Button Grid.Column="1"
-                    Classes="primary filter"
+                    Theme="{StaticResource GradientButton}"
                     VerticalAlignment="Top"
                     VerticalContentAlignment="Center"
                     Command="{Binding NewOptimizationCommand}">

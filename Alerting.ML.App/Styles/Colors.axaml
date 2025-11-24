@@ -1,0 +1,52 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Font sizes -->
+    <x:Double x:Key="Text.Base">12</x:Double>
+    <x:Double x:Key="Text.Lg">16</x:Double>
+    <x:Double x:Key="Text.Xl">20</x:Double>
+    <x:Double x:Key="Text.2Xl">24</x:Double>
+    <x:Double x:Key="Text.3Xl">28</x:Double>
+
+    <!-- Radii -->
+    <CornerRadius x:Key="Radius.Sm">6</CornerRadius>
+    <CornerRadius x:Key="Radius.Md">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Lg">10</CornerRadius>
+    <CornerRadius x:Key="Radius.Xl">14</CornerRadius>
+
+    <!-- Colors -->
+    <SolidColorBrush x:Key="Color.Bg" Color="#0A0E1A" />
+    <SolidColorBrush x:Key="Color.Bg2" Color="#0D1117" />
+    <SolidColorBrush x:Key="Color.Bg3" Color="#161B22" />
+
+    <SolidColorBrush x:Key="Color.Foreground" Color="#FBFBFB" />
+    <SolidColorBrush x:Key="Color.MutedForeground" Color="#99A1AF" />
+    
+    <SolidColorBrush x:Key="Color.RadioButtonChecked" Color="#0E1623" />
+    <SolidColorBrush x:Key="Color.ButtonAccent" Color="#2B7fff" />
+    
+    <SolidColorBrush x:Key="Color.CardBorderHover" Color="#354052" />
+    <SolidColorBrush x:Key="Color.CardBorder" Color="#1E2938" />
+    
+    <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280" />
+    <SolidColorBrush x:Key="Color.Primary" Color="#FBFBFB" />
+    <SolidColorBrush x:Key="Color.PrimaryForeground" Color="#343434" />
+    <SolidColorBrush x:Key="Color.AccentForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Color.Button" Color="#181A20" />
+    <SolidColorBrush x:Key="Color.InputBackground" Color="#12151D" />
+    <SolidColorBrush x:Key="Color.Ring" Color="#707070" />
+    <SolidColorBrush x:Key="Color.SecondaryForeground" Color="#FBFBFB" />
+    <SolidColorBrush x:Key="Color.Border" Color="#1E2939" />
+    <SolidColorBrush x:Key="Color.HoverText" Color="#39A2FF" />
+    
+    <!-- Accent gradient -->
+    <LinearGradientBrush x:Key="Color.AccentGradientDark" StartPoint="0%,0%"
+                         EndPoint="100%,100%">
+        <GradientStop Color="#2C5FCC" Offset="0" />
+        <GradientStop Color="#6C43CC" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Color.AccentGradient" StartPoint="0%,0%"
+                         EndPoint="100%,100%">
+        <GradientStop Color="#3B82F6" Offset="0" />
+        <GradientStop Color="#8B5CF6" Offset="1" />
+    </LinearGradientBrush>
+</ResourceDictionary>

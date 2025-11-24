@@ -9,8 +9,7 @@
         xmlns:overview="clr-namespace:Alerting.ML.App.Views.Overview"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Alerting.ML.App.Views.MainWindow"
-        Title="Alerting.ML.App"
-        WindowState="Maximized">
+        Title="Alerting.ML.App">
     <avalonia:RoutedViewHost Router="{Binding Router}">
         <avalonia:RoutedViewHost.DefaultContent>
             <TextBlock Text="If you see this then something is VERY broken"/>

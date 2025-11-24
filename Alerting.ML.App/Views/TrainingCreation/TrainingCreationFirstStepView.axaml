@@ -4,68 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:trainingCreation="clr-namespace:Alerting.ML.App.Components.TrainingCreation"
              xmlns:trainingCreation1="clr-namespace:Alerting.ML.App.Views.TrainingCreation"
-             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
              x:Class="Alerting.ML.App.Views.TrainingCreation.TrainingCreationFirstStepView">
     <Design.DataContext>
         <trainingCreation1:TrainingCreationFirstStepViewModelDesignTime />
     </Design.DataContext>
-    <UserControl.Resources>
-        <ControlTheme TargetType="RadioButton" x:Key="DataSourceButton">
-            <Setter Property="Background" Value="{StaticResource Color.RadioButton}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="24" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorder}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Style Selector="^:checked /template/ Border#PART_Checkbox">
-                <Setter Property="IsVisible" Value="True" />
-            </Style>
-            <Style Selector="^:unchecked /template/ Border#PART_Checkbox">
-                <Setter Property="IsVisible" Value="False" />
-            </Style>
-            <Style Selector="^:pointerover">
-                <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}" />
-            </Style>
-            <Style Selector="^:checked">
-                <Setter Property="Background" Value="{StaticResource Color.RadioButtonChecked}" />
-                <Setter Property="BorderBrush" Value="{StaticResource Color.ButtonAccent}" />
-            </Style>
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border x:Name="RootBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid ColumnDefinitions="*, Auto" Margin="{TemplateBinding Padding}">
-                            <ContentPresenter Grid.Column="0" x:Name="PART_ContentPresenter"
-                                              Content="{TemplateBinding Content}" />
-                            <Border Grid.Column="1" Width="24" Height="24" Padding="4" CornerRadius="12"
-                                    Background="{StaticResource Color.ButtonAccent}" VerticalAlignment="Center"
-                                    HorizontalAlignment="Right" x:Name="PART_Checkbox">
-                                <Svg Path="../../Assets/check-icon.svg" Css=".lucide { stroke: #FFFFFF; }" />
-                            </Border>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-        </ControlTheme>
-    </UserControl.Resources>
     <Grid RowDefinitions="Auto, Auto, *">
         <trainingCreation:TrainingCreationHeader Grid.Row="0" />
-        <Border Grid.Row="1" Margin="24" Padding="32, 32" CornerRadius="12" Background="{StaticResource Color.Card}">
+        <Border Grid.Row="1" Margin="24, 0, 24, 24" Padding="32, 32" CornerRadius="12" Classes="panel">
             <StackPanel Spacing="8">
-                <!-- Title + description -->
+                
                 <TextBlock Classes="h2" Text="Choose Data Source"/>
-                <TextBlock Classes="p" Text="Select where you want to import your time-series sfrom" />
+                <TextBlock Classes="p" Text="Select where you want to import your time-series from" />
 
                 <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" ColumnSpacing="8" RowSpacing="8" Margin="0,24,0,0">
 
                     <RadioButton Grid.Row="0" Grid.Column="0" GroupName="DataSource"
-                                 Theme="{StaticResource DataSourceButton}"
+                                 Theme="{StaticResource DataSourceRadioButton}"
                                  IsChecked="{Binding IsAzureSelected}">
 
                         <StackPanel Orientation="Horizontal" Spacing="8">
@@ -75,14 +30,14 @@
                             </Border>
 
                             <StackPanel Spacing="2">
-                                <TextBlock Text="Azure Monitor" FontWeight="SemiBold" />
+                                <TextBlock Classes="h3" Text="Azure Monitor" FontWeight="SemiBold" />
                                 <TextBlock Classes="p" Text="Import from Azure Monitor" TextWrapping="Wrap" />
                             </StackPanel>
                         </StackPanel>
                     </RadioButton>
 
                     <RadioButton Grid.Row="0" Grid.Column="1" GroupName="DataSource"
-                                 Theme="{StaticResource DataSourceButton}"
+                                 Theme="{StaticResource DataSourceRadioButton}"
                                  IsChecked="{Binding IsAwsSelected}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Border Width="32" Height="32" CornerRadius="8" Padding="8" Background="{StaticResource Color.Pill}">
@@ -91,14 +46,14 @@
                             </Border>
 
                             <StackPanel Spacing="2">
-                                <TextBlock Text="AWS CloudWatch" FontWeight="SemiBold" />
+                                <TextBlock Classes="h3" Text="AWS CloudWatch" FontWeight="SemiBold" />
                                 <TextBlock Classes="p" Text="Import from CloudWatch" TextWrapping="Wrap" />
                             </StackPanel>
                         </StackPanel>
                     </RadioButton>
 
                     <RadioButton Grid.Row="1" Grid.Column="0" GroupName="DataSource"
-                                 Theme="{StaticResource DataSourceButton}"
+                                 Theme="{StaticResource DataSourceRadioButton}"
                                  IsChecked="{Binding IsGcpSelected}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Border Width="32" Height="32" CornerRadius="8" Padding="8" Background="{StaticResource Color.Pill}">
@@ -107,7 +62,7 @@
                             </Border>
 
                             <StackPanel Spacing="2">
-                                <TextBlock Text="GCP Operations" FontWeight="SemiBold" />
+                                <TextBlock Classes="h3" Text="GCP Operations" FontWeight="SemiBold" />
                                 <TextBlock Classes="p" Text="Import from Google Cloud Operations"
                                            TextWrapping="Wrap" />
                             </StackPanel>
@@ -115,7 +70,7 @@
                     </RadioButton>
 
                     <RadioButton Grid.Row="1" Grid.Column="1" GroupName="DataSource"
-                                 Theme="{StaticResource DataSourceButton}"
+                                 Theme="{StaticResource DataSourceRadioButton}"
                                  IsChecked="{Binding IsCsvSelected}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource Color.Pill}">
@@ -123,7 +78,7 @@
                             </Border>
 
                             <StackPanel Spacing="2">
-                                <TextBlock Text="CSV File" FontWeight="SemiBold" />
+                                <TextBlock Classes="h3" Text="CSV File" FontWeight="SemiBold" />
                                 <TextBlock Classes="p" Text="Select local CSV"
                                            TextWrapping="Wrap" />
                             </StackPanel>
@@ -133,9 +88,9 @@
                 </Grid>
             </StackPanel>
         </Border>
-        <Grid Grid.Row="2" Margin="24">
-            <Button Content="Cancel" HorizontalAlignment="Left"/>
-            <Button Content="Continue" HorizontalAlignment="Right"/>
+        <Grid Grid.Row="2" Margin="24" VerticalAlignment="Top">
+            <Button Theme="{StaticResource ArrowButton}" Classes="left" Content="Cancel" HorizontalAlignment="Left"/>
+            <Button Theme="{StaticResource ArrowButton}" Classes="accent right" Content="Continue" HorizontalAlignment="Right"/>
         </Grid>
     </Grid>
 </UserControl>

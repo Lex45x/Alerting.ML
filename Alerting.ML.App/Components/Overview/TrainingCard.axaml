@@ -16,21 +16,14 @@
         <cloudProvider:CloudProviderToIconConverter x:Key="IconConverter"/>
     </UserControl.Resources>
     <UserControl.Styles>
-        <Style Selector="Border.card">
-            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorder}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Background" Value="{StaticResource Color.Card}" />
-            <Setter Property="Padding" Value="24" />
-        </Style>
-        <Style Selector="vm|TrainingCard:pointerover Border.card">
+        <Style Selector="vm|TrainingCard:pointerover Border.panel">
             <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}"/>
         </Style>
         <Style Selector="vm|TrainingCard:pointerover TextBlock.title">
             <Setter Property="Foreground" Value="{StaticResource Color.HoverText}"/>
         </Style>
     </UserControl.Styles>
-    <Border Classes="card">
+    <Border Classes="panel" CornerRadius="{StaticResource Radius.Lg}" Padding="24">
         <StackPanel Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="12">

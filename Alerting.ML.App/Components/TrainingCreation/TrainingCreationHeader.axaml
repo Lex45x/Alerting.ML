@@ -13,7 +13,7 @@
             <StackPanel Margin="24, 16" Orientation="Horizontal"
                         Spacing="8"
                         VerticalAlignment="Center">
-                <Button Width="36" Height="36" Command="{Binding CancelCommand}">
+                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36" Command="{Binding CancelCommand}">
                     <Svg Path="../../Assets/goback-icon.svg" />
                 </Button>
                 <StackPanel Spacing="2">
@@ -23,7 +23,7 @@
             </StackPanel>
         </Border>
 
-        <UniformGrid Grid.Row="1" Columns="4">
+        <UniformGrid Grid.Row="1" Columns="4" Margin="24,32">
             <components:TrainingCreationStepIndicator IndicatorStep="Step1" CurrentStep="{Binding Step}"/>
             <components:TrainingCreationStepIndicator IndicatorStep="Step2" CurrentStep="{Binding Step}"/>
             <components:TrainingCreationStepIndicator IndicatorStep="Step3" CurrentStep="{Binding Step}"/>
