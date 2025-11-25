@@ -12,6 +12,7 @@
                 <ResourceInclude Source="Theme/FilterRadioButton.axaml"/>
                 <ResourceInclude Source="Theme/ArrowButton.axaml"/>
                 <ResourceInclude Source="Theme/SearchBox.axaml"/>
+                <ResourceInclude Source="Theme/FileUploadButton.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -21,26 +22,7 @@
        ========================= -->
     <Application.Styles>
         <FluentTheme />
-
-        <Style Selector="TextBox.search">
-            <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{StaticResource Radius.Md}" />
-            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Padding" Value="8,6" />
-            <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
-        </Style>
-        <Style Selector="TextBox.search:focus">
-            <Setter Property="BorderBrush" Value="{StaticResource Color.Ring}" />
-            <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
-        </Style>
-        <Style Selector="TextBox.search:pointerover">
-            <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
-        </Style>
-
-
-
+		
         <!-- Body (Window) background + default text -->
         <Style Selector="Window">
             <Setter Property="Background" Value="{StaticResource Color.Bg}" />
@@ -76,34 +58,6 @@
             <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="{StaticResource Color.MutedForeground}" />
         </Style>
-        <Style Selector="Button.selected">
-            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
-            <Setter Property="FontWeight" Value="Medium" />
-            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
-            <Setter Property="Background" Value="{StaticResource Color.Primary}" />
-            <Setter Property="Foreground" Value="{StaticResource Color.PrimaryForeground}" />
-            <Setter Property="Padding" Value="12, 2" />
-        </Style>
-        <Style Selector="Button.filter">
-            <Setter Property="Height" Value="30" />
-            <Setter Property="Padding" Value="12, 6" />
-        </Style>
-        <Style Selector="Button">
-            <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
-            <Setter Property="FontWeight" Value="Medium" />
-            <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
-            <Setter Property="Background" Value="{StaticResource Color.Button}" />
-            <Setter Property="Foreground" Value="{StaticResource Color.SecondaryForeground}" />
-            <Setter Property="Padding" Value="10, 2" />
-            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-        <Style Selector="Button:pointerover">
-            <Setter Property="Opacity" Value="0.95" />
-        </Style>
-        <Style Selector="Button:disabled">
-            <Setter Property="Opacity" Value="0.6" />
-        </Style>
 
         <Style Selector="ListBox.cardsContainer">
             <Setter Property="Background" Value="{StaticResource Color.Bg}" />
@@ -131,6 +85,14 @@
             <Setter Property="Background" Value="{StaticResource Color.Bg2}" />
             <Setter Property="BorderBrush" Value="{StaticResource Color.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.success">
+            <Setter Property="Background" Value="{StaticResource Color.SuccessPanel}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Color.SuccessPanelBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="CornerRadius" Value="8"/>
         </Style>
         
     </Application.Styles>

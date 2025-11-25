@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Alerting.ML.Engine\Alerting.ML.Engine.csproj" />
     <ProjectReference Include="..\Alerting.ML.Sources.Azure\Alerting.ML.Sources.Azure.csproj" />
+    <ProjectReference Include="..\Alerting.ML.Sources.Csv\Alerting.ML.Sources.Csv.csproj" />
     <ProjectReference Include="..\Alerting.ML.TimeSeries.Sample\Alerting.ML.TimeSeries.Sample.csproj" />
   </ItemGroup>
 
@@ -32,6 +33,9 @@
     </Compile>
     <Compile Update="Components\Overview\TrainingCard.axaml.cs">
       <DependentUpon>TrainingCard.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\TrainingCreation\TrainingCreationView.axaml.cs">
+      <DependentUpon>TrainingCreationView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

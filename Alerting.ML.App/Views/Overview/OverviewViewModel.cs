@@ -6,14 +6,20 @@ using Alerting.ML.App.Components.Overview;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.TrainingCreation;
 using Avalonia.Controls;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Overview;
 
+using Alerting.ML.App.Components.TrainingCreation;
+
 public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 {
-    public OverviewViewModel(IScreen hostScreen)
+    private readonly ILoggerFactory loggerFactory;
+
+    public OverviewViewModel(IScreen hostScreen, ILoggerFactory loggerFactory)
     {
+        this.loggerFactory = loggerFactory;
         HostScreen = hostScreen;
         WindowSizeChangedCommand = ReactiveCommand.Create<SizeChangedEventArgs>(WindowSizeChanged);
         NewOptimizationCommand = ReactiveCommand.Create(NewOptimization);
@@ -21,7 +27,7 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 
     private void NewOptimization()
     {
-        HostScreen.Router.Navigate.Execute(new TrainingCreationFirstStepViewModel(HostScreen));
+        HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, loggerFactory));
     }
 
     private void WindowSizeChanged(SizeChangedEventArgs e)
@@ -64,7 +70,7 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 
 public class OverviewViewModelDesignTime : OverviewViewModel
 {
-    public OverviewViewModelDesignTime() : base(null)
+    public OverviewViewModelDesignTime() : base(null, null)
     {
     }
 

@@ -49,16 +49,17 @@ public partial class TrainingCreationStepIndicator : UserControl
     {
         if (CurrentStep > IndicatorStep)
         {
-            IconSvg.Path =  "../../Assets/check-icon.svg";
+            IconSvg.Path = "avares://Alerting.ML.App/Assets/check-icon.svg";
         }
         else
         {
             IconSvg.Path = IndicatorStep switch
             {
-                TrainingCreationStep.Step1 => "../../Assets/cloud-icon.svg",
-                TrainingCreationStep.Step2 => "../../Assets/key-icon.svg",
-                TrainingCreationStep.Step3 => "../../Assets/datasource-icon.svg",
-                TrainingCreationStep.Step4 => "../../Assets/eye-icon.svg",
+                TrainingCreationStep.Step1 => "avares://Alerting.ML.App/Assets/cloud-icon.svg",
+                TrainingCreationStep.Step2 => "avares://Alerting.ML.App/Assets/key-icon.svg",
+                TrainingCreationStep.Step3 => "avares://Alerting.ML.App/Assets/datasource-icon.svg",
+                TrainingCreationStep.Step4 => "avares://Alerting.ML.App/Assets/alert-icon.svg",
+                TrainingCreationStep.Step5 => "avares://Alerting.ML.App/Assets/eye-icon.svg",
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
@@ -71,7 +72,8 @@ public partial class TrainingCreationStepIndicator : UserControl
             TrainingCreationStep.Step1 => "Choose Source",
             TrainingCreationStep.Step2 => "Configure",
             TrainingCreationStep.Step3 => "Select Data",
-            TrainingCreationStep.Step4 => "Preview",
+            TrainingCreationStep.Step4 => "Import Outages",
+            TrainingCreationStep.Step5 => "Preview",
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -84,6 +86,7 @@ public partial class TrainingCreationStepIndicator : UserControl
             TrainingCreationStep.Step2 => "Step 2",
             TrainingCreationStep.Step3 => "Step 3",
             TrainingCreationStep.Step4 => "Step 4",
+            TrainingCreationStep.Step5 => "Step 5",
             _ => throw new ArgumentOutOfRangeException()
         };
     }

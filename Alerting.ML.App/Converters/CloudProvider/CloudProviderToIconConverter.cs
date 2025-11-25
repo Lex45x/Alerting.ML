@@ -10,9 +10,9 @@ public class CloudProviderToIconConverter : IValueConverter
     {
         return (value as Model.Enums.CloudProvider?) switch
         {
-            Model.Enums.CloudProvider.Azure => "../../Assets/azure-icon.svg",
-            Model.Enums.CloudProvider.Amazon => "../../Assets/aws-icon.svg",
-            Model.Enums.CloudProvider.Google => "../../Assets/gcp-icon.svg",
+            Model.Enums.CloudProvider.Azure => "avares://Alerting.ML.App/Assets/azure-icon.svg",
+            Model.Enums.CloudProvider.Amazon => "avares://Alerting.ML.App/Assets/aws-icon.svg",
+            Model.Enums.CloudProvider.Google => "avares://Alerting.ML.App/Assets/gcp-icon.svg",
             _ => throw new ArgumentOutOfRangeException()
         };
     }

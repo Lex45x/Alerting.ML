@@ -1,0 +1,90 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:trainingCreation="clr-namespace:Alerting.ML.App.Components.TrainingCreation"
+             xmlns:trainingCreation1="clr-namespace:Alerting.ML.App.Views.TrainingCreation"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
+             x:Class="Alerting.ML.App.Components.TrainingCreation.TrainingCreationFirstStepView">
+    <Design.DataContext>
+        <trainingCreation:TrainingCreationFirstStepViewModelDesignTime />
+    </Design.DataContext>
+    <StackPanel Spacing="8">
+
+        <TextBlock Classes="h2" Text="Choose Data Source" />
+        <TextBlock Classes="p" Text="Select where you want to import your time-series from" />
+
+        <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" ColumnSpacing="8" RowSpacing="8" Margin="0,24,0,0">
+
+            <RadioButton Grid.Row="0" Grid.Column="0" GroupName="DataSource" IsEnabled="False"
+                         Theme="{StaticResource DataSourceRadioButton}"
+                         IsChecked="{Binding IsAzureSelected}">
+
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Border Width="32" Height="32" CornerRadius="8" Padding="8"
+                            Background="{StaticResource Color.Pill}">
+                        <Svg Path="avares://Alerting.ML.App/Assets/azure-icon.svg" VerticalAlignment="Center"
+                             HorizontalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="h3" Text="Azure Monitor" FontWeight="SemiBold" />
+                        <TextBlock Classes="p" Text="Import from Azure Monitor" TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton Grid.Row="0" Grid.Column="1" GroupName="DataSource" IsEnabled="False"
+                         Theme="{StaticResource DataSourceRadioButton}"
+                         IsChecked="{Binding IsAwsSelected}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Border Width="32" Height="32" CornerRadius="8" Padding="8"
+                            Background="{StaticResource Color.Pill}">
+                        <Svg Path="avares://Alerting.ML.App/Assets/aws-icon.svg" VerticalAlignment="Center"
+                             HorizontalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="h3" Text="AWS CloudWatch" FontWeight="SemiBold" />
+                        <TextBlock Classes="p" Text="Import from CloudWatch" TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton Grid.Row="1" Grid.Column="0" GroupName="DataSource" IsEnabled="False"
+                         Theme="{StaticResource DataSourceRadioButton}"
+                         IsChecked="{Binding IsGcpSelected}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Border Width="32" Height="32" CornerRadius="8" Padding="8"
+                            Background="{StaticResource Color.Pill}">
+                        <Svg Path="avares://Alerting.ML.App/Assets/gcp-icon.svg" VerticalAlignment="Center"
+                             HorizontalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="h3" Text="GCP Operations" FontWeight="SemiBold" />
+                        <TextBlock Classes="p" Text="Import from Google Cloud Operations"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton Grid.Row="1" Grid.Column="1" GroupName="DataSource"
+                         Theme="{StaticResource DataSourceRadioButton}"
+                         IsChecked="{Binding IsCsvSelected}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource Color.Pill}">
+                        <TextBlock Text="📄" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="h3" Text="CSV File" FontWeight="SemiBold" />
+                        <TextBlock Classes="p" Text="Select local CSV"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+        </Grid>
+    </StackPanel>
+</UserControl>

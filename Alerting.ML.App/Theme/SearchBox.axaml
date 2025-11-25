@@ -8,7 +8,7 @@
                          VerticalContentAlignment="Center"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="../../Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
                 <TextBox Theme="{StaticResource SearchBox}" Width="300"
@@ -16,7 +16,7 @@
                          VerticalContentAlignment="Center"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="../../Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
             </StackPanel>
