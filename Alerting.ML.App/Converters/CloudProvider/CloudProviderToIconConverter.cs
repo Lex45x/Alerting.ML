@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Avalonia.Data.Converters;
+using System;
 using System.Globalization;
-using Avalonia.Data.Converters;
 
 namespace Alerting.ML.App.Converters.CloudProvider;
 
@@ -16,7 +16,7 @@ public class CloudProviderToIconConverter : IValueConverter
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
+
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();

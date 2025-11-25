@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Reactive;
-using Alerting.ML.App.Components.Overview;
+﻿using Alerting.ML.App.Components.Overview;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.TrainingCreation;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using System;
+using System.Collections.ObjectModel;
+using System.Reactive;
 
 namespace Alerting.ML.App.Views.Overview;
-
-using Alerting.ML.App.Components.TrainingCreation;
 
 public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 {

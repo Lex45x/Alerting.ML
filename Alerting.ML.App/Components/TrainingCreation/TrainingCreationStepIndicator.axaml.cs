@@ -1,7 +1,6 @@
 using Alerting.ML.App.Model.Enums;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Media;
 using System;
 
 namespace Alerting.ML.App.Components.TrainingCreation;
@@ -13,8 +12,9 @@ public partial class TrainingCreationStepIndicator : UserControl
 
     public static readonly StyledProperty<TrainingCreationStep> CurrentStepProperty =
         AvaloniaProperty.Register<TrainingCreationStepIndicator, TrainingCreationStep>(nameof(CurrentStep));
-    
-    public TrainingCreationStep IndicatorStep {
+
+    public TrainingCreationStep IndicatorStep
+    {
         get => GetValue(IndicatorStepProperty);
         set => SetValue(IndicatorStepProperty, value);
     }

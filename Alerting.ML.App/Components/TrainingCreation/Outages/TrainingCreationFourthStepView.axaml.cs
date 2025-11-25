@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using ReactiveUI.Avalonia;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Outages;

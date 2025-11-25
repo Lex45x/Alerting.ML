@@ -1,9 +1,9 @@
-﻿using System.Reflection;
-using Alerting.ML.Engine.Alert;
+﻿using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace Alerting.ML.Engine;
 

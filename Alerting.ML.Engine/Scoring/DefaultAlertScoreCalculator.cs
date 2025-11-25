@@ -13,7 +13,7 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
         var truePositiveCount = 0;
         int? totalCount = null;
         var detectedOutages = new HashSet<Outage>();
-        
+
 
         foreach (var alertOutage in alertOutages)
         {

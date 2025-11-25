@@ -1,7 +1,7 @@
-﻿using Avalonia.Media;
+﻿using Avalonia.Data.Converters;
+using Avalonia.Media;
 using System;
 using System.Globalization;
-using Avalonia.Data.Converters;
 
 namespace Alerting.ML.App.Converters.ProgressBar;
 

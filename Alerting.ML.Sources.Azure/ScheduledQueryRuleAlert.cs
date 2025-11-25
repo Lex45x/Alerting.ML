@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Alerting.ML.Engine.Alert;
+﻿using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Extensions;
 
@@ -39,7 +38,7 @@ namespace Alerting.ML.Sources.Azure
 
                 var value = configuration.TimeAggregation switch
                 {
-                    TimeAggregation.Average => timeSeriesSpan[timeWindowStartIndex .. timeWindowEndIndex]
+                    TimeAggregation.Average => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex]
                         .Average(metric => metric.Value),
                     TimeAggregation.Minimum => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex]
                         .Min(metric => metric.Value),

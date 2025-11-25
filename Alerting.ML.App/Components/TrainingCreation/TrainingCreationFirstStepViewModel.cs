@@ -5,10 +5,8 @@ using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation;
 
-using System;
-
 using Alerting.ML.App.Components.TrainingCreation.Csv;
-using Alerting.ML.App.Views.TrainingCreation;
+using System;
 
 public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuilder builder)
     : ViewModelBase, ITrainingCreationStepViewModel
@@ -19,10 +17,10 @@ public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuil
     {
         HostScreen.Router.Navigate.Execute(
             this switch
-                {
-                        { IsCsvSelected: true } => new TrainingCreationCsvSecondStepViewModel(HostScreen, builder),
-                    _ => throw new NotImplementedException("Cloud providers are currently noot supported.")
-                });
+            {
+                { IsCsvSelected: true } => new TrainingCreationCsvSecondStepViewModel(HostScreen, builder),
+                _ => throw new NotImplementedException("Cloud providers are currently noot supported.")
+            });
     }
 
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step1;

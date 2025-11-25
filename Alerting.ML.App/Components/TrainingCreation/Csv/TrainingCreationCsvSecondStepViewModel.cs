@@ -1,24 +1,21 @@
-﻿using System;
+﻿using Alerting.ML.App.Components.TrainingCreation.Outages;
 using Alerting.ML.Engine;
+using Alerting.ML.Sources.Azure;
+using Alerting.ML.Sources.Csv;
 using Avalonia;
-using Avalonia.Input;
 using Avalonia.Platform.Storage;
-using Avalonia.Xaml.Interactions.DragAndDrop;
+using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Alerting.ML.App.Components.TrainingCreation.Outages;
-using Alerting.ML.Sources.Azure;
-using Alerting.ML.Sources.Csv;
-using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Csv;
 
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
-using Alerting.ML.App.Views.TrainingCreation;
 using Avalonia.Controls;
 
 public class TrainingCreationCsvSecondStepViewModel : ViewModelBase, ITrainingCreationStepViewModel

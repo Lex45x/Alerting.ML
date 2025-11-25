@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Outages;
 
-public class TrainingCreationFourthStepViewModel:ViewModelBase, ITrainingCreationStepViewModel
+public class TrainingCreationFourthStepViewModel : ViewModelBase, ITrainingCreationStepViewModel
 {
     private readonly TrainingBuilder builder;
 

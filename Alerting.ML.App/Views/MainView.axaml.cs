@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Threading;
 
 namespace Alerting.ML.App.Views;
 

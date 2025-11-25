@@ -1,19 +1,15 @@
-﻿using System.Reactive;
-using System.Reactive.Linq;
-
-using Alerting.ML.App.Model.Enums;
+﻿using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
-using Alerting.ML.App.Views.Overview;
 using Alerting.ML.Engine;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using System.Reactive;
 
 namespace Alerting.ML.App.Views.TrainingCreation;
 
+using Alerting.ML.App.Components.TrainingCreation;
 using System;
 using System.Reactive.Linq;
-
-using Alerting.ML.App.Components.TrainingCreation;
 
 public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScreen
 {
@@ -30,7 +26,7 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
                 });
         Router.NavigateAndReset.Execute(new TrainingCreationFirstStepViewModel(this, new TrainingBuilder(loggerFactory)));
     }
-    
+
     private void GoBack()
     {
         if (Router.NavigationStack.Count > 1)
@@ -42,7 +38,7 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
             Cancel();
         }
     }
-    
+
     private void Cancel()
     {
         HostScreen.Router.NavigateBack.Execute();

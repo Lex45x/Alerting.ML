@@ -1,7 +1,6 @@
-﻿using System;
-
-using Avalonia;
+﻿using Avalonia;
 using ReactiveUI.Avalonia;
+using System;
 
 namespace Alerting.ML.App.Desktop;
 

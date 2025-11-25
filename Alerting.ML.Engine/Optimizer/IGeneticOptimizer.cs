@@ -1,6 +1,4 @@
-﻿using Alerting.ML.Engine.Scoring;
-
-namespace Alerting.ML.Engine.Optimizer;
+﻿namespace Alerting.ML.Engine.Optimizer;
 
 public interface IGeneticOptimizer
 {

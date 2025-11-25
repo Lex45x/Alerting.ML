@@ -1,6 +1,4 @@
-﻿using System.Reactive;
-using Alerting.ML.App.Components.Overview;
-using Alerting.ML.App.Views.Overview;
+﻿using Alerting.ML.App.Views.Overview;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 

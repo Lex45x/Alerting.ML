@@ -1,5 +1,4 @@
-﻿using Alerting.ML.App.Components.Overview;
-using Alerting.ML.App.ViewModels;
+﻿using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views;
 
 using Avalonia;

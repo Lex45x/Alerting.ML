@@ -2,11 +2,11 @@
 
 namespace Alerting.ML.App.Routing;
 
-using System;
-using Views.Overview;
-using ReactiveUI;
 using Components.TrainingCreation;
 using Components.TrainingCreation.Csv;
+using ReactiveUI;
+using System;
+using Views.Overview;
 using Views.TrainingCreation;
 
 public class AppViewLocator : IViewLocator
