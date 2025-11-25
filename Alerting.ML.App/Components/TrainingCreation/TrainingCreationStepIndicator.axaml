@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:enums="clr-namespace:Alerting.ML.App.Model.Enums"
              xmlns:local="clr-namespace:Alerting.ML.App.Components.TrainingCreation"
+             xmlns:trainingCreation="clr-namespace:Alerting.ML.App.Views.TrainingCreation"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.TrainingCreation.TrainingCreationStepIndicator">
     <Design.DataContext>
-        <local:TrainingCreationHeaderDesignTimeViewModel />
+        <trainingCreation:TrainingCreationHeaderDesignTimeViewModel />
     </Design.DataContext>
     <UserControl.Resources>
         <SolidColorBrush x:Key="FollowingStepBackground" Color="#1E2939"/>

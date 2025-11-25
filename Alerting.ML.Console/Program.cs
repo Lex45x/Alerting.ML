@@ -2,7 +2,8 @@
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Sources.Azure;
-using Alerting.ML.TimeSeries.Sample;using Microsoft.Extensions.Logging;
+using Alerting.ML.TimeSeries.Sample;
+using Microsoft.Extensions.Logging;
 
 var loggerFactory = LoggerFactory.Create(builder => { });
 

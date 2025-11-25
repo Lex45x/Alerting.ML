@@ -26,6 +26,7 @@
     
     <SolidColorBrush x:Key="Color.CardBorderHover" Color="#354052" />
     <SolidColorBrush x:Key="Color.CardBorder" Color="#1E2938" />
+    <SolidColorBrush x:Key="Color.NoteBorder" Color="#151D27" />
     
     <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280" />
     <SolidColorBrush x:Key="Color.Primary" Color="#FBFBFB" />
@@ -37,6 +38,12 @@
     <SolidColorBrush x:Key="Color.SecondaryForeground" Color="#FBFBFB" />
     <SolidColorBrush x:Key="Color.Border" Color="#1E2939" />
     <SolidColorBrush x:Key="Color.HoverText" Color="#39A2FF" />
+
+    <SolidColorBrush x:Key="Color.SuccessPanelBorder" Color="#3234D080" />
+    <SolidColorBrush x:Key="Color.SuccessPanel" Color="#1934D058" />
+    <SolidColorBrush x:Key="Color.SuccessPanelForeground" Color="#07DF72" />
+
+    <SolidColorBrush x:Key="Color.ButtonForeground" Color="#FAFAFA" />
     
     <!-- Accent gradient -->
     <LinearGradientBrush x:Key="Color.AccentGradientDark" StartPoint="0%,0%"

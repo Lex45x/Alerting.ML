@@ -50,7 +50,7 @@ public static class SpanExtensions
         }
 
         var max = selector(source[0]);
-        
+
         for (var index = 1; index < source.Length; index++)
         {
             max = Math.Max(max, selector(source[index]));

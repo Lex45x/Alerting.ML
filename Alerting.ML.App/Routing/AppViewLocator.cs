@@ -1,19 +1,25 @@
-﻿using System;
-using Alerting.ML.App.Components.Overview;
-using Alerting.ML.App.Views.Overview;
-using Alerting.ML.App.Views.TrainingCreation;
-using ReactiveUI;
+﻿using Alerting.ML.App.Components.TrainingCreation.Outages;
 
 namespace Alerting.ML.App.Routing;
 
+using Components.TrainingCreation;
+using Components.TrainingCreation.Csv;
+using ReactiveUI;
+using System;
+using Views.Overview;
+using Views.TrainingCreation;
+
 public class AppViewLocator : IViewLocator
 {
-    public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
+    public IViewFor ResolveView<T>(T? viewModel, string? contract = null)
     {
         return viewModel switch
         {
             OverviewViewModel => new OverviewView { DataContext = viewModel },
+            TrainingCreationViewModel => new TrainingCreationView() { DataContext = viewModel },
             TrainingCreationFirstStepViewModel => new TrainingCreationFirstStepView { DataContext = viewModel },
+            TrainingCreationCsvSecondStepViewModel => new TrainingCreationCsvSecondStepView { DataContext = viewModel },
+            TrainingCreationFourthStepViewModel => new TrainingCreationFourthStepView { DataContext = viewModel },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel), $"Unsupported ViewModel type {typeof(T)}")
         };
     }

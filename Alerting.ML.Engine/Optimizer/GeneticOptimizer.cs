@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
-using Alerting.ML.Engine.Alert;
+﻿using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Scoring;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Alerting.ML.Engine.Optimizer;
 

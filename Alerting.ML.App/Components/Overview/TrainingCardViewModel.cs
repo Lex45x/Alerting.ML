@@ -1,6 +1,6 @@
-﻿using System;
-using Alerting.ML.App.Model.Enums;
+﻿using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
+using System;
 
 namespace Alerting.ML.App.Components.Overview;
 
@@ -21,5 +21,5 @@ public class TrainingCardViewModelDesignTime : TrainingCardViewModel
     public override double HighestScore => 0.9;
     public override double LatestProgress { get; } = Random.Shared.NextDouble();
     public override int GenerationsCounter => 121;
-    public override CloudProvider CloudProvider { get; } = (CloudProvider) Random.Shared.Next(0, 3);
+    public override CloudProvider CloudProvider { get; } = (CloudProvider)Random.Shared.Next(0, 3);
 }

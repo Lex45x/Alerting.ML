@@ -21,7 +21,7 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
     public T Mutate(T value)
     {
         var result = new T();
-        
+
         foreach (var parameter in Parameters)
         {
             var newValue = parameter.Property.GetValue(value);

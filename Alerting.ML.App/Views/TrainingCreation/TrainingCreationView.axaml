@@ -1,0 +1,54 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:Alerting.ML.App.Components.TrainingCreation"
+             xmlns:trainingCreation="clr-namespace:Alerting.ML.App.Views.TrainingCreation"
+             xmlns:avalonia="http://reactiveui.net"
+             xmlns:routing="clr-namespace:Alerting.ML.App.Routing"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Alerting.ML.App.Views.TrainingCreation.TrainingCreationView">
+    <Design.DataContext>
+        <trainingCreation:TrainingCreationHeaderDesignTimeViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto, Auto, *, Auto">
+        <Border Grid.Row="0" Classes="header">
+            <StackPanel Margin="24, 16" Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36" Command="{Binding CancelCommand}">
+                    <Svg Path="avares://Alerting.ML.App/Assets/goback-icon.svg" />
+                </Button>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="h3" Text="New Training Run" />
+                    <Label Content="Import and configure your data source" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <UniformGrid Grid.Row="1" Columns="5" Margin="24,32">
+            <components:TrainingCreationStepIndicator IndicatorStep="Step1" CurrentStep="{Binding Step}"/>
+            <components:TrainingCreationStepIndicator IndicatorStep="Step2" CurrentStep="{Binding Step}"/>
+            <components:TrainingCreationStepIndicator IndicatorStep="Step3" CurrentStep="{Binding Step}"/>
+            <components:TrainingCreationStepIndicator IndicatorStep="Step4" CurrentStep="{Binding Step}"/>
+            <components:TrainingCreationStepIndicator IndicatorStep="Step5" CurrentStep="{Binding Step}"/>
+        </UniformGrid>
+
+        <Border Grid.Row="2" Margin="24, 0, 24, 24" Padding="32, 32" CornerRadius="12" Classes="panel">
+            <avalonia:RoutedViewHost Router="{Binding Router}">
+                <avalonia:RoutedViewHost.DefaultContent>
+                    <TextBlock Text="If you see this then something is VERY broken"/>
+                </avalonia:RoutedViewHost.DefaultContent>
+                <avalonia:RoutedViewHost.ViewLocator>
+                    <routing:AppViewLocator />
+                </avalonia:RoutedViewHost.ViewLocator>
+            </avalonia:RoutedViewHost>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="24" VerticalAlignment="Top">
+            <Button Theme="{StaticResource ArrowButton}" Classes="left" Content="Cancel" HorizontalAlignment="Left" Command="{Binding GoBackCommand}"/>
+            <Button Theme="{StaticResource ArrowButton}" Classes="accent right" Content="Continue" HorizontalAlignment="Right" Command="{Binding ContinueCommand}"/>
+        </Grid>
+
+    </Grid>
+</UserControl>

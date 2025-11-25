@@ -1,0 +1,68 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <Button Theme="{StaticResource FileUploadButton}" MinWidth="100" MinHeight="100">
+                    <StackPanel Spacing="8"
+                                HorizontalAlignment="Center">
+                        <!-- Icon placeholder -->
+                        <TextBlock Text="⬆"
+                                   FontSize="32"
+                                   HorizontalAlignment="Center" />
+
+                        <TextBlock Classes="h3" Text="Upload CSV File" HorizontalAlignment="Center" />
+
+                        <TextBlock Classes="p" Text="Drag and drop or click to browse" HorizontalAlignment="Center" />
+
+                        <Button Theme="{StaticResource ArrowButton}" Content="Select File" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <SolidColorBrush x:Key="Color.FileUploadButtonBorder" Color="#364153" />
+    <SolidColorBrush x:Key="Color.FileUploadButtonBorderHover" Color="#4A5565" />
+    <ControlTheme x:Key="FileUploadButton" TargetType="Button">
+        <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Padding" Value="48" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderBrush" Value="{StaticResource Color.FileUploadButtonBorder}" />
+        <Setter Property="Background" Value="{StaticResource Color.Bg2}" />
+        <Setter Property="Foreground" Value="{StaticResource Color.ButtonForeground}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Rectangle x:Name="RootBorder" Fill="{StaticResource Color.Bg2}"
+                               Stroke="{StaticResource Color.FileUploadButtonBorder}"
+                               StrokeThickness="2"
+                               StrokeDashArray="4,2"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               RadiusX="10" RadiusY="10">
+                    </Rectangle>
+                    <ContentPresenter x:Name="PART_ContentPresenter" Margin="{TemplateBinding Padding}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" ZIndex="1" />
+
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="BorderBrush" Value="{StaticResource Color.FileUploadButtonBorderHover}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundDisabled}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

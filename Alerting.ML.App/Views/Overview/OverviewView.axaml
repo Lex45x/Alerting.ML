@@ -17,7 +17,7 @@
                             Spacing="8"
                             VerticalAlignment="Center">
                     <Border>
-                        <Svg Path="../../Assets/main-icon.svg" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/main-icon.svg" />
                     </Border>
                     <StackPanel Spacing="2">
                         <TextBlock Classes="h3" Text="Monitoring Optimization Studio" FontWeight="SemiBold" />
@@ -40,7 +40,7 @@
                          Theme="{StaticResource SearchBox}"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="../../Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
 
@@ -49,21 +49,21 @@
 
                 <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/azure-icon.svg" Width="16" Height="16" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/azure-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="Azure" VerticalAlignment="Center" />
                     </StackPanel>
                 </RadioButton>
 
                 <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/aws-icon.svg" Width="16" Height="16" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/aws-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="AWS" VerticalAlignment="Center" />
                     </StackPanel>
                 </RadioButton>
 
                 <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Svg Path="../../Assets/gcp-icon.svg" Width="16" Height="16" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/gcp-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="GCP" VerticalAlignment="Center" />
                     </StackPanel>
                 </RadioButton>

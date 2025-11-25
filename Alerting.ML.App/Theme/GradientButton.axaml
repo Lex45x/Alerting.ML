@@ -38,8 +38,8 @@
                     <StackPanel Orientation="Horizontal" Spacing="8" 
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
-                        <Svg x:Name="PART_CheckSvg" Width="16" Height="16" Path="../../Assets/check-icon.svg" Css=".lucide { stroke: #FFFFFF; }"/>
-                        <Svg x:Name="PART_PlusSvg" Width="16" Height="16" Path="../../Assets/plus-icon.svg" Css=".lucide { stroke: #FFFFFF; }"/>
+                        <Svg x:Name="PART_CheckSvg" Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/check-icon.svg" Css=".lucide { stroke: #FFFFFF; }"/>
+                        <Svg x:Name="PART_PlusSvg" Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/plus-icon.svg" Css=".lucide { stroke: #FFFFFF; }"/>
                         <ContentPresenter x:Name="PART_ContentPresenter"
                                           Foreground="{StaticResource Color.AccentForeground}"
                                           Content="{TemplateBinding Content}"

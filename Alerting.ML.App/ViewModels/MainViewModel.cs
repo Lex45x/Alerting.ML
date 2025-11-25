@@ -1,14 +1,22 @@
-﻿using Alerting.ML.Engine.Data;
+﻿using Alerting.ML.Engine.Alert;
+using Alerting.ML.Engine.Data;
+using Alerting.ML.Engine.Optimizer;
+using Alerting.ML.Engine.Scoring;
+using Alerting.ML.Sources.Azure;
 using Alerting.ML.TimeSeries.Sample;
+using Avalonia.Data;
+using Avalonia.Input;
+using Avalonia.Threading;
 using DynamicData;
-using LiveChartsCore;
+using DynamicData.Binding;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Kernel;
 using LiveChartsCore.Kernel.Events;
 using LiveChartsCore.Kernel.Sketches;
-using LiveChartsCore.Painting;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using SkiaSharp;
 using System;
@@ -19,16 +27,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Alerting.ML.Engine.Alert;
-using Alerting.ML.Engine.Optimizer;
-using Alerting.ML.Engine.Scoring;
-using Alerting.ML.Sources.Azure;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Threading;
-using DynamicData.Binding;
-using LiveChartsCore.SkiaSharpView.Avalonia;
-using Microsoft.Extensions.Logging;
 using Metric = Alerting.ML.Engine.Data.Metric;
 
 namespace Alerting.ML.App.ViewModels;
@@ -108,7 +106,7 @@ public class MainViewModel : ViewModelBase
             .ToObservableChangeSet()
             .Subscribe(set => { this.RaisePropertyChanged(nameof(GenerationBest)); });
 
-        
+
     }
 
     private void OnLog(string category, LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter)

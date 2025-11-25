@@ -3,53 +3,75 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
-                <RadioButton Theme="{StaticResource DataSourceRadioButton}" GroupName="1" Content="Some Text"/>
-                <RadioButton Theme="{StaticResource DataSourceRadioButton}" GroupName="1" Content="Some Text"/>
+                <RadioButton Theme="{StaticResource DataSourceRadioButton}" GroupName="1" Content="Some Text" />
+                <RadioButton Theme="{StaticResource DataSourceRadioButton}" GroupName="1" Content="Some Text" />
+                <RadioButton Theme="{StaticResource DataSourceRadioButton}" GroupName="1" Content="Some Text"
+                             IsEnabled="False" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
-     <ControlTheme TargetType="RadioButton" x:Key="DataSourceRadioButton">
-            <Setter Property="Background" Value="{StaticResource Color.Bg3}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="24" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorder}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Style Selector="^:checked /template/ Border#PART_Checkbox">
-                <Setter Property="IsVisible" Value="True" />
-            </Style>
-            <Style Selector="^:unchecked /template/ Border#PART_Checkbox">
-                <Setter Property="IsVisible" Value="False" />
-            </Style>
-            <Style Selector="^:pointerover">
-                <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}" />
-            </Style>
-            <Style Selector="^:checked">
-                <Setter Property="Background" Value="{StaticResource Color.RadioButtonChecked}" />
-                <Setter Property="BorderBrush" Value="{StaticResource Color.ButtonAccent}" />
-            </Style>
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border x:Name="RootBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid ColumnDefinitions="*, Auto" Margin="{TemplateBinding Padding}">
-                            <ContentPresenter Grid.Column="0" x:Name="PART_ContentPresenter"
-                                              Content="{TemplateBinding Content}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
-                            <Border Grid.Column="1" Width="24" Height="24" CornerRadius="12"
-                                    Background="{StaticResource Color.ButtonAccent}" VerticalAlignment="Center"
-                                    HorizontalAlignment="Right" x:Name="PART_Checkbox">
-                                <Svg Width="16" Height="16" Path="../../Assets/check-icon.svg" Css=".lucide { stroke: #FFFFFF; }" />
-                            </Border>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-        </ControlTheme>
+    <SolidColorBrush x:Key="Color.DataSourceRadioButtonDisabled" Color="#E012161D"/>
+    <ControlTheme TargetType="RadioButton" x:Key="DataSourceRadioButton">
+        <Setter Property="Background" Value="{StaticResource Color.Bg3}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="24" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Style Selector="^ /template/ Border#PART_DisabledBanner">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:checked /template/ Border#PART_Checkbox">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:unchecked /template/ Border#PART_Checkbox">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="^:pointerover">
+            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}" />
+        </Style>
+        <Style Selector="^:checked">
+            <Setter Property="Background" Value="{StaticResource Color.RadioButtonChecked}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Color.ButtonAccent}" />
+        </Style>
+        <Style Selector="^:disabled /template/ Border#PART_DisabledBanner">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="RootBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <Grid ColumnDefinitions="*, Auto" Margin="{TemplateBinding Padding}">
+                        <ContentPresenter Grid.Column="0" x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                        <Border Grid.Column="1" Width="24" Height="24" CornerRadius="12"
+                                Background="{StaticResource Color.ButtonAccent}" VerticalAlignment="Center"
+                                HorizontalAlignment="Right" x:Name="PART_Checkbox">
+                            <Svg Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
+                                 Css=".lucide { stroke: #FFFFFF; }" />
+                        </Border>
+                        <Border x:Name="PART_DisabledBanner" Grid.Column="0" Grid.ColumnSpan="2"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                Background="{StaticResource Color.DataSourceRadioButtonDisabled}" ZIndex="1"
+                                Margin="-24">
+                            <TextBlock Classes="h3" Text="Coming Soon" Foreground="{StaticResource Color.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"/>
+                        </Border>
+
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
 </ResourceDictionary>
