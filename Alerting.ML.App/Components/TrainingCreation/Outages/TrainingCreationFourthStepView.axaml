@@ -2,7 +2,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:outages="clr-namespace:Alerting.ML.App.Components.TrainingCreation.Outages"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.TrainingCreation.Outages.TrainingCreationFourthStepView">
-  Welcome to Avalonia!
+    <Design.DataContext>
+        <outages:TrainingCreationFourthStepViewModelDesignTime />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto">
+        <StackPanel Spacing="8">
+            <TextBlock Classes="h2" Text="Import Outages" />
+            <TextBlock Classes="p" Text="Upload a CSV file containing outage data" />
+
+            <!-- Main content -->
+            <StackPanel Spacing="12" Margin="0,8,0,0">
+
+                <!-- Upload area -->
+                <Button Theme="{StaticResource FileUploadButton}" HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" DragDrop.AllowDrop="True" Command="{Binding PickFileCommand}"
+                        CommandParameter="{Binding $self}">
+                    <Interaction.Behaviors>
+                        <FilesDropBehavior Command="{Binding FileDroppedCommand}" PassEventArgsToCommand="True" />
+                    </Interaction.Behaviors>
+                    <StackPanel Spacing="8"
+                                HorizontalAlignment="Center">
+                        <Svg Width="48" Height="48" Path="avares://Alerting.ML.App/Assets/fileupload-icon.svg"
+                             Css=".lucide { stroke: #99A1AF; }" />
+
+                        <TextBlock Classes="h3" Text="{Binding UploadTitle}" HorizontalAlignment="Center" />
+
+                        <TextBlock Classes="p" Text="{Binding UploadSubTitle}" HorizontalAlignment="Center" />
+
+                        <Button Theme="{StaticResource ArrowButton}" Content="Select File"
+                                Command="{Binding PickFileCommand}" CommandParameter="{Binding $self}" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Selected file info -->
+                <Border Classes="success" IsVisible="{Binding IsFileSelected}">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Center">
+                        <Svg Width="20" Height="20" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
+                             Css=".lucide { stroke: #07df72; }" />
+
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="h4" Text="File Selected"
+                                       Foreground="{StaticResource Color.SuccessPanelForeground}" />
+                            <TextBlock Classes="p" Text="{Binding SelectedFileName}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- CSV format requirements -->
+                <Border Classes="note">
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="h4" Text="Outages CSV Format Requirements:" FontWeight="SemiBold" />
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="p" Text="• Must include timestamp column with outage start" />
+                            <TextBlock Classes="p" Text="• Must include timestamp column with outage end" />
+                            <TextBlock Classes="p" Text="• Maximum file size: depends on your RAM :)" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </UserControl>
