@@ -1,4 +1,6 @@
-﻿using Alerting.ML.App.Model.Enums;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
 using ReactiveUI;
@@ -13,6 +15,12 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
     {
         this.builder = builder;
         HostScreen = hostScreen;
+        PreviewItems =
+        [
+            new PreviewSummaryItem("Data Source", builder.TimeSeriesProvider),
+            new PreviewSummaryItem("Alert Type", builder.Alert),
+            new PreviewSummaryItem("Outages File", builder.KnownOutagesProvider)
+        ];
     }
 
     public string? UrlPathSegment => "preview";
@@ -23,5 +31,30 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
         var geneticOptimizer = builder.Build();
     }
 
+    public ObservableCollection<PreviewSummaryItem> PreviewItems
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step5;
+
+    public bool IsValidationPassed => true;
+
+    public record PreviewSummaryItem(string Name, object? Value);
+}
+
+public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
+{
+    public TrainingCreationFifthStepViewModelDesignTime() : base(null, new TrainingBuilder(null))
+    {
+        PreviewItems =
+        [
+            new("Data Source", "CSV"),
+            new("Alert Type", "Azure Scheduled Query Rule"),
+            new("Outage File", "outages.csv")
+        ];
+    }
+
+    
 }

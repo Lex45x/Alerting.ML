@@ -1,4 +1,8 @@
-﻿using Alerting.ML.App.Components.TrainingCreation.Outages;
+﻿using System.Linq;
+using System.Reflection;
+using Alerting.ML.App.Components.TrainingCreation.Outages;
+using Alerting.ML.App.Components.TrainingCreation.Preview;
+using ReactiveUI.Avalonia;
 
 namespace Alerting.ML.App.Routing;
 
@@ -20,6 +24,7 @@ public class AppViewLocator : IViewLocator
             TrainingCreationFirstStepViewModel => new TrainingCreationFirstStepView { DataContext = viewModel },
             TrainingCreationCsvSecondStepViewModel => new TrainingCreationCsvSecondStepView { DataContext = viewModel },
             TrainingCreationFourthStepViewModel => new TrainingCreationFourthStepView { DataContext = viewModel },
+            TrainingCreationFifthStepViewModel => new TrainingCreationFifthStepView { DataContext = viewModel },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel), $"Unsupported ViewModel type {viewModel?.GetType().ToString() ?? "null"}")
         };
     }

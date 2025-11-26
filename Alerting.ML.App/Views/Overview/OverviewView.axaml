@@ -68,12 +68,6 @@
                     </StackPanel>
                 </RadioButton>
 
-                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
-                    <StackPanel Orientation="Horizontal" Spacing="4">
-                        <TextBlock Text="📄" />
-                        <TextBlock Text="CSV" VerticalAlignment="Center" />
-                    </StackPanel>
-                </RadioButton>
             </WrapPanel>
 
             <Button Grid.Column="1"
