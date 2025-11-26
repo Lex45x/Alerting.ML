@@ -20,7 +20,7 @@ public class AppViewLocator : IViewLocator
             TrainingCreationFirstStepViewModel => new TrainingCreationFirstStepView { DataContext = viewModel },
             TrainingCreationCsvSecondStepViewModel => new TrainingCreationCsvSecondStepView { DataContext = viewModel },
             TrainingCreationFourthStepViewModel => new TrainingCreationFourthStepView { DataContext = viewModel },
-            _ => throw new ArgumentOutOfRangeException(nameof(viewModel), $"Unsupported ViewModel type {typeof(T)}")
+            _ => throw new ArgumentOutOfRangeException(nameof(viewModel), $"Unsupported ViewModel type {viewModel?.GetType().ToString() ?? "null"}")
         };
     }
 }

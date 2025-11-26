@@ -58,7 +58,7 @@
                 <StackPanel Spacing="4">
                     <TextBlock Classes="h3" Text="Alert Configuration Type"
                                FontWeight="Medium" />
-                    <TextBlock Classes="p" Text="Select which alert type configuration to use for training"/>
+                    <TextBlock Classes="p" Text="Select which alert type to use for training"/>
 
                     <StackPanel Spacing="6">
                        <RadioButton Theme="{StaticResource DataSourceRadioButton}" GroupName="AlertTypes" Padding="16" IsChecked="{Binding IsAzureScheduledQueryRuleSelected}">
@@ -79,8 +79,7 @@
                 </StackPanel>
 
                 <!-- CSV format requirements -->
-                <Border CornerRadius="8"
-                        Padding="12" Background="{StaticResource Color.NoteBorder}">
+                <Border Classes="note">
                     <StackPanel Spacing="4">
                         <TextBlock Classes="h4" Text="CSV Format Requirements:" FontWeight="SemiBold" />
                         <StackPanel Spacing="2">
