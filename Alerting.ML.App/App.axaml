@@ -13,6 +13,7 @@
                 <ResourceInclude Source="Theme/ArrowButton.axaml"/>
                 <ResourceInclude Source="Theme/SearchBox.axaml"/>
                 <ResourceInclude Source="Theme/FileUploadButton.axaml"/>
+                <ResourceInclude Source="Theme/TableListBox.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -22,6 +23,7 @@
        ========================= -->
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 		
         <!-- Body (Window) background + default text -->
         <Style Selector="Window">
@@ -97,7 +99,7 @@
             <Setter Property="Background" Value="{StaticResource Color.SuccessPanel}" />
             <Setter Property="BorderBrush" Value="{StaticResource Color.SuccessPanelBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Padding" Value="16"/>
             <Setter Property="CornerRadius" Value="8"/>
         </Style>
         

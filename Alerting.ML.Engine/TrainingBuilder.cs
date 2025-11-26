@@ -25,49 +25,59 @@ public class TrainingBuilder(
             throw new InvalidOperationException("Unable to find generic build private method.");
     }
 
+    public ITimeSeriesProvider? TimeSeriesProvider => timeSeriesProvider;
+
+    public IKnownOutagesProvider? KnownOutagesProvider => knownOutagesProvider;
+
+    public IAlertScoreCalculator? AlertScoreCalculator => alertScoreCalculator;
+
+    public IConfigurationFactory? ConfigurationFactory => configurationFactory;
+
+    public IAlert? Alert => alert;
+
     public TrainingBuilder WithTimeSeriesProvider(ITimeSeriesProvider provider)
     {
-        return new TrainingBuilder(loggerFactory, provider, knownOutagesProvider, alertScoreCalculator,
-            configurationFactory, alert, alertConfigurationType);
+        return new TrainingBuilder(loggerFactory, provider, KnownOutagesProvider, AlertScoreCalculator,
+            ConfigurationFactory, Alert, alertConfigurationType);
     }
 
     public TrainingBuilder WithAlert<T>(IAlert<T> alert) where T : AlertConfiguration<T>
     {
         CheckConfigurationType(typeof(T));
 
-        return new TrainingBuilder(loggerFactory, timeSeriesProvider, knownOutagesProvider, alertScoreCalculator,
-            configurationFactory, alert, typeof(T));
+        return new TrainingBuilder(loggerFactory, TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
+            ConfigurationFactory, alert, typeof(T));
     }
 
     public TrainingBuilder WithKnownOutagesProvider(IKnownOutagesProvider provider)
     {
-        return new TrainingBuilder(loggerFactory, timeSeriesProvider, provider, alertScoreCalculator,
-            configurationFactory, alert, alertConfigurationType);
+        return new TrainingBuilder(loggerFactory, TimeSeriesProvider, provider, AlertScoreCalculator,
+            ConfigurationFactory, Alert, alertConfigurationType);
     }
 
     public TrainingBuilder WithCustomAlertScoreCalculator(IAlertScoreCalculator calculator)
     {
-        return new TrainingBuilder(loggerFactory, timeSeriesProvider, knownOutagesProvider, calculator,
-            configurationFactory, alert, alertConfigurationType);
+        return new TrainingBuilder(loggerFactory, TimeSeriesProvider, KnownOutagesProvider, calculator,
+            ConfigurationFactory, Alert, alertConfigurationType);
     }
 
     public TrainingBuilder WithCustomConfigurationFactory<T>(IConfigurationFactory<T> factory)
         where T : AlertConfiguration<T>
     {
         CheckConfigurationType(typeof(T));
-        return new TrainingBuilder(loggerFactory, timeSeriesProvider, knownOutagesProvider, alertScoreCalculator,
-            factory, alert, typeof(T));
+        return new TrainingBuilder(loggerFactory, TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
+            factory, Alert, typeof(T));
     }
 
     // ReSharper disable once UnusedMember.Local
     // Used via Reflection
     private GeneticOptimizer<T> GenericBuild<T>() where T : AlertConfiguration<T>, new()
     {
-        return new GeneticOptimizer<T>(alert as IAlert<T> ?? throw new InvalidOperationException(),
-            timeSeriesProvider ?? throw new InvalidOperationException(),
-            knownOutagesProvider ?? throw new InvalidOperationException(),
-            alertScoreCalculator ?? new DefaultAlertScoreCalculator(),
-            configurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
+        return new GeneticOptimizer<T>(Alert as IAlert<T> ?? throw new InvalidOperationException(),
+            TimeSeriesProvider ?? throw new InvalidOperationException(),
+            KnownOutagesProvider ?? throw new InvalidOperationException(),
+            AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
+            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
             loggerFactory.CreateLogger<GeneticOptimizer<T>>());
     }
 

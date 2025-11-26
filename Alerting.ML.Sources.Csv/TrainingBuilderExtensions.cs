@@ -8,12 +8,12 @@ public static class TrainingBuilderExtensions
     {
         public TrainingBuilder WithCsvOutagesProvider(string path)
         {
-            return builder.WithKnownOutagesProvider(new CsvOutagesProvider());
+            return builder.WithKnownOutagesProvider(new CsvOutagesProvider(path));
         }
 
         public TrainingBuilder WithCsvTimeSeriesProvider(string path)
         {
-            return builder.WithTimeSeriesProvider(new CsvTimeSeriesProvider());
+            return builder.WithTimeSeriesProvider(new CsvTimeSeriesProvider(path));
         }
     }
 }
