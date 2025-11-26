@@ -39,6 +39,8 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
 
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step5;
 
+    public bool IsValidationPassed => true;
+
     public record PreviewSummaryItem(string Name, object? Value);
 }
 
@@ -53,4 +55,6 @@ public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFift
             new("Outage File", "outages.csv")
         ];
     }
+
+    
 }

@@ -28,22 +28,16 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*,*">
-                                    <TextBlock Classes="p" Grid.Column="0" Text="{Binding Name}"/>
-                                    <ContentPresenter Grid.Column="1" Content="{Binding Value, Converter={StaticResource TableItemConverter}}"/>
+                                    <TextBlock Classes="p" Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Left"/>
+                                    <ContentPresenter Grid.Column="1" Content="{Binding Value, Converter={StaticResource TableItemConverter}}" HorizontalAlignment="Right"/>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="12"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
                     </ListBox>
 
                 </StackPanel>
             </Border>
-
-
+			
             <Border Classes="success" IsVisible="{Binding IsValidationPassed}">
                 <StackPanel Orientation="Horizontal"
                             Spacing="8"

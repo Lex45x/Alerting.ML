@@ -20,7 +20,12 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.IsScrollChainingEnabled" Value="True" />
         <Setter Property="ScrollViewer.IsScrollInertiaEnabled" Value="True" />
-        <Setter Property="ItemContainerTheme" Value="{StaticResource TableListBoxItem}"/>
+        <Setter Property="ItemContainerTheme" Value="{StaticResource TableListBoxItem}" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Spacing="12" Orientation="Vertical"/>
+            </ItemsPanelTemplate>
+        </Setter>
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Name="border"
