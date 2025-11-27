@@ -3,7 +3,7 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-internal class TournamentRoundCompletedEvent<T> : IEvent where T : AlertConfiguration<T>
+internal class TournamentRoundCompletedEvent<T> : IEvent where T : AlertConfiguration
 {
     public T FirstWinner { get; }
     public T SecondWinner { get; }

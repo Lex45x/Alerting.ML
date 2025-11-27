@@ -4,7 +4,7 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-internal class EvaluationCompletedEvent<T> : IEvent where T : AlertConfiguration<T>
+internal class EvaluationCompletedEvent<T> : IEvent where T : AlertConfiguration
 {
     public T Configuration { get; }
     public IReadOnlyList<Outage> Outages { get; }

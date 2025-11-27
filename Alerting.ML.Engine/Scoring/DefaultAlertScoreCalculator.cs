@@ -6,7 +6,7 @@ namespace Alerting.ML.Engine.Scoring;
 public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 {
     public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IKnownOutagesProvider knownOutagesProvider,
-        IAlertConfiguration configuration, AlertScoreConfiguration scoreConfiguration)
+        AlertConfiguration configuration)
     {
         var knownOutages = knownOutagesProvider.GetKnownOutages();
         var latencies = new List<TimeSpan>();
@@ -57,6 +57,6 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 
 
         return new AlertScoreCard(((double)truePositiveCount) / (totalCount ?? 1), median,
-            ((double)knownOutages.Count - detectedOutages.Count) / knownOutages.Count, totalCount ?? 0, configuration, scoreConfiguration);
+            ((double)knownOutages.Count - detectedOutages.Count) / knownOutages.Count, totalCount ?? 0, configuration);
     }
 }

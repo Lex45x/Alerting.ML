@@ -57,8 +57,7 @@ public class MainViewModel : ViewModelBase
 
         geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
             timeSeriesProvider, knownOutagesProvider, new DefaultAlertScoreCalculator(),
-            new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new InMemoryEventStore(), new OptimizationConfiguration(100, 0.1, 0.3, 100,
-                new AlertScoreConfiguration(0.9, TimeSpan.FromMinutes(5), AlertScorePriority.Precision), 5));
+            new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new InMemoryEventStore(), OptimizationConfiguration.Default);
 
         var reducedSeries = metrics.Scale(2_000).ToList();
 

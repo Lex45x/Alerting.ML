@@ -6,7 +6,7 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer;
 
-public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
+public class GeneticOptimizerState<T> where T : AlertConfiguration
 {
     public GeneticOptimizerState(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,

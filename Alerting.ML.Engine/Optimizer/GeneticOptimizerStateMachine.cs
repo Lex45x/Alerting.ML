@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Alerting.ML.Engine.Optimizer;
 
 public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
-    where T : AlertConfiguration<T>
+    where T : AlertConfiguration
 {
     private readonly IEventStore store;
 
@@ -76,8 +76,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             (first, second) = current.ConfigurationFactory.Crossover(first, second);
         }
 
-        first = current.ConfigurationFactory.Mutate(first);
-        second = current.ConfigurationFactory.Mutate(second);
+        first = current.ConfigurationFactory.Mutate(first, current.Configuration.MutationProbability);
+        second = current.ConfigurationFactory.Mutate(second, current.Configuration.MutationProbability);
 
         return RaiseEvent(new TournamentRoundCompletedEvent<T>(first, second));
     }
@@ -98,7 +98,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     {
         var (alertConfiguration, outages) = current.NextScoreComputation;
         var alertScoreCard = current.AlertScoreCalculator.CalculateScore(outages, current.KnownOutagesProvider,
-            alertConfiguration, current.Configuration.AlertScoreConfiguration);
+            alertConfiguration);
         return RaiseEvent(new AlertScoreComputedEvent<T>(alertConfiguration, alertScoreCard));
     }
 

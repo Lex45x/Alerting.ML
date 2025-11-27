@@ -2,7 +2,7 @@
 
 namespace Alerting.ML.Sources.Azure;
 
-public class ScheduledQueryRuleConfiguration : AlertConfiguration<ScheduledQueryRuleConfiguration>
+public class ScheduledQueryRuleConfiguration : AlertConfiguration
 {
     public override string ToString()
     {

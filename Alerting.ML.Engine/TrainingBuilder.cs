@@ -42,7 +42,7 @@ public class TrainingBuilder(
             ConfigurationFactory, Alert, alertConfigurationType);
     }
 
-    public TrainingBuilder WithAlert<T>(IAlert<T> alert) where T : AlertConfiguration<T>
+    public TrainingBuilder WithAlert<T>(IAlert<T> alert) where T : AlertConfiguration
     {
         CheckConfigurationType(typeof(T));
 
@@ -63,7 +63,7 @@ public class TrainingBuilder(
     }
 
     public TrainingBuilder WithCustomConfigurationFactory<T>(IConfigurationFactory<T> factory)
-        where T : AlertConfiguration<T>
+        where T : AlertConfiguration
     {
         CheckConfigurationType(typeof(T));
         return new TrainingBuilder(loggerFactory, TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
@@ -72,13 +72,13 @@ public class TrainingBuilder(
 
     // ReSharper disable once UnusedMember.Local
     // Used via Reflection
-    private IGeneticOptimizer GenericBuild<T>() where T : AlertConfiguration<T>, new()
+    private IGeneticOptimizer GenericBuild<T>() where T : AlertConfiguration, new()
     {
         return new GeneticOptimizerStateMachine<T>(Alert as IAlert<T> ?? throw new InvalidOperationException(),
             TimeSeriesProvider ?? throw new InvalidOperationException(),
             KnownOutagesProvider ?? throw new InvalidOperationException(),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
-            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(), new InMemoryEventStore(), new OptimizationConfiguration(0, 0, 0, 0, null, 0)); //todo: Create a default configuration here.
+            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(), new InMemoryEventStore(), OptimizationConfiguration.Default);
     }
 
     private void CheckConfigurationType(Type incomingType)

@@ -5,8 +5,7 @@ using Alerting.ML.Engine.Storage;
 using Alerting.ML.Sources.Azure;
 using Alerting.ML.TimeSeries.Sample;
 
-var alertScoreConfiguration = new AlertScoreConfiguration(0.9, TimeSpan.FromMinutes(5), AlertScorePriority.Precision);
-var optimizationConfiguration = new OptimizationConfiguration(100, 0.1, 0.3, 100, alertScoreConfiguration, 5);
+var optimizationConfiguration = OptimizationConfiguration.Default;
 
 var knownOutagesProvider = new SampleOutagesProvider();
 var geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),

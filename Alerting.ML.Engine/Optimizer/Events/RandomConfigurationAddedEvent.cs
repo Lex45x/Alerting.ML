@@ -3,7 +3,7 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-internal class RandomConfigurationAddedEvent<T> : IEvent where T : AlertConfiguration<T>
+internal class RandomConfigurationAddedEvent<T> : IEvent where T : AlertConfiguration
 {
     public override string ToString()
     {
