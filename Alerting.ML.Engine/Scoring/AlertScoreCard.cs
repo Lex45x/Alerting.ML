@@ -18,11 +18,8 @@ public sealed class AlertScoreCard
         var precisionDelta = Math.Max(scoreConfiguration.PrecisionTarget - Precision, 0);
         var latencyDelta = Math.Abs(MedianDetectionLatency.TotalMinutes) < scoreConfiguration.MedianDetectionLatencyTarget.TotalMinutes ? 0 : scoreConfiguration.MedianDetectionLatencyTarget.TotalMinutes - MedianDetectionLatency.TotalMinutes;
 
-        var worstLatencyDelta = (scoreConfiguration.MedianDetectionLatencyTarget - TimeSpan.FromDays(1)).TotalMinutes;
-
         Score = ComputeScore(precisionDelta, latencyDelta, FalseNegativeRate);
-        var theWorstScore = ComputeScore(scoreConfiguration.PrecisionTarget, worstLatencyDelta, 1);
-        IsWorst = theWorstScore - Score < 0.0001;
+        IsNotFeasible = outagesCount == 0;
     }
 
     private static double ComputeScore(double precisionDelta, double latencyDelta, double falseNegativeRate)
@@ -32,7 +29,7 @@ public sealed class AlertScoreCard
                          Math.Pow(falseNegativeRate * 100, 2));
     }
 
-    public bool IsWorst { get; }
+    public bool IsNotFeasible { get; }
 
     public double Precision { get; }
     public TimeSpan MedianDetectionLatency { get; }

@@ -1,16 +1,7 @@
-﻿using System;
-using Alerting.ML.App.Model.Enums;
-using Alerting.ML.App.ViewModels;
-using Alerting.ML.Engine;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Threading.Tasks;
-using Alerting.ML.App.Components.TrainingCreation.FileUpload;
+﻿using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
+using Alerting.ML.App.Model.Enums;
+using Alerting.ML.Engine;
 using Alerting.ML.Sources.Csv;
 using ReactiveUI;
 

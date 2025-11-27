@@ -38,4 +38,8 @@
       <DependentUpon>TrainingCreationView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\TrainingProcess\" />
+  </ItemGroup>
 </Project>

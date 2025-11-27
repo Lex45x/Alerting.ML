@@ -2,6 +2,6 @@
 
 public interface IGeneticOptimizer
 {
-    public IEnumerable<GenerationSummary> Optimize(OptimizationConfiguration configuration);
+    public IAsyncEnumerable<GenerationSummary> Optimize(CancellationToken cancellationToken);
 }
 

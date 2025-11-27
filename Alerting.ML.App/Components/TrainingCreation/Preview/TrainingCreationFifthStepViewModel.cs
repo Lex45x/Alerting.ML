@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Alerting.ML.App.Model.Enums;
+﻿using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
 using ReactiveUI;
+using System.Collections.ObjectModel;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Preview;
 
@@ -56,5 +55,5 @@ public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFift
         ];
     }
 
-    
+
 }

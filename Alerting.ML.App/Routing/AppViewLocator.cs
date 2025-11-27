@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using System.Reflection;
-using Alerting.ML.App.Components.TrainingCreation.Outages;
+﻿using Alerting.ML.App.Components.TrainingCreation.Outages;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
-using ReactiveUI.Avalonia;
 
 namespace Alerting.ML.App.Routing;
 

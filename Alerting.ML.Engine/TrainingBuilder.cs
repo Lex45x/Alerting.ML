@@ -4,6 +4,7 @@ using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine;
 
@@ -71,14 +72,14 @@ public class TrainingBuilder(
 
     // ReSharper disable once UnusedMember.Local
     // Used via Reflection
-    private GeneticOptimizer<T> GenericBuild<T>() where T : AlertConfiguration<T>, new()
+    private IGeneticOptimizer GenericBuild<T>() where T : AlertConfiguration<T>, new()
     {
-        return new GeneticOptimizer<T>(Alert as IAlert<T> ?? throw new InvalidOperationException(),
+        return new GeneticOptimizerStateMachine<T>(Alert as IAlert<T> ?? throw new InvalidOperationException(),
             TimeSeriesProvider ?? throw new InvalidOperationException(),
             KnownOutagesProvider ?? throw new InvalidOperationException(),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
             ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
-            loggerFactory.CreateLogger<GeneticOptimizer<T>>());
+            loggerFactory.CreateLogger<GeneticOptimizerStateMachine<T>>(), new InMemoryEventStore(), new OptimizationConfiguration(0, 0, 0, 0, null, 0)); //todo: Create a default configuration here.
     }
 
     private void CheckConfigurationType(Type incomingType)
