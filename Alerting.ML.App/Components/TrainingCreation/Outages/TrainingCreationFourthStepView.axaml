@@ -26,7 +26,7 @@
                     <StackPanel Spacing="8"
                                 HorizontalAlignment="Center">
                         <Svg Width="48" Height="48" Path="avares://Alerting.ML.App/Assets/fileupload-icon.svg"
-                             Css=".lucide { stroke: #99A1AF; }" />
+                             Svg.Css=".lucide { stroke: #99A1AF; }" />
 
                         <TextBlock Classes="h3" Text="{Binding UploadTitle}" HorizontalAlignment="Center" />
 
@@ -43,7 +43,7 @@
                                 Spacing="8"
                                 VerticalAlignment="Center">
                         <Svg Width="20" Height="20" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
-                             Css=".lucide { stroke: #07df72; }" />
+                             Svg.Css=".lucide { stroke: #07df72; }" />
 
                         <StackPanel Spacing="2">
                             <TextBlock Classes="h4" Text="File Selected"

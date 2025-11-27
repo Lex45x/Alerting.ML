@@ -78,8 +78,7 @@ public class TrainingBuilder(
             TimeSeriesProvider ?? throw new InvalidOperationException(),
             KnownOutagesProvider ?? throw new InvalidOperationException(),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
-            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
-            loggerFactory.CreateLogger<GeneticOptimizerStateMachine<T>>(), new InMemoryEventStore(), new OptimizationConfiguration(0, 0, 0, 0, null, 0)); //todo: Create a default configuration here.
+            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(), new InMemoryEventStore(), new OptimizationConfiguration(0, 0, 0, 0, null, 0)); //todo: Create a default configuration here.
     }
 
     private void CheckConfigurationType(Type incomingType)

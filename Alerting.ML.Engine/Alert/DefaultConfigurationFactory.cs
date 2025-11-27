@@ -24,7 +24,7 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
 
         foreach (var parameter in Parameters)
         {
-            var newValue = parameter.Property.GetValue(value);
+            var newValue = parameter.Property.GetValue(value)!;
 
             if (Random.Shared.NextDouble() > 0.9)
             {

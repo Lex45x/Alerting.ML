@@ -33,14 +33,14 @@
                          BorderThickness="{TemplateBinding BorderThickness}"
                          CornerRadius="{TemplateBinding CornerRadius}">
                     <StackPanel Orientation="Horizontal" Margin="{TemplateBinding Padding}" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Svg x:Name="PART_ArrowLeft" Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/goback-icon.svg" Css=".lucide { stroke: #FAFAFA; }"/>
+                        <Svg x:Name="PART_ArrowLeft" Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/goback-icon.svg" Svg.Css=".lucide { stroke: #FAFAFA; }"/>
                         <ContentPresenter x:Name="PART_ContentPresenter"
                                           Foreground="{TemplateBinding Foreground}"
                                           Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        <Svg x:Name="PART_ArrowRight" Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/goback-icon.svg" Css=".lucide { stroke: #FAFAFA; }">
+                        <Svg x:Name="PART_ArrowRight" Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/goback-icon.svg" Svg.Css=".lucide { stroke: #FAFAFA; }">
                             <Svg.RenderTransform>
                                 <RotateTransform Angle="180"/>
                             </Svg.RenderTransform>

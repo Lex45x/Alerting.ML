@@ -1,4 +1,5 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using System.Runtime.CompilerServices;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Scoring;
@@ -7,18 +8,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Alerting.ML.Engine.Optimizer;
 
-public class GeneticOptimizerStateMachine<T> : IAsyncEnumerator<IEvent>, IGeneticOptimizer
+public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     where T : AlertConfiguration<T>
 {
-    private readonly ILogger<GeneticOptimizerStateMachine<T>> logger;
     private readonly IEventStore store;
 
     public GeneticOptimizerStateMachine(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
-        IConfigurationFactory<T> configurationFactory, ILogger<GeneticOptimizerStateMachine<T>> logger, IEventStore store,
+        IConfigurationFactory<T> configurationFactory, IEventStore store,
         OptimizationConfiguration configuration)
     {
-        this.logger = logger;
         this.store = store;
         current = new GeneticOptimizerState<T>(alert, timeSeriesProvider, knownOutagesProvider,
             alertScoreCalculator, configurationFactory, configuration);
@@ -37,21 +36,7 @@ public class GeneticOptimizerStateMachine<T> : IAsyncEnumerator<IEvent>, IGeneti
         var randomConfiguration = current.ConfigurationFactory.CreateRandom();
         return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration));
     }
-
-    public async ValueTask<bool> MoveNextAsync()
-    {
-        return current.Step switch
-        {
-            GeneticOptimizerStep.RandomRepopulation => await RepopulateWithRandom(),
-            GeneticOptimizerStep.Evaluation => await Evaluate(),
-            GeneticOptimizerStep.ScoreComputation => await ComputeScore(),
-            GeneticOptimizerStep.CreateSummary => await CreateSummary(),
-            GeneticOptimizerStep.SurvivorsCounting => await CountSurvivors(),
-            GeneticOptimizerStep.Tournament => await RunTournament(),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
-
+    
     private Task<bool> CreateSummary()
     {
         return RaiseEvent(new SummaryCreatedEvent(new GenerationSummary(current.GenerationIndex, current.GenerationScores.OrderBy(card => card.Score).ToList())));
@@ -124,28 +109,28 @@ public class GeneticOptimizerStateMachine<T> : IAsyncEnumerator<IEvent>, IGeneti
 
         return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages));
     }
-
-    IEvent IAsyncEnumerator<IEvent>.Current => current.LastEvent;
-
-    public async ValueTask DisposeAsync()
+    public async IAsyncEnumerable<GenerationSummary> Optimize([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        //todo: do I need this? I might :D
-    }
+        bool canContinue;
 
-    public IAsyncEnumerator<IEvent> GetAsyncEnumerator() => this;
-
-    public async IAsyncEnumerable<GenerationSummary> Optimize(CancellationToken cancellationToken)
-    {
-        await foreach (var @event in this)
+        do
         {
-            if (cancellationToken.IsCancellationRequested)
+            canContinue = current.State switch
             {
-                yield break;
-            }
-            if (@event is SummaryCreatedEvent resultsReviewed)
+                GeneticOptimizerStateEnum.RandomRepopulation => await RepopulateWithRandom(),
+                GeneticOptimizerStateEnum.Evaluation => await Evaluate(),
+                GeneticOptimizerStateEnum.ScoreComputation => await ComputeScore(),
+                GeneticOptimizerStateEnum.CreateSummary => await CreateSummary(),
+                GeneticOptimizerStateEnum.SurvivorsCounting => await CountSurvivors(),
+                GeneticOptimizerStateEnum.Tournament => await RunTournament(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            if (current.LastEvent is SummaryCreatedEvent summaryCreated)
             {
-                yield return resultsReviewed.Summary;
+                yield return summaryCreated.Summary;
             }
-        }
+
+        } while (canContinue && !cancellationToken.IsCancellationRequested);
     }
 }

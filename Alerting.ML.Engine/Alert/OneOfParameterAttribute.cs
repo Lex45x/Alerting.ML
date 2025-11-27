@@ -6,7 +6,7 @@ public abstract class OneOfParameterAttribute<TValue> : ConfigurationParameterAt
     {
         var randomIndex = Random.Shared.Next(0, AllowedValues.Count);
 
-        return AllowedValues[randomIndex];
+        return AllowedValues[randomIndex]!;
     }
 
     public sealed override object Nudge(object value, IAlertConfiguration appliedTo)
@@ -23,7 +23,7 @@ public abstract class OneOfParameterAttribute<TValue> : ConfigurationParameterAt
         var resultIndex = targetIndex + Random.Shared.NextDouble() > 0.5 ? -1 : 1;
         var clippedIndex = Math.Min(Math.Max(resultIndex, 0), AllowedValues.Count - 1);
 
-        return AllowedValues[clippedIndex];
+        return AllowedValues[clippedIndex]!;
     }
 
     protected abstract IReadOnlyList<TValue> AllowedValues { get; }

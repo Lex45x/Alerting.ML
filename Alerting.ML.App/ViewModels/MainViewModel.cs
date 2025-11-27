@@ -51,15 +51,13 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        var loggerFactory = LoggerFactory.Create(builder => { builder.AddProvider(new CallbackLoggerProvider(OnLog)); });
-
         knownOutagesProvider = new SampleOutagesProvider();
         timeSeriesProvider = new SampleTimeSeriesProvider(knownOutagesProvider);
         metrics = timeSeriesProvider.GetTimeSeries().ToArray().ToList();
 
         geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
             timeSeriesProvider, knownOutagesProvider, new DefaultAlertScoreCalculator(),
-            new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), loggerFactory.CreateLogger<GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>>(), new InMemoryEventStore(), new OptimizationConfiguration(100, 0.1, 0.3, 100,
+            new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new InMemoryEventStore(), new OptimizationConfiguration(100, 0.1, 0.3, 100,
                 new AlertScoreConfiguration(0.9, TimeSpan.FromMinutes(5), AlertScorePriority.Precision), 5));
 
         var reducedSeries = metrics.Scale(2_000).ToList();

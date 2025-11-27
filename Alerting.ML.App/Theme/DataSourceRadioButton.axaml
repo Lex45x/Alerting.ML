@@ -59,7 +59,7 @@
                                 Background="{StaticResource Color.ButtonAccent}" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" x:Name="PART_Checkbox">
                             <Svg Width="16" Height="16" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
-                                 Css=".lucide { stroke: #FFFFFF; }" />
+                                 Svg.Css=".lucide { stroke: #FFFFFF; }" />
                         </Border>
                         <Border x:Name="PART_DisabledBanner" Grid.Column="0" Grid.ColumnSpan="2"
                                 CornerRadius="{TemplateBinding CornerRadius}"

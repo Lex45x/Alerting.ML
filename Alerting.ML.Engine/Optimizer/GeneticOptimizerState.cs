@@ -10,7 +10,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
 {
     public GeneticOptimizerState(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
-        IConfigurationFactory<T> configurationFactory, OptimizationConfiguration configuration)
+        IConfigurationFactory<T> configurationFactory, OptimizationConfiguration configuration, params IEnumerable<IEvent> events)
     {
         Alert = alert;
         TimeSeriesProvider = timeSeriesProvider;
@@ -18,7 +18,11 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
         AlertScoreCalculator = alertScoreCalculator;
         ConfigurationFactory = configurationFactory;
         Configuration = configuration;
-        Step = GeneticOptimizerStep.RandomRepopulation;
+        State = GeneticOptimizerStateEnum.RandomRepopulation;
+        foreach (var @event in events)
+        {
+            Apply(@event);
+        }
     }
 
     public Guid Id { get; }
@@ -28,7 +32,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
     public IAlertScoreCalculator AlertScoreCalculator { get; }
     public IConfigurationFactory<T> ConfigurationFactory { get; }
     public OptimizationConfiguration Configuration { get; }
-    public GeneticOptimizerStep Step { get; private set; }
+    public GeneticOptimizerStateEnum State { get; private set; }
     public AlertScoreCard? BestScore { get; private set; }
 
     private readonly Queue<T> evaluationQueue = new();
@@ -47,32 +51,32 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
 
     public IReadOnlyList<AlertScoreCard> EligibleForTournament { get; private set; } = [];
     public int GenerationIndex { get; private set; }
-    public IEvent LastEvent { get; private set; }
+    public IEvent? LastEvent { get; private set; }
 
     public bool Apply<TEvent>(TEvent @event) where TEvent : IEvent
     {
         LastEvent = @event;
         return @event switch
         {
-            RandomConfigurationAddedEvent<T> configurationAdded => ConfigurationAdded(configurationAdded),
-            EvaluationCompletedEvent<T> evaluationCompleted => EvaluationCompleted(evaluationCompleted),
-            AlertScoreComputedEvent<T> scoreComputed => ScoreComputed(scoreComputed),
-            SummaryCreatedEvent _ => SummaryCreated(),
-            SurvivorsCountedEvent<T> survivorsCounted => SurvivorsCounted(survivorsCounted),
-            TournamentRoundCompletedEvent<T> tournamentRoundCompleted => TournamentRoundCompleted(
+            RandomConfigurationAddedEvent<T> configurationAdded => Handle(configurationAdded),
+            EvaluationCompletedEvent<T> evaluationCompleted => Handle(evaluationCompleted),
+            AlertScoreComputedEvent<T> scoreComputed => Handle(scoreComputed),
+            SummaryCreatedEvent summaryCreated => Handle(summaryCreated),
+            SurvivorsCountedEvent<T> survivorsCounted => Handle(survivorsCounted),
+            TournamentRoundCompletedEvent<T> tournamentRoundCompleted => Handle(
                 tournamentRoundCompleted),
             _ => throw new ArgumentOutOfRangeException(nameof(@event), @event, null)
         };
     }
 
-    private bool SummaryCreated()
+    private bool Handle(SummaryCreatedEvent summaryCreated)
     {
         GenerationIndex += 1;
-        Step = GeneticOptimizerStep.SurvivorsCounting;
+        State = GeneticOptimizerStateEnum.SurvivorsCounting;
         return true;
     }
 
-    private bool TournamentRoundCompleted(TournamentRoundCompletedEvent<T> tournamentRoundCompleted)
+    private bool Handle(TournamentRoundCompletedEvent<T> tournamentRoundCompleted)
     {
         evaluationQueue.Enqueue(tournamentRoundCompleted.FirstWinner);
 
@@ -84,20 +88,20 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
         if (evaluationQueue.Count >= Configuration.PopulationSize)
         {
             generationScores.Clear();
-            Step = GeneticOptimizerStep.Evaluation;
+            State = GeneticOptimizerStateEnum.Evaluation;
         }
 
         if (EligibleForTournament.Count < Configuration.SurvivorCount &&
             evaluationQueue.Count >= Configuration.PopulationSize / 2)
         {
             generationScores.Clear();
-            Step = GeneticOptimizerStep.RandomRepopulation;
+            State = GeneticOptimizerStateEnum.RandomRepopulation;
         }
 
         return true;
     }
 
-    private bool SurvivorsCounted(SurvivorsCountedEvent<T> survivorsCounted)
+    private bool Handle(SurvivorsCountedEvent<T> survivorsCounted)
     {
         foreach (var survivor in survivorsCounted.Survivors)
         {
@@ -106,14 +110,14 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
 
         EligibleForTournament = GenerationScores.Where(scoreCard => !scoreCard.IsNotFeasible).ToList();
 
-        Step = EligibleForTournament.Count < 2
-            ? GeneticOptimizerStep.RandomRepopulation
-            : GeneticOptimizerStep.Tournament;
+        State = EligibleForTournament.Count < 2
+            ? GeneticOptimizerStateEnum.RandomRepopulation
+            : GeneticOptimizerStateEnum.Tournament;
 
         return true;
     }
 
-    private bool ScoreComputed(AlertScoreComputedEvent<T> scoreComputedEvent)
+    private bool Handle(AlertScoreComputedEvent<T> scoreComputedEvent)
     {
         if (scoreComputationQueue.Dequeue().Item1 != scoreComputedEvent.Configuration)
         {
@@ -130,13 +134,13 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
 
         if (scoreComputationQueue.Count == 0)
         {
-            Step = GeneticOptimizerStep.CreateSummary;
+            State = GeneticOptimizerStateEnum.CreateSummary;
         }
 
         return true;
     }
 
-    private bool EvaluationCompleted(EvaluationCompletedEvent<T> evaluationCompleted)
+    private bool Handle(EvaluationCompletedEvent<T> evaluationCompleted)
     {
         if (evaluationQueue.Dequeue() != evaluationCompleted.Configuration)
         {
@@ -148,18 +152,18 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration<T>
 
         if (evaluationQueue.Count == 0)
         {
-            Step = GeneticOptimizerStep.ScoreComputation;
+            State = GeneticOptimizerStateEnum.ScoreComputation;
         }
 
         return true;
     }
 
-    private bool ConfigurationAdded(RandomConfigurationAddedEvent<T> configurationAdded)
+    private bool Handle(RandomConfigurationAddedEvent<T> configurationAdded)
     {
         evaluationQueue.Enqueue(configurationAdded.RandomConfiguration);
         if (evaluationQueue.Count >= Configuration.PopulationSize)
         {
-            Step = GeneticOptimizerStep.Evaluation;
+            State = GeneticOptimizerStateEnum.Evaluation;
         }
 
         return true;
