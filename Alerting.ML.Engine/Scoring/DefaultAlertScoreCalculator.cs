@@ -3,10 +3,15 @@ using Alerting.ML.Engine.Data;
 
 namespace Alerting.ML.Engine.Scoring;
 
+/// <summary>
+/// Creates a <see cref="AlertScoreCard"/> based on detected outages comparison to known outages.
+/// </summary>
 public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 {
     private const double OnePercent = 0.01;
 
+
+    /// <inheritdoc />
     public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IKnownOutagesProvider knownOutagesProvider,
         AlertConfiguration configuration)
     {

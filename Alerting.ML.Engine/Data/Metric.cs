@@ -1,19 +1,28 @@
 ﻿namespace Alerting.ML.Engine.Data;
 
+/// <summary>
+/// A single point of a time-series.
+/// </summary>
 public readonly struct Metric
 {
+    /// <summary>
+    /// Creates a new instance of Metric with a time point and a metric value
+    /// </summary>
+    /// <param name="timestamp"></param>
+    /// <param name="value"></param>
     public Metric(DateTime timestamp, double value)
     {
-        this.Timestamp = timestamp;
-        this.Value = value;
+        Timestamp = timestamp;
+        Value = value;
     }
 
-    public DateTime Timestamp { get; init; }
-    public double Value { get; init; }
+    /// <summary>
+    /// Time when metric had a selected value.
+    /// </summary>
+    public DateTime Timestamp { get; }
 
-    public void Deconstruct(out DateTime Timestamp, out double Value)
-    {
-        Timestamp = this.Timestamp;
-        Value = this.Value;
-    }
+    /// <summary>
+    /// Value of the metric.
+    /// </summary>
+    public double Value { get; }
 }
