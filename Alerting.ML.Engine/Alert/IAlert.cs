@@ -10,7 +10,7 @@ public interface IAlert<in T> : IAlert where T : AlertConfiguration
 {
     /// <summary>
     /// Takes a time-series from <paramref name="provider"/> and runs anomaly detection with given <paramref name="configuration"/>.
-    /// Produces a list of <see cref="Outage"/>s that represent a time window when this alert would fire.
+    /// Produces a list of <see cref="Outage"/>s that represent a set of time-windows when this alert would fire.
     /// </summary>
     /// <param name="provider">A source of time-series.</param>
     /// <param name="configuration">Alert configuration</param>

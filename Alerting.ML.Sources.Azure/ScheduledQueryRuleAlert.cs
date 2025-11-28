@@ -4,8 +4,13 @@ using Alerting.ML.Engine.Extensions;
 
 namespace Alerting.ML.Sources.Azure
 {
+    /// <summary>
+    /// Represent an <b>approximate</b> implementation of <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/scheduledqueryrules">Azure Scheduled Query Rule</a> based on the information inferred from bicep parameters and their description. <br/>
+    /// Assumes usage of StaticThresholdCriterion, a single criteria, and no dimensions.
+    /// </summary>
     public class ScheduledQueryRuleAlert : IAlert<ScheduledQueryRuleConfiguration>
     {
+        /// <inheritdoc />
         public IEnumerable<Outage> Evaluate(ITimeSeriesProvider provider, ScheduledQueryRuleConfiguration configuration)
         {
             var evaluationPeriods = new Queue<bool>(); //holds last NumberOfEvaluationPeriods results

@@ -7,6 +7,10 @@ namespace Alerting.ML.TimeSeries.Sample
     /// </summary>
     public class SampleTimeSeriesProvider : ITimeSeriesProvider
     {
+        /// <summary>
+        /// Creates a new time-series provider with respect to know outages.
+        /// </summary>
+        /// <param name="outagesProvider"></param>
         public SampleTimeSeriesProvider(IKnownOutagesProvider outagesProvider)
         {
             series = Enumerable
@@ -29,6 +33,7 @@ namespace Alerting.ML.TimeSeries.Sample
         private static readonly DateTime Current = DateTime.UtcNow;
         private readonly Metric[] series;
 
+        /// <inheritdoc />
         public Metric[] GetTimeSeries()
         {
             return series;
