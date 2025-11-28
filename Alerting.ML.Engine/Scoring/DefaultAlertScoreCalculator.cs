@@ -5,19 +5,20 @@ namespace Alerting.ML.Engine.Scoring;
 
 public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 {
+    private const double OnePercent = 0.01;
+
     public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IKnownOutagesProvider knownOutagesProvider,
         AlertConfiguration configuration)
     {
         var knownOutages = knownOutagesProvider.GetKnownOutages();
         var latencies = new List<TimeSpan>();
         var truePositiveCount = 0;
-        int? totalCount = null;
+        var totalCount = 0;
         var detectedOutages = new HashSet<Outage>();
 
 
         foreach (var alertOutage in alertOutages)
         {
-            totalCount ??= 0;
             totalCount++;
             var matchingOutage = knownOutages.SingleOrDefault(outage =>
                 TimeSpan.FromTicks(Math.Abs((outage.StartTime - alertOutage.StartTime).Ticks)) <
@@ -46,8 +47,8 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
             }
             else
             {
-                median = (latencies[latencies.Count / 2 - 1] +
-                          latencies[latencies.Count / 2] / 2);
+                median = latencies[latencies.Count / 2 - 1] +
+                         latencies[latencies.Count / 2] / 2;
             }
         }
         else
@@ -55,8 +56,11 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
             median = TimeSpan.FromDays(1);
         }
 
+        var precision = ((double)truePositiveCount) / (Math.Max(totalCount, 1));
+        var falseNegativeRate = ((double)knownOutages.Count - detectedOutages.Count) / knownOutages.Count;
+        var isNotFeasible = totalCount == 0 || precision < OnePercent;
 
-        return new AlertScoreCard(((double)truePositiveCount) / (totalCount ?? 1), median,
-            ((double)knownOutages.Count - detectedOutages.Count) / knownOutages.Count, totalCount ?? 0, configuration);
+        return new AlertScoreCard(precision, median,
+            falseNegativeRate, totalCount, configuration, isNotFeasible);
     }
 }

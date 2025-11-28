@@ -4,15 +4,28 @@ using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
-using Microsoft.Extensions.Logging;
 
 namespace Alerting.ML.Engine.Optimizer;
 
+/// <summary>
+/// A state-machine that operates <see cref="GeneticOptimizerState{T}"/>
+/// </summary>
+/// <typeparam name="T">Underlying <see cref="AlertConfiguration"/></typeparam>
 public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     where T : AlertConfiguration
 {
     private readonly IEventStore store;
 
+    /// <summary>
+    /// Creates a new instance of Genetic Optimizer.
+    /// </summary>
+    /// <param name="alert">Alert rule to be optimized.</param>
+    /// <param name="timeSeriesProvider">Provider of the relevant metric.</param>
+    /// <param name="knownOutagesProvider">Provider of known outages.</param>
+    /// <param name="alertScoreCalculator">Calculates alert score based on detected outages.</param>
+    /// <param name="configurationFactory">A relevant factory for <typeparamref name="T"/></param>
+    /// <param name="store">An event store to persist all events.</param>
+    /// <param name="configuration">Configuration of the optimization process.</param>
     public GeneticOptimizerStateMachine(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
         IConfigurationFactory<T> configurationFactory, IEventStore store,
@@ -36,10 +49,11 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         var randomConfiguration = current.ConfigurationFactory.CreateRandom();
         return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration));
     }
-    
+
     private Task<bool> CreateSummary()
     {
-        return RaiseEvent(new SummaryCreatedEvent(new GenerationSummary(current.GenerationIndex, current.GenerationScores.OrderBy(card => card.Score).ToList())));
+        return RaiseEvent(new SummaryCreatedEvent(new GenerationSummary(current.GenerationIndex,
+            current.GenerationScores.OrderBy(card => card.Score).ToList())));
     }
 
     private static T Tournament(OptimizationConfiguration configuration,
@@ -109,7 +123,10 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
         return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages));
     }
-    public async IAsyncEnumerable<GenerationSummary> Optimize([EnumeratorCancellation] CancellationToken cancellationToken)
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<GenerationSummary> Optimize(
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         bool canContinue;
 
@@ -130,7 +147,6 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             {
                 yield return summaryCreated.Summary;
             }
-
         } while (canContinue && !cancellationToken.IsCancellationRequested);
     }
 }

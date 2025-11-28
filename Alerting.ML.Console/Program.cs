@@ -12,9 +12,8 @@ var geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfig
     new SampleTimeSeriesProvider(knownOutagesProvider), knownOutagesProvider, new DefaultAlertScoreCalculator(),
     new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new NullEventStore(), optimizationConfiguration);
 
-var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(20));
 
-await foreach (var alertScoreCard in geneticOptimizer.Optimize(cancellationTokenSource.Token))
+await foreach (var alertScoreCard in geneticOptimizer.Optimize(CancellationToken.None))
 {
     Console.WriteLine($"Score: {alertScoreCard.Best.Score}. {alertScoreCard}");
 }

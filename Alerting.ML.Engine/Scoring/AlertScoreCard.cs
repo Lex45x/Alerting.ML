@@ -10,19 +10,19 @@ public sealed class AlertScoreCard
     private const double IdealLatencyMinutes = 0;
 
     public AlertScoreCard(double precision, TimeSpan medianDetectionLatency, double falseNegativeRate, int outagesCount,
-        AlertConfiguration configuration)
+        AlertConfiguration configuration, bool isNotFeasible)
     {
         Precision = precision;
         MedianDetectionLatency = medianDetectionLatency;
         FalseNegativeRate = falseNegativeRate;
         OutagesCount = outagesCount;
         Configuration = configuration;
+        IsNotFeasible = isNotFeasible;
 
         var precisionDelta = Math.Max(IdealPrecision - Precision, 0);
         var latencyDelta = Math.Abs(IdealLatencyMinutes - MedianDetectionLatency.TotalMinutes);
 
         Score = ComputeScore(precisionDelta, latencyDelta, FalseNegativeRate);
-        IsNotFeasible = outagesCount == 0;
     }
 
     private static double ComputeScore(double precisionDelta, double latencyDelta, double falseNegativeRate)
