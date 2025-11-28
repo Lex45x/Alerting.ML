@@ -45,7 +45,7 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
 
 public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
 {
-    public TrainingCreationFifthStepViewModelDesignTime() : base(null, new TrainingBuilder(null))
+    public TrainingCreationFifthStepViewModelDesignTime() : base(null, TrainingBuilder.Create())
     {
         PreviewItems =
         [

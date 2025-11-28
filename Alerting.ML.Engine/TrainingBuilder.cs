@@ -11,20 +11,49 @@ namespace Alerting.ML.Engine;
 /// <summary>
 /// Enables fluent API for creating GeneticOptimizer. Calling public methods that return <see cref="TrainingBuilder"/> will create a new instance with applied change.
 /// </summary>
-/// <param name="timeSeriesProvider">Source of the time series.</param>
-/// <param name="knownOutagesProvider">Source of known outages.</param>
-/// <param name="alertScoreCalculator">Defines alert score calculation. </param>
-/// <param name="configurationFactory">Allows manipulation with <paramref name="alertConfigurationType"/></param>
-/// <param name="alert">Alert to be evaluated.</param>
-/// <param name="alertConfigurationType">Underlying configuration type.</param>
-public class TrainingBuilder(
-    ITimeSeriesProvider? timeSeriesProvider = null,
-    IKnownOutagesProvider? knownOutagesProvider = null,
-    IAlertScoreCalculator? alertScoreCalculator = null,
-    IConfigurationFactory? configurationFactory = null,
-    IAlert? alert = null,
-    Type? alertConfigurationType = null)
+public class TrainingBuilder
 {
+    /// <summary>
+    /// Event store used to save optimization progress.
+    /// </summary>
+    public IEventStore? EventStore { get; }
+
+    /// <summary>
+    /// Enables fluent API for creating GeneticOptimizer. Calling public methods that return <see cref="TrainingBuilder"/> will create a new instance with applied change.
+    /// </summary>
+    /// <param name="timeSeriesProvider">Source of the time series.</param>
+    /// <param name="knownOutagesProvider">Source of known outages.</param>
+    /// <param name="alertScoreCalculator">Defines alert score calculation. </param>
+    /// <param name="configurationFactory">Allows manipulation with <paramref name="alertConfigurationType"/></param>
+    /// <param name="alert">Alert to be evaluated.</param>
+    /// <param name="alertConfigurationType">Underlying configuration type.</param>
+    /// <param name="eventStore"></param>
+    private TrainingBuilder(ITimeSeriesProvider? timeSeriesProvider,
+        IKnownOutagesProvider? knownOutagesProvider,
+        IAlertScoreCalculator? alertScoreCalculator,
+        IConfigurationFactory? configurationFactory,
+        IAlert? alert,
+        Type? alertConfigurationType,
+        IEventStore? eventStore)
+    {
+        EventStore = eventStore;
+        TimeSeriesProvider = timeSeriesProvider;
+        KnownOutagesProvider = knownOutagesProvider;
+        AlertScoreCalculator = alertScoreCalculator;
+        ConfigurationFactory = configurationFactory;
+        Alert = alert;
+        this.AlertConfigurationType = alertConfigurationType;
+    }
+
+    /// <summary>
+    /// Creates an uninitialized instance of <see cref="TrainingBuilder"/>
+    /// </summary>
+    /// <returns></returns>
+    public static TrainingBuilder Create()
+    {
+        return new TrainingBuilder(null, null, null, null, null, null, null);
+    }
+
     private static readonly MethodInfo GenericBuildInfo;
 
     static TrainingBuilder()
@@ -37,27 +66,32 @@ public class TrainingBuilder(
     /// <summary>
     /// Source of the time series.
     /// </summary>
-    public ITimeSeriesProvider? TimeSeriesProvider => timeSeriesProvider;
+    public ITimeSeriesProvider? TimeSeriesProvider { get; }
 
     /// <summary>
     /// Source of known outages.
     /// </summary>
-    public IKnownOutagesProvider? KnownOutagesProvider => knownOutagesProvider;
+    public IKnownOutagesProvider? KnownOutagesProvider { get; }
 
     /// <summary>
     /// Defines alert score calculation.
     /// </summary>
-    public IAlertScoreCalculator? AlertScoreCalculator => alertScoreCalculator;
+    public IAlertScoreCalculator? AlertScoreCalculator { get; }
 
     /// <summary>
     /// Allows manipulation with <see cref="AlertConfiguration"/>
     /// </summary>
-    public IConfigurationFactory? ConfigurationFactory => configurationFactory;
+    public IConfigurationFactory? ConfigurationFactory { get; }
 
     /// <summary>
     /// Alert to be evaluated.
     /// </summary>
-    public IAlert? Alert => alert;
+    public IAlert? Alert { get; }
+
+    /// <summary>
+    /// Configuration type used by <see cref="IAlert"/>
+    /// </summary>
+    public Type? AlertConfigurationType { get; }
 
     /// <summary>
     /// Configures <see cref="TrainingBuilder"/> with <paramref name="provider"/>
@@ -66,7 +100,7 @@ public class TrainingBuilder(
     public TrainingBuilder WithTimeSeriesProvider(ITimeSeriesProvider provider)
     {
         return new TrainingBuilder(provider, KnownOutagesProvider, AlertScoreCalculator,
-            ConfigurationFactory, Alert, alertConfigurationType);
+            ConfigurationFactory, Alert, AlertConfigurationType, EventStore);
     }
 
     /// <summary>
@@ -78,7 +112,7 @@ public class TrainingBuilder(
         CheckConfigurationType(typeof(T));
 
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
-            ConfigurationFactory, alertInstance, typeof(T));
+            ConfigurationFactory, alertInstance, typeof(T), EventStore);
     }
 
     /// <summary>
@@ -88,7 +122,7 @@ public class TrainingBuilder(
     public TrainingBuilder WithKnownOutagesProvider(IKnownOutagesProvider provider)
     {
         return new TrainingBuilder(TimeSeriesProvider, provider, AlertScoreCalculator,
-            ConfigurationFactory, Alert, alertConfigurationType);
+            ConfigurationFactory, Alert, AlertConfigurationType, EventStore);
     }
 
     /// <summary>
@@ -98,7 +132,7 @@ public class TrainingBuilder(
     public TrainingBuilder WithCustomAlertScoreCalculator(IAlertScoreCalculator calculator)
     {
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, calculator,
-            ConfigurationFactory, Alert, alertConfigurationType);
+            ConfigurationFactory, Alert, AlertConfigurationType, EventStore);
     }
 
     /// <summary>
@@ -110,7 +144,17 @@ public class TrainingBuilder(
     {
         CheckConfigurationType(typeof(T));
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
-            factory, Alert, typeof(T));
+            factory, Alert, typeof(T), EventStore);
+    }
+
+    /// <summary>
+    /// Overrides <see cref="TrainingBuilder"/> with <paramref name="eventStore"/> instead of <see cref="InMemoryEventStore"/>
+    /// </summary>
+    /// <returns>New instance of TrainingBuilder with updated value.</returns>
+    public TrainingBuilder WithCustomEventStore(IEventStore eventStore)
+    {
+        return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
+            ConfigurationFactory, Alert, AlertConfigurationType, eventStore);
     }
 
     // ReSharper disable once UnusedMember.Local
@@ -121,23 +165,24 @@ public class TrainingBuilder(
             TimeSeriesProvider ?? throw new ArgumentNullException(nameof(TimeSeriesProvider)),
             KnownOutagesProvider ?? throw new ArgumentNullException(nameof(KnownOutagesProvider)),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
-            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(), new InMemoryEventStore(), OptimizationConfiguration.Default);
+            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
+            EventStore ?? new InMemoryEventStore(), OptimizationConfiguration.Default);
     }
 
     private void CheckConfigurationType(Type incomingType)
     {
-        if (alertConfigurationType == null)
+        if (AlertConfigurationType == null)
         {
             return;
         }
 
-        if (alertConfigurationType == incomingType)
+        if (AlertConfigurationType == incomingType)
         {
             return;
         }
 
         throw new InvalidOperationException(
-            $"Current TrainingBuilder is already configured to work with {alertConfigurationType}. Create a new builder for {incomingType}.");
+            $"Current TrainingBuilder is already configured to work with {AlertConfigurationType}. Create a new builder for {incomingType}.");
     }
 
     /// <summary>
@@ -147,8 +192,8 @@ public class TrainingBuilder(
     /// <exception cref="ArgumentNullException">Indicates that one of the mandatory properties (<see cref="Alert"/>, <see cref="TimeSeriesProvider"/>, <see cref="KnownOutagesProvider"/>) was not configured.</exception>
     public IGeneticOptimizer Build()
     {
-        var configurationType = alertConfigurationType
-                                ?? throw new ArgumentNullException(nameof(alertConfigurationType));
+        var configurationType = AlertConfigurationType
+                                ?? throw new ArgumentNullException(nameof(AlertConfigurationType));
 
         return (IGeneticOptimizer)GenericBuildInfo.MakeGenericMethod(configurationType).Invoke(this, [])!;
     }
