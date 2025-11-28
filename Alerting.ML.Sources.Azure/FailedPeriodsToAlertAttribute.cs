@@ -10,13 +10,13 @@ internal class FailedPeriodsToAlertAttribute : ConfigurationParameterAttribute
     {
         this.step = step;
     }
-    public override object GetRandomValue(IAlertConfiguration appliedTo)
+    public override object GetRandomValue(AlertConfiguration appliedTo)
     {
         var configuration = (ScheduledQueryRuleConfiguration)appliedTo;
         return Random.Shared.Next(1, configuration.NumberOfEvaluationPeriods + 1);
     }
 
-    public override object Nudge(object value, IAlertConfiguration appliedTo)
+    public override object Nudge(object value, AlertConfiguration appliedTo)
     {
         if (Random.Shared.NextDouble() > 0.5)
         {
@@ -27,8 +27,7 @@ internal class FailedPeriodsToAlertAttribute : ConfigurationParameterAttribute
         return Math.Min(Math.Max(newValue, 1), configuration.NumberOfEvaluationPeriods);
     }
 
-    public override bool CrossoverSensitive => true;
-    public override object CrossoverRepair(object value, IAlertConfiguration appliedTo)
+    public override object CrossoverRepair(object value, AlertConfiguration appliedTo)
     {
         var configuration = (ScheduledQueryRuleConfiguration)appliedTo;
         return Math.Min(Math.Max((int)value, 1), configuration.NumberOfEvaluationPeriods);

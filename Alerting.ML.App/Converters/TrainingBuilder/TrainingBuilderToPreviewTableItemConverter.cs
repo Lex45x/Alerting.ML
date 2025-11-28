@@ -1,9 +1,9 @@
-﻿using System;
-using System.Globalization;
-using Alerting.ML.Sources.Azure;
+﻿using Alerting.ML.Sources.Azure;
 using Alerting.ML.Sources.Csv;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
+using System;
+using System.Globalization;
 
 namespace Alerting.ML.App.Converters.TrainingBuilder;
 

@@ -1,29 +1,20 @@
-﻿using Alerting.ML.App.Components.TrainingCreation.Outages;
+﻿using Alerting.ML.App.Components.TrainingCreation.FileUpload;
+using Alerting.ML.App.Components.TrainingCreation.Outages;
 using Alerting.ML.Engine;
 using Alerting.ML.Sources.Azure;
 using Alerting.ML.Sources.Csv;
-using Avalonia;
-using Avalonia.Platform.Storage;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Csv;
 
 using Alerting.ML.App.Model.Enums;
-using Alerting.ML.App.ViewModels;
-using Avalonia.Controls;
 
 public class TrainingCreationCsvSecondStepViewModel : FileUploadViewModel, ITrainingCreationStepViewModel
 {
     private readonly TrainingBuilder builder;
     public string? UrlPathSegment => "csv";
-    
+
     public bool IsAzureScheduledQueryRuleSelected
     {
         get;

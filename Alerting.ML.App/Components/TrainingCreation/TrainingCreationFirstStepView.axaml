@@ -75,7 +75,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <Border Width="32" Height="32" CornerRadius="8" Padding="8" Background="{StaticResource Color.Pill}">
                         <Svg Path="avares://Alerting.ML.App/Assets/csv-icon.svg" VerticalAlignment="Center"
-                             HorizontalAlignment="Center" Css=".lucide { stroke: #99A1AF; }"/>
+                             HorizontalAlignment="Center" Svg.Css=".lucide { stroke: #99A1AF; }"/>
                     </Border>
 
                     <StackPanel Spacing="2">

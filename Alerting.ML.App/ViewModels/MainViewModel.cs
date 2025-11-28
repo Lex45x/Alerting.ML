@@ -27,6 +27,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Alerting.ML.Engine.Storage;
 using Metric = Alerting.ML.Engine.Data.Metric;
 
 namespace Alerting.ML.App.ViewModels;
@@ -50,15 +51,13 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        var loggerFactory = LoggerFactory.Create(builder => { builder.AddProvider(new CallbackLoggerProvider(OnLog)); });
-
         knownOutagesProvider = new SampleOutagesProvider();
         timeSeriesProvider = new SampleTimeSeriesProvider(knownOutagesProvider);
         metrics = timeSeriesProvider.GetTimeSeries().ToArray().ToList();
 
-        geneticOptimizer = new GeneticOptimizer<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
+        geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
             timeSeriesProvider, knownOutagesProvider, new DefaultAlertScoreCalculator(),
-            new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), loggerFactory.CreateLogger<GeneticOptimizer<ScheduledQueryRuleConfiguration>>());
+            new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new InMemoryEventStore(), OptimizationConfiguration.Default);
 
         var reducedSeries = metrics.Scale(2_000).ToList();
 
@@ -131,8 +130,7 @@ public class MainViewModel : ViewModelBase
     {
         await Task.Run(async () =>
         {
-            foreach (var summary in geneticOptimizer.Optimize(new OptimizationConfiguration(100, 0.1, 0.3, 100,
-                         new AlertScoreConfiguration(0.9, TimeSpan.FromMinutes(5), AlertScorePriority.Precision), 5)))
+            await foreach (var summary in geneticOptimizer.Optimize(CancellationToken.None))
             {
                 Dispatcher.UIThread.Invoke(() =>
                 {

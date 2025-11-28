@@ -1,16 +1,20 @@
 ﻿using System.Reflection;
+using Alerting.ML.Engine.Optimizer;
 
 namespace Alerting.ML.Engine.Alert;
 
 /// <summary>
-/// todo: reflection here is slow. Generic Type Initializer or Lazy&lt;&gt; can be used to build an expression tree that does the same thing.
+/// A default implementation of configuration factory. Actions available on configuration parameters are defined by <see cref="ConfigurationParameterAttribute"/>.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Type of AlertConfiguration</typeparam>
 public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
-    where T : AlertConfiguration<T>, new()
+    where T : AlertConfiguration, new()
 {
+    private const double FiftyPercentProbability = 0.5;
+
     private record Parameter(PropertyInfo Property, ConfigurationParameterAttribute Attribute);
 
+    //todo: reflection here is slow. Expression tree that does the same thing can be built instead.
     private static readonly IReadOnlyList<Parameter> Parameters = typeof(T)
         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
         .Select(info =>
@@ -18,15 +22,17 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
         .OrderBy(arg => arg.Attribute.Order)
         .ToList();
 
-    public T Mutate(T value)
+
+    /// <inheritdoc />
+    public T Mutate(T value, double mutationProbability)
     {
         var result = new T();
 
         foreach (var parameter in Parameters)
         {
-            var newValue = parameter.Property.GetValue(value);
+            var newValue = parameter.Property.GetValue(value)!;
 
-            if (Random.Shared.NextDouble() > 0.9)
+            if (Random.Shared.NextDouble() > 1 - mutationProbability)
             {
                 newValue = parameter.Attribute.Nudge(newValue, result);
             }
@@ -37,6 +43,7 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
         return result;
     }
 
+    /// <inheritdoc />
     public (T, T) Crossover(T first, T second)
     {
         var firstResult = new T();
@@ -44,13 +51,14 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
 
         foreach (var parameter in Parameters)
         {
-            parameter.Property.SetValue(firstResult, parameter.Attribute.CrossoverRepair(parameter.Property.GetValue(Random.Shared.NextDouble() > 0.5 ? first : second)!, firstResult));
-            parameter.Property.SetValue(secondResult, parameter.Attribute.CrossoverRepair(parameter.Property.GetValue(Random.Shared.NextDouble() > 0.5 ? first : second)!, firstResult));
+            parameter.Property.SetValue(firstResult, parameter.Attribute.CrossoverRepair(parameter.Property.GetValue(Random.Shared.NextDouble() > FiftyPercentProbability ? first : second)!, firstResult));
+            parameter.Property.SetValue(secondResult, parameter.Attribute.CrossoverRepair(parameter.Property.GetValue(Random.Shared.NextDouble() > FiftyPercentProbability ? first : second)!, firstResult));
         }
 
         return (firstResult, secondResult);
     }
 
+    /// <inheritdoc />
     public T CreateRandom()
     {
         var result = new T();

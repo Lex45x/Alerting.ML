@@ -2,6 +2,9 @@
 
 namespace Alerting.ML.TimeSeries.Sample;
 
+/// <summary>
+/// Generates 30 random outages in last 70-ish days.
+/// </summary>
 public class SampleOutagesProvider : IKnownOutagesProvider
 {
     private static readonly DateTime Current = DateTime.UtcNow;
@@ -12,6 +15,7 @@ public class SampleOutagesProvider : IKnownOutagesProvider
         return new Outage(startTime, startTime.AddHours(6));
     }).ToList();
 
+    /// <inheritdoc />
     public IReadOnlyList<Outage> GetKnownOutages()
     {
         return Outages;

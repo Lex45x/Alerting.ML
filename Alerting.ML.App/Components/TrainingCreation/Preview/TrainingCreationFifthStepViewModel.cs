@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Alerting.ML.App.Model.Enums;
+﻿using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
 using ReactiveUI;
+using System.Collections.ObjectModel;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Preview;
 
@@ -46,7 +45,7 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
 
 public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
 {
-    public TrainingCreationFifthStepViewModelDesignTime() : base(null, new TrainingBuilder(null))
+    public TrainingCreationFifthStepViewModelDesignTime() : base(null, TrainingBuilder.Create())
     {
         PreviewItems =
         [
@@ -56,5 +55,5 @@ public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFift
         ];
     }
 
-    
+
 }
