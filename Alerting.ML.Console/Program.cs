@@ -1,32 +1,54 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using Alerting.ML.Console;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Optimizer;
+using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
 using Alerting.ML.Sources.Azure;
 using Alerting.ML.TimeSeries.Sample;
 
-var optimizationConfiguration = OptimizationConfiguration.Default;
-
 var knownOutagesProvider = new SampleOutagesProvider();
 var geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
     new SampleTimeSeriesProvider(knownOutagesProvider), knownOutagesProvider, new DefaultAlertScoreCalculator(),
-    new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new NullEventStore(), optimizationConfiguration);
+    new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new NullEventStore());
 
+AlertScoreCard? generationBest = null;
 
-await foreach (var alertScoreCard in geneticOptimizer.Optimize(CancellationToken.None))
+await foreach (var @event in geneticOptimizer.Optimize(OptimizationConfiguration.Default, CancellationToken.None))
 {
-    Console.WriteLine($"Score: {alertScoreCard.Best.Score}. {alertScoreCard}");
+    switch (@event)
+    {
+        case AlertScoreComputedEvent alertScoreComputedEvent:
+            generationBest =
+                generationBest == null || generationBest.Score > alertScoreComputedEvent.AlertScoreCard.Score
+                    ? alertScoreComputedEvent.AlertScoreCard
+                    : generationBest;
+            break;
+        case GenerationCompletedEvent _:
+        {
+            if (generationBest != null)
+            {
+                Console.WriteLine($"Score: {generationBest.Score}. {generationBest}");
+            }
+
+            generationBest = null;
+            break;
+        }
+    }
 }
 
-public class NullEventStore : IEventStore
+namespace Alerting.ML.Console
 {
-    public async Task Write<T>(Guid aggregateId, T @event) where T: IEvent
+    public class NullEventStore : IEventStore
     {
-        Console.WriteLine($"{aggregateId} :: {@event}");
-    }
+        public async Task Write<T>(Guid aggregateId, T @event) where T: IEvent
+        {
+            System.Console.WriteLine($"{aggregateId} :: {@event}");
+        }
 
-    public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId)
-    {
-        yield break;
+        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId)
+        {
+            yield break;
+        }
     }
 }

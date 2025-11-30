@@ -1,4 +1,6 @@
-﻿namespace Alerting.ML.Engine.Storage;
+﻿using System.Threading.Channels;
+
+namespace Alerting.ML.Engine.Storage;
 
 /// <summary>
 /// Provides access to store and read <see cref="IEvent"/>s produced in engine.

@@ -1,6 +1,7 @@
 ﻿using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
 using Alerting.ML.App.Model.Enums;
+using Alerting.ML.App.Model.Training;
 using Alerting.ML.Engine;
 using Alerting.ML.Sources.Csv;
 using ReactiveUI;

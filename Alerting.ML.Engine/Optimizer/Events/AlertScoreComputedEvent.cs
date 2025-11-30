@@ -4,19 +4,32 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-internal class AlertScoreComputedEvent<T> : IEvent where T : AlertConfiguration
+public class AlertScoreComputedEvent : IEvent
 {
-    public T Configuration { get; }
     public AlertScoreCard AlertScoreCard { get; }
 
-    public AlertScoreComputedEvent(T configuration, AlertScoreCard alertScoreCard)
+    public AlertScoreComputedEvent(AlertScoreCard alertScoreCard)
     {
-        Configuration = configuration;
         AlertScoreCard = alertScoreCard;
     }
 
     public override string ToString()
     {
         return $"AlertScoreComputedEvent: {AlertScoreCard}";
+    }
+}
+
+public class OptimizerConfiguredEvent : IEvent
+{
+    public OptimizationConfiguration Configuration { get; }
+
+    public OptimizerConfiguredEvent(OptimizationConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public override string ToString()
+    {
+        return $"OptimizerConfiguredEvent{nameof(Configuration)}: {Configuration}";
     }
 }

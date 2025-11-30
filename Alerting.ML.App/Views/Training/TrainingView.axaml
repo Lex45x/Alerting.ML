@@ -1,0 +1,353 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Alerting.ML.App.Views.Training.TrainingView">
+    <Grid RowDefinitions="Auto, *">
+
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Classes="header">
+            <StackPanel Margin="24, 16" Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36"
+                        Command="{Binding CancelCommand}">
+                    <Svg Path="avares://Alerting.ML.App/Assets/goback-icon.svg" />
+                </Button>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="h3" Text="New Training Run" />
+                    <Label Content="Import and configure your data source" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <Grid ColumnDefinitions="320,*" ColumnSpacing="16">
+                <!-- LEFT SIDEBAR -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Vertical"
+                            Spacing="16">
+
+                    <!-- Training Parameters Card -->
+                    <Border Classes="panel">
+                        <StackPanel> 
+
+                            <!-- Collapsible header (using Expander) -->
+                            <Expander IsExpanded="True">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <!-- TODO: Icon -->
+                                        <TextBlock Text="Training Parameters"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Expander.Header>
+
+                                <StackPanel Margin="0,12,0,0" Spacing="12">
+
+                                    <!-- Population Size -->
+                                    <StackPanel Spacing="4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Population Size"
+                                                       Grid.Column="0"
+                                                       FontSize="12" />
+                                            <TextBlock Text="110"
+                                                       Grid.Column="1"
+                                                       FontSize="12" />
+                                        </Grid>
+
+                                        <Slider Minimum="20"
+                                                Maximum="200"
+                                                Value="110" />
+                                    </StackPanel>
+
+                                    <!-- Mutation Rate -->
+                                    <StackPanel Spacing="4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Mutation Rate"
+                                                       Grid.Column="0"
+                                                       FontSize="12" />
+                                            <TextBlock Text="0.31"
+                                                       Grid.Column="1"
+                                                       FontSize="12" />
+                                        </Grid>
+
+                                        <Slider Minimum="1"
+                                                Maximum="50"
+                                                Value="31" />
+                                    </StackPanel>
+
+                                    <!-- Crossover Rate -->
+                                    <StackPanel Spacing="4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Crossover Rate"
+                                                       Grid.Column="0"
+                                                       FontSize="12" />
+                                            <TextBlock Text="0.80"
+                                                       Grid.Column="1"
+                                                       FontSize="12" />
+                                        </Grid>
+
+                                        <Slider Minimum="50"
+                                                Maximum="100"
+                                                Value="80" />
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </Expander>
+
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Training Status Card -->
+                    <Border Padding="16" Classes="panel">
+                        <StackPanel Spacing="12">
+
+                            <!-- Header -->
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        Margin="0,0,0,4">
+                                <!-- TODO: Icon -->
+                                <TextBlock Text="Training Status"
+                                           FontSize="12" />
+                            </StackPanel>
+
+                            <!-- Progress -->
+                            <StackPanel>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Progress"
+                                               Grid.Column="0"
+                                               FontSize="12" />
+                                    <TextBlock Text="49%"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <ProgressBar Minimum="0"
+                                             Maximum="100"
+                                             Value="49"
+                                             Height="8" />
+                            </StackPanel>
+
+                            <!-- Stats -->
+                            <StackPanel Margin="0,8,0,0" Spacing="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Generation"
+                                               Grid.Column="0"
+                                               FontSize="12" />
+                                    <TextBlock Text="98 / 200"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Best Fitness"
+                                               Grid.Column="0"
+                                               FontSize="12" />
+                                    <TextBlock Text="0.7404"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Mutation Rate"
+                                               Grid.Column="0"
+                                               FontSize="12" />
+                                    <TextBlock Text="0.31"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Population"
+                                               Grid.Column="0"
+                                               FontSize="12" />
+                                    <TextBlock Text="110"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Paused badge -->
+                            <Border Margin="0,8,0,0"
+                                    Padding="4"
+                                    HorizontalAlignment="Stretch">
+                                <TextBlock Text="Paused"
+                                           HorizontalAlignment="Center"
+                                           FontSize="11" />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Spacing="8">
+                        <Button Content="Resume Training"
+                                HorizontalAlignment="Stretch"
+                                Height="32" />
+                        <Button Content="Terminate"
+                                HorizontalAlignment="Stretch"
+                                Height="32" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- RIGHT MAIN AREA -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Vertical"
+                            Spacing="16">
+
+                    <!-- Fitness Evolution Card -->
+                    <Border Padding="16" Classes="panel">
+                        <StackPanel Spacing="12">
+
+                            <!-- Header + Legend -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="8">
+                                    <!-- TODO: Icon -->
+                                    <TextBlock Text="Fitness Evolution"
+                                               FontSize="14" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            Spacing="16">
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="4">
+                                        <Border Width="10" Height="10" />
+                                        <TextBlock Text="Best Fitness"
+                                                   FontSize="11" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="4">
+                                        <Border Width="10" Height="10" />
+                                        <TextBlock Text="Avg Fitness"
+                                                   FontSize="11" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Chart placeholder -->
+                            <Border Height="300"
+                                    Margin="0,4,0,0">
+                                <TextBlock Text="Fitness chart goes here"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="12" />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Population Diversity Card -->
+                    <Border Padding="16" Classes="panel">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        Margin="0,0,0,4">
+                                <!-- TODO: Icon -->
+                                <TextBlock Text="Population Diversity"
+                                           FontSize="14" />
+                            </StackPanel>
+
+                            <!-- Chart placeholder -->
+                            <Border Height="200">
+                                <TextBlock Text="Diversity chart goes here"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="12" />
+                            </Border>
+
+                            <TextBlock
+                                Text="Diversity measures genetic variation in the population. Higher diversity helps avoid local optima."
+                                FontSize="12"
+                                TextWrapping="Wrap"
+                                Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bottom stats cards -->
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="8">
+
+                        <!-- Card 1 -->
+                        <Border Padding="12" Grid.Column="0" Classes="panel">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Best F1 Score"
+                                           FontSize="12" />
+                                <TextBlock Text="0.740"
+                                           FontSize="18" />
+                                <TextBlock Text="+-2.0% from start"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 2 -->
+                        <Border Padding="12" Grid.Column="1" Classes="panel">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Evaluations"
+                                           FontSize="12" />
+                                <TextBlock Text="10,780"
+                                           FontSize="18" />
+                                <TextBlock Text="110 per generation"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 3 -->
+                        <Border Padding="12" Grid.Column="2" Classes="panel">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Time Elapsed"
+                                           FontSize="12" />
+                                <TextBlock Text="0m 49s"
+                                           FontSize="18" />
+                                <TextBlock Text="~0m remaining"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

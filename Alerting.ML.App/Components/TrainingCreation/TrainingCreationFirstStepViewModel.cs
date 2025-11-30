@@ -1,4 +1,5 @@
 ﻿using Alerting.ML.App.Model.Enums;
+using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
 using ReactiveUI;
@@ -11,8 +12,6 @@ using System;
 public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuilder builder)
     : ViewModelBase, ITrainingCreationStepViewModel
 {
-    private readonly TrainingBuilder builder = builder;
-
     public void Continue()
     {
         HostScreen.Router.Navigate.Execute(

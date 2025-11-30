@@ -25,34 +25,32 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     /// <param name="alertScoreCalculator">Calculates alert score based on detected outages.</param>
     /// <param name="configurationFactory">A relevant factory for <typeparamref name="T"/></param>
     /// <param name="store">An event store to persist all events.</param>
-    /// <param name="configuration">Configuration of the optimization process.</param>
     public GeneticOptimizerStateMachine(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
-        IConfigurationFactory<T> configurationFactory, IEventStore store,
-        OptimizationConfiguration configuration)
+        IConfigurationFactory<T> configurationFactory, IEventStore store)
     {
         this.store = store;
         current = new GeneticOptimizerState<T>(alert, timeSeriesProvider, knownOutagesProvider,
-            alertScoreCalculator, configurationFactory, configuration);
+            alertScoreCalculator, configurationFactory);
     }
 
-    private async Task<bool> RaiseEvent<TEvent>(TEvent @event) where TEvent : IEvent
+    private async Task<(bool, IEvent)> RaiseEvent<TEvent>(TEvent @event) where TEvent : IEvent
     {
         await store.Write(current.Id, @event);
-        return current.Apply(@event);
+        return (current.Apply(@event), @event);
     }
 
     private readonly GeneticOptimizerState<T> current;
 
-    private Task<bool> RepopulateWithRandom()
+    private Task<(bool, IEvent)> RepopulateWithRandom()
     {
         var randomConfiguration = current.ConfigurationFactory.CreateRandom();
         return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration));
     }
 
-    private Task<bool> CreateSummary()
+    private Task<(bool, IEvent)> CreateSummary()
     {
-        return RaiseEvent(new SummaryCreatedEvent(new GenerationSummary(current.GenerationIndex,
+        return RaiseEvent(new GenerationCompletedEvent(new GenerationSummary(current.GenerationIndex,
             current.GenerationScores.OrderBy(card => card.Score).ToList())));
     }
 
@@ -73,7 +71,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return (T)winner.Configuration;
     }
 
-    private Task<bool> RunTournament()
+    private Task<(bool, IEvent)> RunTournament()
     {
         var isEnoughProperConfigurations = current.EligibleForTournament.Count >= current.Configuration.SurvivorCount;
 
@@ -96,7 +94,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return RaiseEvent(new TournamentRoundCompletedEvent<T>(first, second));
     }
 
-    private Task<bool> CountSurvivors()
+    private Task<(bool, IEvent)> CountSurvivors()
     {
         var survivors = current.GenerationScores
             .Where(card => !card.IsNotFeasible)
@@ -108,15 +106,15 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return RaiseEvent(new SurvivorsCountedEvent<T>(survivors));
     }
 
-    private Task<bool> ComputeScore()
+    private Task<(bool, IEvent)> ComputeScore()
     {
         var (alertConfiguration, outages) = current.NextScoreComputation;
         var alertScoreCard = current.AlertScoreCalculator.CalculateScore(outages, current.KnownOutagesProvider,
             alertConfiguration);
-        return RaiseEvent(new AlertScoreComputedEvent<T>(alertConfiguration, alertScoreCard));
+        return RaiseEvent(new AlertScoreComputedEvent(alertScoreCard));
     }
 
-    private Task<bool> Evaluate()
+    private Task<(bool, IEvent)> Evaluate()
     {
         var configuration = current.NextEvaluation;
         var outages = current.Alert.Evaluate(current.TimeSeriesProvider, configuration).ToList();
@@ -125,28 +123,50 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<GenerationSummary> Optimize(
-        [EnumeratorCancellation] CancellationToken cancellationToken)
-    {
-        bool canContinue;
+    public Guid Id => current.Id;
 
+    /// <inheritdoc />
+    public async IAsyncEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        if (current.State == GeneticOptimizerStateEnum.Completed)
+        {
+            yield break;
+        }
+
+        (var canContinue, IEvent? @event) = await Reconfigure(configuration);
+
+        if (!canContinue)
+        {
+            yield break;
+        }
+
+        yield return @event;
+        
         do
         {
-            canContinue = current.State switch
+            (canContinue, @event) = current.State switch
             {
                 GeneticOptimizerStateEnum.RandomRepopulation => await RepopulateWithRandom(),
                 GeneticOptimizerStateEnum.Evaluation => await Evaluate(),
                 GeneticOptimizerStateEnum.ScoreComputation => await ComputeScore(),
-                GeneticOptimizerStateEnum.CreateSummary => await CreateSummary(),
+                GeneticOptimizerStateEnum.CompletingGeneration => await CreateSummary(),
                 GeneticOptimizerStateEnum.SurvivorsCounting => await CountSurvivors(),
                 GeneticOptimizerStateEnum.Tournament => await RunTournament(),
+                GeneticOptimizerStateEnum.Completed => (false, null),
+                GeneticOptimizerStateEnum.Created => throw new InvalidOperationException(),
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            if (current.LastEvent is SummaryCreatedEvent summaryCreated)
+            if (canContinue)
             {
-                yield return summaryCreated.Summary;
+                yield return @event!;
             }
+
         } while (canContinue && !cancellationToken.IsCancellationRequested);
+    }
+    
+    private Task<(bool canContinue, IEvent @event)> Reconfigure(OptimizationConfiguration optimizationConfiguration)
+    {
+        return RaiseEvent(new OptimizerConfiguredEvent(optimizationConfiguration));
     }
 }

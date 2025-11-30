@@ -14,6 +14,27 @@ public class ScheduledQueryRuleConfiguration : AlertConfiguration
             $"{nameof(Operator)}: {Operator}, {nameof(Threshold)}: {Threshold}, {nameof(NumberOfEvaluationPeriods)}: {NumberOfEvaluationPeriods}, {nameof(MinFailingPeriodsToAlert)}: {MinFailingPeriodsToAlert}, {nameof(TimeAggregation)}: {TimeAggregation}, {nameof(WindowSize)}: {WindowSize}, {nameof(EvaluationFrequency)}: {EvaluationFrequency}";
     }
 
+    /// <inheritdoc />
+    public override double Distance(AlertConfiguration other)
+    {
+        if (other is not ScheduledQueryRuleConfiguration otherConfiguration)
+        {
+            throw new InvalidOperationException();
+        }
+
+        var squaresSum = 0.0;
+
+        squaresSum += Math.Pow(Operator - otherConfiguration.Operator, 2);
+        squaresSum += Math.Pow(Threshold - otherConfiguration.Threshold, 2);
+        squaresSum += Math.Pow(NumberOfEvaluationPeriods - otherConfiguration.NumberOfEvaluationPeriods, 2);
+        squaresSum += Math.Pow(MinFailingPeriodsToAlert - otherConfiguration.MinFailingPeriodsToAlert, 2);
+        squaresSum += Math.Pow(TimeAggregation - otherConfiguration.TimeAggregation, 2);
+        squaresSum += Math.Pow((WindowSize - otherConfiguration.WindowSize).TotalMinutes, 2);
+        squaresSum += Math.Pow((EvaluationFrequency - otherConfiguration.EvaluationFrequency).TotalMinutes, 2);
+
+        return Math.Sqrt(squaresSum);
+    }
+
     /// <summary>
     /// Defines a comparison operator for alert. Evaluation period is considered failed when operator execution returns true.
     /// </summary>

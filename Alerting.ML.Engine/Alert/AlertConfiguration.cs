@@ -10,4 +10,11 @@ public abstract class AlertConfiguration
     /// </summary>
     /// <returns>String representation of a given configuration</returns>
     public abstract override string ToString();
+
+    /// <summary>
+    /// Measures Euclidean distance between two configurations. Can be used to calculate population diversity. 
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public abstract double Distance(AlertConfiguration other);
 }

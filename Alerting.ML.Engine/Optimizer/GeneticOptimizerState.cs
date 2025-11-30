@@ -21,18 +21,16 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     /// <param name="knownOutagesProvider">Provider of known outages.</param>
     /// <param name="alertScoreCalculator">Calculates alert score based on detected outages.</param>
     /// <param name="configurationFactory">A relevant factory for <typeparamref name="T"/></param>
-    /// <param name="configuration">Configuration of the optimization process.</param>
     public GeneticOptimizerState(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
-        IConfigurationFactory<T> configurationFactory, OptimizationConfiguration configuration)
+        IConfigurationFactory<T> configurationFactory)
     {
         Alert = alert;
         TimeSeriesProvider = timeSeriesProvider;
         KnownOutagesProvider = knownOutagesProvider;
         AlertScoreCalculator = alertScoreCalculator;
         ConfigurationFactory = configurationFactory;
-        Configuration = configuration;
-        State = GeneticOptimizerStateEnum.RandomRepopulation;
+        State = GeneticOptimizerStateEnum.Created;
     }
 
     /// <summary>
@@ -68,7 +66,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     /// <summary>
     /// Configuration of the optimization process.
     /// </summary>
-    public OptimizationConfiguration Configuration { get; }
+    public OptimizationConfiguration Configuration { get; private set; }
 
     /// <summary>
     /// Indicates a current state for <see cref="GeneticOptimizerStateMachine{T}"/>
@@ -129,17 +127,34 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
         {
             RandomConfigurationAddedEvent<T> configurationAdded => Handle(configurationAdded),
             EvaluationCompletedEvent<T> evaluationCompleted => Handle(evaluationCompleted),
-            AlertScoreComputedEvent<T> scoreComputed => Handle(scoreComputed),
-            SummaryCreatedEvent summaryCreated => Handle(summaryCreated),
+            AlertScoreComputedEvent scoreComputed => Handle(scoreComputed),
+            GenerationCompletedEvent generationCompleted => Handle(generationCompleted),
             SurvivorsCountedEvent<T> survivorsCounted => Handle(survivorsCounted),
+            OptimizerConfiguredEvent optimizerConfigured => Handle(optimizerConfigured),
             TournamentRoundCompletedEvent<T> tournamentRoundCompleted => Handle(
                 tournamentRoundCompleted),
             _ => throw new ArgumentOutOfRangeException(nameof(@event), @event, null)
         };
     }
 
-    private bool Handle(SummaryCreatedEvent summaryCreated)
+    private bool Handle(OptimizerConfiguredEvent optimizerConfigured)
     {
+        Configuration = optimizerConfigured.Configuration;
+
+        State = GeneticOptimizerStateEnum.RandomRepopulation;
+        //todo: What could go wrong in the middle of simulation?
+        //todo: A lot! Reconfiguring should keep existing population and add or remove more citizens and restart the current generation.
+
+        return true;
+    }
+
+    private bool Handle(GenerationCompletedEvent _)
+    {
+        if (Configuration.TotalGenerations - 1 <= GenerationIndex)
+        {
+            return false;
+        }
+
         GenerationIndex += 1;
         State = GeneticOptimizerStateEnum.SurvivorsCounting;
         return true;
@@ -186,9 +201,9 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
         return true;
     }
 
-    private bool Handle(AlertScoreComputedEvent<T> scoreComputedEvent)
+    private bool Handle(AlertScoreComputedEvent scoreComputedEvent)
     {
-        if (scoreComputationQueue.Dequeue().Item1 != scoreComputedEvent.Configuration)
+        if (scoreComputationQueue.Dequeue().Item1 != scoreComputedEvent.AlertScoreCard.Configuration)
         {
             throw new InvalidOperationException(
                 "Computed Score configuration is not coming from the top of the score computation queue!");
@@ -203,7 +218,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
 
         if (scoreComputationQueue.Count == 0)
         {
-            State = GeneticOptimizerStateEnum.CreateSummary;
+            State = GeneticOptimizerStateEnum.CompletingGeneration;
         }
 
         return true;

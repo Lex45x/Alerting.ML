@@ -166,7 +166,7 @@ public class TrainingBuilder
             KnownOutagesProvider ?? throw new ArgumentNullException(nameof(KnownOutagesProvider)),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
             ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
-            EventStore ?? new InMemoryEventStore(), OptimizationConfiguration.Default);
+            EventStore ?? new InMemoryEventStore());
     }
 
     private void CheckConfigurationType(Type incomingType)

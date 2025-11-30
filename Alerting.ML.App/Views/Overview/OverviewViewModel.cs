@@ -7,16 +7,17 @@ using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using Alerting.ML.App.Model.Training;
 
 namespace Alerting.ML.App.Views.Overview;
 
 public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 {
-    private readonly ILoggerFactory loggerFactory;
+    private readonly IBackgroundTrainingOrchestrator trainingOrchestrator;
 
-    public OverviewViewModel(IScreen hostScreen, ILoggerFactory loggerFactory)
+    public OverviewViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator)
     {
-        this.loggerFactory = loggerFactory;
+        this.trainingOrchestrator = trainingOrchestrator;
         HostScreen = hostScreen;
         WindowSizeChangedCommand = ReactiveCommand.Create<SizeChangedEventArgs>(WindowSizeChanged);
         NewOptimizationCommand = ReactiveCommand.Create(NewOptimization);
@@ -24,7 +25,7 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 
     private void NewOptimization()
     {
-        HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, loggerFactory));
+        HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, trainingOrchestrator));
     }
 
     private void WindowSizeChanged(SizeChangedEventArgs e)

@@ -1,12 +1,16 @@
-﻿using Alerting.ML.App.Model.Enums;
+﻿using System;
+using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using Alerting.ML.App.Model.Training;
+using Alerting.ML.Engine.Optimizer;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Preview;
 
-public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreationStepViewModel
+public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreationStepViewModel,
+    ITrainingCreationLastStepViewModel
 {
     private readonly TrainingBuilder builder;
 
@@ -14,6 +18,7 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
     {
         this.builder = builder;
         HostScreen = hostScreen;
+        ConfiguredOptimizer = this.builder.Build();
         PreviewItems =
         [
             new PreviewSummaryItem("Data Source", builder.TimeSeriesProvider),
@@ -27,7 +32,7 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
 
     public void Continue()
     {
-        var geneticOptimizer = builder.Build();
+        throw new InvalidOperationException("This is the last step that can't be continued further");
     }
 
     public ObservableCollection<PreviewSummaryItem> PreviewItems
@@ -41,11 +46,13 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
     public bool IsValidationPassed => true;
 
     public record PreviewSummaryItem(string Name, object? Value);
+
+    public IGeneticOptimizer ConfiguredOptimizer { get; }
 }
 
 public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
 {
-    public TrainingCreationFifthStepViewModelDesignTime() : base(null, TrainingBuilder.Create())
+    public TrainingCreationFifthStepViewModelDesignTime() : base(null, null)
     {
         PreviewItems =
         [
@@ -54,6 +61,4 @@ public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFift
             new("Outage File", "outages.csv")
         ];
     }
-
-
 }
