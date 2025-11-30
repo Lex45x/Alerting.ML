@@ -68,7 +68,7 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
         HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, trainingSession));
     }
 
-    public IGeneticOptimizer ConfiguredOptimizer
+    public IGeneticOptimizer? ConfiguredOptimizer
     {
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
@@ -84,7 +84,7 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
     public ReactiveCommand<Unit, Unit> StartOptimizationCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> ContinueCommand
+    public ReactiveCommand<Unit, Unit>? ContinueCommand
     {
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);

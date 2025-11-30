@@ -45,7 +45,7 @@ public abstract class FileUploadViewModel : ViewModelBase
                 }
             });
 
-        SelectedFilePath = files.First().Path.ToString();
+        SelectedFilePath = files.First().TryGetLocalPath() ?? throw new InvalidOperationException("Unable to get a full path to CSV file.");
     }
 
     private void FileDropped(IEnumerable<IStorageItem> arg)
