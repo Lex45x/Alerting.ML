@@ -8,40 +8,60 @@ using Alerting.ML.Sources.Azure;
 using Alerting.ML.TimeSeries.Sample;
 
 var knownOutagesProvider = new SampleOutagesProvider();
-var geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
-    new SampleTimeSeriesProvider(knownOutagesProvider), knownOutagesProvider, new DefaultAlertScoreCalculator(),
-    new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new NullEventStore());
+var sampleTimeSeriesProvider = new SampleTimeSeriesProvider(knownOutagesProvider);
 
-AlertScoreCard? generationBest = null;
 
-await foreach (var @event in geneticOptimizer.Optimize(OptimizationConfiguration.Default, CancellationToken.None))
+await using var fileStream = File.OpenWrite("outages_1.csv");
+using var writer = new StreamWriter(fileStream);
+
+foreach (var knownOutage in knownOutagesProvider.GetKnownOutages())
 {
-    switch (@event)
-    {
-        case AlertScoreComputedEvent alertScoreComputedEvent:
-            generationBest =
-                generationBest == null || generationBest.Score > alertScoreComputedEvent.AlertScoreCard.Score
-                    ? alertScoreComputedEvent.AlertScoreCard
-                    : generationBest;
-            break;
-        case GenerationCompletedEvent _:
-        {
-            if (generationBest != null)
-            {
-                Console.WriteLine($"Score: {generationBest.Score}. {generationBest}");
-            }
-
-            generationBest = null;
-            break;
-        }
-    }
+    writer.WriteLine($"{knownOutage.StartTime},{knownOutage.EndTime}");
 }
+
+await using var seriesStream = File.OpenWrite("timeseries_1.csv");
+using var seriesWriter = new StreamWriter(seriesStream);
+
+foreach (var metric in sampleTimeSeriesProvider.GetTimeSeries())
+{
+    seriesWriter.WriteLine($"{metric.Timestamp},{metric.Value}");
+}
+
+
+//var geneticOptimizer = new GeneticOptimizerStateMachine<ScheduledQueryRuleConfiguration>(new ScheduledQueryRuleAlert(),
+//    sampleTimeSeriesProvider, knownOutagesProvider, new DefaultAlertScoreCalculator(),
+//    new DefaultConfigurationFactory<ScheduledQueryRuleConfiguration>(), new NullEventStore());
+
+//AlertScoreCard? generationBest = null;
+
+//await foreach (var @event in geneticOptimizer.Optimize(OptimizationConfiguration.Default, CancellationToken.None))
+//{
+//    switch (@event)
+//    {
+//        case AlertScoreComputedEvent alertScoreComputedEvent:
+//            generationBest =
+//                generationBest == null || generationBest.Score > alertScoreComputedEvent.AlertScoreCard.Score
+//                    ? alertScoreComputedEvent.AlertScoreCard
+//                    : generationBest;
+//            break;
+//        case GenerationCompletedEvent _:
+//        {
+//            if (generationBest != null)
+//            {
+//                Console.WriteLine($"Score: {generationBest.Score}. {generationBest}");
+//            }
+
+//            generationBest = null;
+//            break;
+//        }
+//    }
+//}
 
 namespace Alerting.ML.Console
 {
     public class NullEventStore : IEventStore
     {
-        public async Task Write<T>(Guid aggregateId, T @event) where T: IEvent
+        public async Task Write<T>(Guid aggregateId, T @event) where T : IEvent
         {
             System.Console.WriteLine($"{aggregateId} :: {@event}");
         }

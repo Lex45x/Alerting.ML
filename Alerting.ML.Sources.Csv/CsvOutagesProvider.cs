@@ -12,7 +12,7 @@ namespace Alerting.ML.Sources.Csv
     public class CsvOutagesProvider(string filePath) : IKnownOutagesProvider
     {
         private List<Outage>? outages;
-        private const string SupportedSeparators = ";,\t";
+        
         /// <inheritdoc />
         public IReadOnlyList<Outage> GetKnownOutages()
         {
@@ -44,7 +44,7 @@ namespace Alerting.ML.Sources.Csv
 
             //identify separator in the file
 
-            var csvSeparator = SupportedSeparators
+            var csvSeparator = CsvConstants.SupportedSeparators
                 .Where(separator => currentLine.Split(separator).Length > 1)
                 .Select(separator => separator.ToString())
                 .FirstOrDefault();
@@ -112,7 +112,7 @@ namespace Alerting.ML.Sources.Csv
                 }
             }
 
-            //ensure both or none date columns are identified.
+            //ensure both date columns are identified.
             if (outageStartIndex < 0 || outageEndIndex < 0)
             {
                 return new ValidationResult([
@@ -131,7 +131,7 @@ namespace Alerting.ML.Sources.Csv
 
             // proceed to CSV parsing
             var errorList = new List<ValidationFailure>();
-            while (currentLine != null)
+            while (!string.IsNullOrWhiteSpace(currentLine))
             {
                 var rowParts = currentLine.Split(csvSeparator);
 
@@ -156,7 +156,7 @@ namespace Alerting.ML.Sources.Csv
                 }
                 else
                 {
-                    errorList.Add(new ValidationFailure(nameof(FilePath), $"Line #{lineIndex + 1} contains invalid amount of elements. Expected to find a date time and indexes {outageStartIndex} and {outageEndIndex}"));
+                    errorList.Add(new ValidationFailure(nameof(FilePath), $"Line #{lineIndex + 1} contains invalid amount of elements. Expected to find a date time at indexes {outageStartIndex} and {outageEndIndex}"));
                 }
                
                 currentLine = await reader.ReadLineAsync();

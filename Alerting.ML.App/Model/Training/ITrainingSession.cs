@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Alerting.ML.App.Model.Enums;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
 
@@ -16,8 +17,11 @@ public interface ITrainingSession
     int CurrentGeneration { get; }
     double BestFitness { get; }
     int TotalEvaluations { get; }
+    double ProgressPercentage { get; }
+    CloudProvider AlertProvider {get;}
+    DateTime CreatedAt {get;}
     TimeSpan Elapsed { get; }
-    OptimizationConfiguration CurrentConfiguration { get; }
+    OptimizationConfiguration? CurrentConfiguration { get; }
     void Start(OptimizationConfiguration configuration);
     void Stop();
     bool IsPaused { get; }

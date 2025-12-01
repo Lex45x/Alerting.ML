@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Alerting.ML.App.Converters.CloudProvider;
 
-public class CloudProviderToIconConverter : IValueConverter
+public class AlertProviderToIconConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

@@ -81,7 +81,7 @@
 
         <!-- MAIN CONTENT -->
         <ListBox Grid.Row="2" Margin="24, 16"
-                 ItemsSource="{Binding Cards}" Classes="cardsContainer">
+                 ItemsSource="{Binding TrainingOrchestrator.AllSessions}" Classes="cardsContainer">
             <Interaction.Behaviors>
                 <SizeChangedTrigger>
                     <InvokeCommandAction Command="{Binding WindowSizeChangedCommand}" PassEventArgsToCommand="True" />
@@ -89,7 +89,7 @@
             </Interaction.Behaviors>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <components:TrainingCard />
+                    <components:TrainingCard Command="{Binding $parent[ListBox].DataContext.OpenSessionCommand}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>

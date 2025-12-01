@@ -5,15 +5,16 @@
              xmlns:vm="clr-namespace:Alerting.ML.App.Components.Overview"
              xmlns:progressBar="clr-namespace:Alerting.ML.App.Converters.ProgressBar"
              xmlns:cloudProvider="clr-namespace:Alerting.ML.App.Converters.CloudProvider"
+             xmlns:training="clr-namespace:Alerting.ML.App.Views.Training"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Alerting.ML.App.Components.Overview.TrainingCard"
-             x:DataType="vm:TrainingCardViewModel" Classes="card">
+             x:DataType="vm:TrainingCardViewModel">
     <Design.DataContext>
-        <vm:TrainingCardViewModelDesignTime />
+        <training:DesignTimeTrainingSession />
     </Design.DataContext>
     <UserControl.Resources>
         <progressBar:ProgressBarColorConverter x:Key="ColorConverter"/>
-        <cloudProvider:CloudProviderToIconConverter x:Key="IconConverter"/>
+        <cloudProvider:AlertProviderToIconConverter x:Key="IconConverter"/>
     </UserControl.Resources>
     <UserControl.Styles>
         <Style Selector="vm|TrainingCard:pointerover Border.panel">
@@ -23,31 +24,36 @@
             <Setter Property="Foreground" Value="{StaticResource Color.HoverText}"/>
         </Style>
     </UserControl.Styles>
-    <Border Classes="panel" CornerRadius="{StaticResource Radius.Lg}" Padding="24">
+    <Border Classes="panel" CornerRadius="{StaticResource Radius.Lg}" Padding="24" PointerReleased="InputElement_OnPointerReleased">
         <StackPanel Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <Border Padding="8" Width="36" Height="36"
                             CornerRadius="8"
                             VerticalAlignment="Top" Background="{StaticResource Color.Pill}">
-                        <Svg Path="{Binding CloudProvider, Converter={StaticResource IconConverter}}" />
+                        <Svg Path="{Binding AlertProvider, Converter={StaticResource IconConverter}}" />
                     </Border>
                     <StackPanel Spacing="2">
-                        <TextBlock Classes="h3 title" Text="{Binding TrainingSessionName}" />
-                        <Label Content="{Binding TrainingDate}" />
+                        <TextBlock Classes="h3 title" Text="{Binding Name}" />
+                        <TextBlock Classes="p" Text="{Binding CreatedAt, StringFormat={}{0:d}}" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
             <StackPanel Spacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock FontSize="{StaticResource Text.3Xl}" Text="{Binding HighestScore}" VerticalAlignment="Bottom"/>
-                    <Label Content="Best Score" VerticalAlignment="Bottom"/>
+                    <TextBlock FontSize="{StaticResource Text.3Xl}" Text="{Binding BestFitness}" VerticalAlignment="Bottom"/>
+                    <TextBlock Classes="p" Text="Best Fitness" VerticalAlignment="Bottom"/>
                 </StackPanel>
-                <ProgressBar Height="8" Minimum="0" Maximum="1" Value="{Binding LatestProgress}" Foreground="{Binding LatestProgress, Converter={StaticResource ColorConverter}}"/>
+                <ProgressBar Height="8" Minimum="0" Maximum="1" Value="{Binding ProgressPercentage}" Foreground="{Binding ProgressPercentage, Converter={StaticResource ColorConverter}}"/>
             </StackPanel>
             <Grid ColumnDefinitions="*,Auto">
-                <Label Grid.Column="0" Content="{Binding GenerationsCounter, StringFormat='Generations: {0}'}" />
-                <Label Grid.Column="1" Content="{Binding LatestProgress, StringFormat='\{0:P\}'}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Classes="p" Text="Generation "/>
+                    <TextBlock Classes="p" Text="{Binding CurrentGeneration}"/>
+                    <TextBlock Classes="p" Text=" / "/>
+                    <TextBlock Classes="p" Text="{Binding CurrentConfiguration.TotalGenerations}"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Classes="p" Text="{Binding ProgressPercentage, StringFormat={}{0:P}}" />
             </Grid>
         </StackPanel>
     </Border>

@@ -8,7 +8,7 @@ public static class SpanExtensions
 
     /// <param name="source">Source span</param>
     /// <typeparam name="T">Span element type</typeparam>
-    extension<T>(Span<T> source)
+    extension<T>(ReadOnlySpan<T> source)
     {
         /// <summary>
         /// Computes an average value in a span

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
@@ -20,7 +21,8 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
         this.builder = builder;
         HostScreen = hostScreen;
         this.WhenAnyValue(model => model.SelectedFilePath)
-            .Subscribe(async s => await ConfigureBuilder(s));
+            .SelectMany(s => Observable.FromAsync(() => ConfigureBuilder(s)))
+            .Subscribe();
     }
 
 

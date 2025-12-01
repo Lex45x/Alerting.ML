@@ -1,0 +1,175 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="300">
+            <StackPanel Spacing="10">
+                <Slider Theme="{StaticResource TrainingConfigurationSlider}" Minimum="0"
+                        Maximum="100" Value="20" />
+                <Slider Theme="{StaticResource TrainingConfigurationSlider}" Minimum="0"
+                        Maximum="100" Value="20" IsEnabled="False" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <SolidColorBrush x:Key="Color.ConfigurationSliderBackground" Color="#262626" />
+    <SolidColorBrush x:Key="Color.ConfigurationSliderDisabledBackground" Color="#191b1e" />
+    <SolidColorBrush x:Key="Color.ConfigurationSliderForeground" Color="#FAFAFA" />
+    <SolidColorBrush x:Key="Color.ConfigurationSliderDisabledForeground" Color="#838588" />
+    <SolidColorBrush x:Key="Color.ConfigurationSliderThumb" Color="#0A0A0A" />
+    <SolidColorBrush x:Key="Color.ConfigurationSliderDisabledThumb" Color="#0b0d10" />
+    <SolidColorBrush x:Key="Color.ConfigurationSliderThumbHover" Color="#828282" />
+
+    <ControlTheme x:Key="TrainingConfigurationSliderThumbTheme" TargetType="Thumb">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="Thumb_Increase">
+                    <Border x:Name="Thumb_Decrease" CornerRadius="0, 8, 8, 0" ZIndex="1">
+                        <Border Background="{TemplateBinding Background}" Margin="1"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0"
+                                CornerRadius="8" ZIndex="2" />
+                    </Border>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^ /template/ Border#Thumb_Increase">
+            <Setter Property="Background" Value="{DynamicResource Color.ConfigurationSliderBackground}" />
+        </Style>
+
+        <Style Selector="^ /template/ Border#Thumb_Decrease">
+            <Setter Property="Background" Value="{DynamicResource Color.ConfigurationSliderForeground}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{DynamicResource Color.ConfigurationSliderDisabledThumb}" />
+            <Style Selector="^ /template/ Border#Thumb_Increase">
+                <Setter Property="Background" Value="{DynamicResource Color.ConfigurationSliderDisabledBackground}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#Thumb_Decrease">
+                <Setter Property="Background" Value="{DynamicResource Color.ConfigurationSliderDisabledForeground}" />
+            </Style>
+        </Style>
+    </ControlTheme>
+    <ControlTheme x:Key="TrainingConfigurationSliderLeftButton" TargetType="RepeatButton">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Border Name="FocusTarget" Margin="0,-10" Background="Transparent" />
+                    <Border Name="TrackBackground"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="8, 0, 0, 8"
+                            Height="16"
+                            VerticalAlignment="Center" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="TrainingConfigurationSliderRightButton" TargetType="RepeatButton">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Border Name="FocusTarget" Margin="0,-10" Background="Transparent" />
+                    <Border Name="TrackBackground"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="0, 8, 8, 0"
+                            Height="16"
+                            VerticalAlignment="Center" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    <ControlTheme x:Key="TrainingConfigurationSlider" TargetType="Slider">
+        <Setter Property="Background" Value="{StaticResource Color.ConfigurationSliderBackground}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource SliderBorderThemeThickness}" />
+        <Setter Property="Foreground" Value="{StaticResource Color.ConfigurationSliderForeground}" />
+        <Style Selector="^:horizontal">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <DataValidationErrors>
+                        <Border
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid x:Name="SliderContainer"
+                                  Margin="{TemplateBinding Padding}"
+                                  Background="{DynamicResource SliderContainerBackground}">
+                                <Grid.Styles>
+                                    <Style Selector="TickBar">
+                                        <Setter Property="ReservedSpace" Value="{Binding #PART_Track.Thumb.Bounds}" />
+                                    </Style>
+                                </Grid.Styles>
+                                <Grid
+                                    x:Name="HorizontalTemplate"
+                                    MinHeight="{DynamicResource SliderHorizontalHeight}"
+                                    ColumnDefinitions="Auto,Auto,*">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="{DynamicResource SliderPreContentMargin}" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="{DynamicResource SliderPostContentMargin}" />
+                                    </Grid.RowDefinitions>
+                                    <Track
+                                        Name="PART_Track"
+                                        Grid.Row="1"
+                                        Grid.ColumnSpan="3"
+                                        Minimum="{TemplateBinding Minimum}"
+                                        Maximum="{TemplateBinding Maximum}"
+                                        Value="{TemplateBinding Value, Mode=TwoWay}"
+                                        IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                                        Orientation="Horizontal">
+                                        <Track.DecreaseButton>
+                                            <RepeatButton
+                                                Name="PART_DecreaseButton"
+                                                Theme="{StaticResource TrainingConfigurationSliderLeftButton}"
+                                                Background="{TemplateBinding Foreground}"
+                                                Focusable="False" />
+                                        </Track.DecreaseButton>
+                                        <Track.IncreaseButton>
+                                            <RepeatButton
+                                                Name="PART_IncreaseButton"
+                                                Theme="{StaticResource TrainingConfigurationSliderRightButton}"
+                                                Background="{TemplateBinding Background}"
+                                                Focusable="False" />
+                                        </Track.IncreaseButton>
+                                        <Thumb
+                                            Name="thumb"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0"
+                                            Padding="0"
+                                            Background="{StaticResource Color.ConfigurationSliderThumb}"
+                                            Theme="{StaticResource TrainingConfigurationSliderThumbTheme}"
+                                            DataContext="{TemplateBinding Value}" />
+                                    </Track>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataValidationErrors>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+		
+        <!--  PointerOver State  -->
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ Thumb">
+                <Setter Property="Background" Value="{StaticResource Color.ConfigurationSliderThumbHover}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ Thumb">
+                <Setter Property="Background" Value="{StaticResource Color.ConfigurationSliderThumbHover}" />
+            </Style>
+        </Style>
+
+        <!--  Disabled State  -->
+        <Style Selector="^:disabled">
+            <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+                <Setter Property="Background" Value="{StaticResource Color.ConfigurationSliderDisabledForeground}" />
+            </Style>
+
+            <Style Selector="^ /template/ RepeatButton#PART_IncreaseButton">
+                <Setter Property="Background" Value="{StaticResource Color.ConfigurationSliderDisabledBackground}" />
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

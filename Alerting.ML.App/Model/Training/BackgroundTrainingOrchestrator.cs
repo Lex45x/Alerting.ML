@@ -3,27 +3,23 @@ using DynamicData;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Alerting.ML.App.Model.Training;
 
 public class BackgroundTrainingOrchestrator : IBackgroundTrainingOrchestrator
 {
-    //todo: this should be read from application state.
-    private readonly ConcurrentDictionary<Guid, ITrainingSession> allSessions = new();
-
     public ITrainingSession StartNew(IGeneticOptimizer optimizer)
     {
         var trainingSession = new TrainingSession(optimizer);
 
-        if (!allSessions.TryAdd(trainingSession.Id, trainingSession))
-        {
-            throw new InvalidOperationException($"Can't start session with Id {optimizer.Id} as it's already started!");
-        }
+        AllSessions.Add(trainingSession);
         
         trainingSession.Start(OptimizationConfiguration.Default);
 
         return trainingSession;
     }
 
-    public IReadOnlyDictionary<Guid, ITrainingSession> AllSessions => allSessions;
+    //todo: this should be read from application state.
+    public ObservableCollection<ITrainingSession> AllSessions { get; } = new();
 }
