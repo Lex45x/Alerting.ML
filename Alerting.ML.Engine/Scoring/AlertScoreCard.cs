@@ -13,6 +13,11 @@ public sealed class AlertScoreCard
     /// </summary>
     public double Score { get; }
 
+    /// <summary>
+    /// Normalized score value. Is between 0 and 1 where higher is better.
+    /// </summary>
+    public double Fitness => 1 / (1 + Math.Log10(1 + Score));
+
     private const double IdealPrecision = 1;
     private const double IdealLatencyMinutes = 0;
 

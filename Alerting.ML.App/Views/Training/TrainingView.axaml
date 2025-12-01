@@ -1,0 +1,348 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:training="clr-namespace:Alerting.ML.App.Views.Training"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:effects="clr-namespace:LiveChartsCore.SkiaSharpView.Painting.Effects;assembly=LiveChartsCore.SkiaSharpView"
+             xmlns:cloudProvider="clr-namespace:Alerting.ML.App.Converters.CloudProvider"
+             xmlns:progressBar="clr-namespace:Alerting.ML.App.Converters.ProgressBar"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1000"
+             x:Class="Alerting.ML.App.Views.Training.TrainingView">
+    <Design.DataContext>
+        <training:TrainingViewModelDesignTime />
+    </Design.DataContext>
+    <UserControl.Resources>
+        <progressBar:ProgressBarColorConverter x:Key="ColorConverter"/>
+    </UserControl.Resources>
+    <Grid RowDefinitions="Auto, *">
+
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Classes="header">
+            <StackPanel Margin="24, 16" Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36"
+                        Command="{Binding GoBackCommand}">
+                    <Svg Path="avares://Alerting.ML.App/Assets/goback-icon.svg" />
+                </Button>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="h3" Text="{Binding Session.Name}" />
+                    <Label Content="Training in progress..." />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <Grid ColumnDefinitions="320,*" ColumnSpacing="16">
+                <!-- LEFT SIDEBAR -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Vertical"
+                            Spacing="16">
+
+                    <!-- Training Parameters Card -->
+                    <Border Classes="panel">
+                        <StackPanel Margin="24" Spacing="12">
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <!-- TODO: Icon -->
+                                <TextBlock Classes="h4" Text="Training Parameters" />
+
+                            </StackPanel>
+
+                            <!-- Population Size -->
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto, Auto">
+
+                                <TextBlock Text="Population Size"
+                                           Grid.Column="0" Grid.Row="0"
+                                           FontSize="12" />
+                                <TextBlock Text="{Binding ConfigurationBuilder.PopulationSize}"
+                                           Grid.Column="1" Grid.Row="0"
+                                           Classes="p" />
+
+                                <Slider Theme="{StaticResource TrainingConfigurationSlider}" Grid.Column="0"
+                                        IsEnabled="{Binding Session.IsPaused}"
+                                        Grid.Row="1" Grid.ColumnSpan="2" Minimum="50"
+                                        TickFrequency="50"
+                                        IsSnapToTickEnabled="True"
+                                        Maximum="1000"
+                                        Value="{Binding ConfigurationBuilder.PopulationSize}" />
+                            </Grid>
+
+                            <!-- Mutation Rate -->
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto, Auto">
+
+                                <TextBlock Text="Mutation Rate"
+                                           Grid.Column="0" Grid.Row="0"
+                                           FontSize="12" />
+                                <TextBlock Text="{Binding ConfigurationBuilder.MutationRate, StringFormat={}{0:P0}}"
+                                           Grid.Column="1" Grid.Row="0"
+                                           Classes="p" />
+
+                                <Slider Theme="{StaticResource TrainingConfigurationSlider}" Grid.Column="0"
+                                        IsEnabled="{Binding Session.IsPaused}"
+                                        Grid.Row="1" Grid.ColumnSpan="2" Minimum="0.01"
+                                        TickFrequency="0.01"
+                                        IsSnapToTickEnabled="True"
+                                        Maximum="1"
+                                        Value="{Binding ConfigurationBuilder.MutationRate}" />
+                            </Grid>
+
+                            <!-- Crossover Rate -->
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto, Auto">
+
+                                <TextBlock Text="Crossover Rate"
+                                           Grid.Column="0" Grid.Row="0"
+                                           FontSize="12" />
+                                <TextBlock Text="{Binding ConfigurationBuilder.CrossoverRate, StringFormat={}{0:P0}}"
+                                           Grid.Column="1" Grid.Row="0"
+                                           Classes="p" />
+
+                                <Slider Theme="{StaticResource TrainingConfigurationSlider}" Grid.Column="0"
+                                        IsEnabled="{Binding Session.IsPaused}"
+                                        Grid.Row="1" Grid.ColumnSpan="2" Minimum="0.01"
+                                        TickFrequency="0.01"
+                                        IsSnapToTickEnabled="True"
+                                        Maximum="1"
+                                        Value="{Binding ConfigurationBuilder.CrossoverRate}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Training Status Card -->
+                    <Border Padding="16" Classes="panel">
+                        <StackPanel Spacing="12">
+
+                            <!-- Header -->
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
+                                <!-- TODO: Icon -->
+                                <TextBlock Text="Training Status"
+                                           FontSize="12" />
+                            </StackPanel>
+
+                            <!-- Progress -->
+                            <StackPanel>
+                                <Grid ColumnDefinitions="*,Auto">
+
+                                    <TextBlock Text="Progress"
+                                               Classes="p"
+                                               Grid.Column="0" />
+                                    <TextBlock Text="{Binding ProgressPercentage, StringFormat={}{0:P}}"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <ProgressBar Minimum="0"
+                                             Maximum="{Binding Session.CurrentConfiguration.TotalGenerations}"
+                                             Value="{Binding Session.CurrentGeneration}"
+                                             Height="8" 
+                                             Foreground="{Binding ProgressPercentage, Converter={StaticResource ColorConverter}}"/>
+                            </StackPanel>
+
+                            <!-- Stats -->
+                            <StackPanel Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="Generation"
+                                               Grid.Column="0"
+                                               Classes="p" />
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Session.CurrentGeneration}"
+                                                   FontSize="12" />
+                                        <TextBlock Text="/"
+                                                   FontSize="12" />
+                                        <TextBlock Text="{Binding Session.CurrentConfiguration.TotalGenerations}"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Best Fitness"
+                                               Classes="p"
+                                               Grid.Column="0" />
+                                    <TextBlock Text="{Binding Session.BestFitness}"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="Mutation Rate" Classes="p"
+                                               Grid.Column="0" />
+                                    <TextBlock Text="{Binding Session.CurrentConfiguration.MutationProbability}"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="Population" Classes="p"
+                                               Grid.Column="0" />
+                                    <TextBlock Text="{Binding Session.CurrentConfiguration.PopulationSize}"
+                                               Grid.Column="1"
+                                               FontSize="12" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Paused badge -->
+                            <Border Margin="0,8,0,0"
+                                    Padding="4"
+                                    HorizontalAlignment="Stretch">
+                                <TextBlock Text="Paused"
+                                           HorizontalAlignment="Center"
+                                           FontSize="11" />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Spacing="8">
+                        <Button Classes="accent" Theme="{StaticResource ArrowButton}" Content="Resume Training"
+                                HorizontalAlignment="Stretch" />
+                        <Button Theme="{StaticResource ArrowButton}" Content="Pause Training"
+                                HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- RIGHT MAIN AREA -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Vertical"
+                            Spacing="16">
+
+                    <!-- Fitness Evolution Card -->
+                    <Border Padding="16" Classes="panel">
+                        <StackPanel Spacing="12">
+                            <lvc:CartesianChart Height="300"
+                                                Background="{StaticResource Color.Bg2}"
+                                                LegendPosition="Top"
+                                                LegendTextPaint="{lvc:SolidColorPaint Color='#99A1AF'}">
+                                <lvc:CartesianChart.XAxes>
+                                    <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  LabelsPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  ShowSeparatorLines="True"
+                                                  SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}"
+                                                  MinLimit="0"/>
+                                </lvc:CartesianChart.XAxes>
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  LabelsPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  ShowSeparatorLines="True"
+                                                  SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}" />
+                                </lvc:CartesianChart.YAxes>
+                                <lvc:CartesianChart.Title>
+                                    <lvc:XamlDrawnLabelVisual
+                                        Text="Fitness Evolution"
+                                        Paint="{lvc:SolidColorPaint Color='#FBFBFB'}"
+                                        TextSize="16" HorizontalAlign="Start" />
+                                </lvc:CartesianChart.Title>
+                                <lvc:CartesianChart.Series>
+                                    <lvc:XamlLineSeries
+                                        Values="{Binding Session.AverageGenerationFitness}"
+                                        SeriesName="Avg Fitness"
+                                        Stroke="{lvc:SolidColorPaint Color='#AD46FF'}"
+                                        Fill="{x:Null}"
+                                        GeometrySize="0"
+                                        LineSmoothness="1" />
+                                    <lvc:XamlLineSeries
+                                        Values="{Binding Session.BestGenerationFitness}"
+                                        SeriesName="Best Fitness"
+                                        Stroke="{lvc:SolidColorPaint Color='#2B7FFF'}"
+                                        Fill="{x:Null}"
+                                        GeometrySize="0"
+                                        LineSmoothness="1" />
+                                </lvc:CartesianChart.Series>
+                            </lvc:CartesianChart>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Population Diversity Card -->
+                    <Border Padding="16" Classes="panel">
+                        <StackPanel Spacing="8">
+
+                            <!-- Chart placeholder -->
+                            <lvc:CartesianChart Height="200" Background="{StaticResource Color.Bg2}">
+                                <lvc:CartesianChart.XAxes>
+                                    <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  LabelsPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  ShowSeparatorLines="True"
+                                                  SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}" 
+                                                  MinLimit="0"/>
+                                </lvc:CartesianChart.XAxes>
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  LabelsPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
+                                                  ShowSeparatorLines="True"
+                                                  SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}" />
+                                </lvc:CartesianChart.YAxes>
+                                <lvc:CartesianChart.Title>
+                                    <lvc:XamlDrawnLabelVisual
+                                        Text="Population Diversity"
+                                        Paint="{lvc:SolidColorPaint Color='#FBFBFB'}"
+                                        TextSize="16" HorizontalAlign="Start" />
+                                </lvc:CartesianChart.Title>
+                                <lvc:CartesianChart.Series>
+                                    <lvc:XamlLineSeries
+                                        Values="{Binding Session.PopulationDiversity}"
+                                        SeriesName="Diversity"
+                                        Fill="{lvc:SolidColorPaint Color='#51F97316'}"
+                                        Stroke="{lvc:SolidColorPaint Color='#F97316'}"
+                                        DataLabelsPaint="Blue"
+                                        GeometrySize="0"
+                                        LineSmoothness="1" />
+                                </lvc:CartesianChart.Series>
+                            </lvc:CartesianChart>
+
+                            <TextBlock Classes="p"
+                                       Text="Diversity measures genetic variation in the population. Higher diversity helps avoid local optima."
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bottom stats cards -->
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="8">
+
+                        <!-- Card 1 -->
+                        <Border Padding="12" Grid.Column="0" Classes="panel">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Best F1 Score"
+                                           FontSize="12" />
+                                <TextBlock Text="0.740"
+                                           FontSize="18" />
+                                <TextBlock Text="+-2.0% from start"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 2 -->
+                        <Border Padding="12" Grid.Column="1" Classes="panel">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Evaluations"
+                                           FontSize="12" />
+                                <TextBlock Text="{Binding Session.TotalEvaluations}"
+                                           FontSize="18" />
+                                <TextBlock Text="110 per generation"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 3 -->
+                        <Border Padding="12" Grid.Column="2" Classes="panel">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Time Elapsed"
+                                           FontSize="12" />
+                                <TextBlock Text="0m 49s"
+                                           FontSize="18" />
+                                <TextBlock Text="~0m remaining"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

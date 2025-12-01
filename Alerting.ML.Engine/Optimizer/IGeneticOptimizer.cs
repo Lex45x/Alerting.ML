@@ -1,4 +1,5 @@
 ﻿using Alerting.ML.Engine.Alert;
+using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer;
 
@@ -8,11 +9,16 @@ namespace Alerting.ML.Engine.Optimizer;
 public interface IGeneticOptimizer
 {
     /// <summary>
-    /// Every time a generation evaluation is completed, yields a new instance of <see cref="GenerationSummary"/>.
+    /// Whenever new optimizer is created, a new Id is associated with it.
+    /// </summary>
+    public Guid Id { get; }
+
+    /// <summary>
+    /// Every time a change to generation state happens, yields an <see cref="IEvent"/> associated with the change.
     /// When cancelled and called again - should pick up the process where it was left.
     /// </summary>
+    /// <param name="configuration">A configuration to apply to current run.</param>
     /// <param name="cancellationToken">Allows to pause optimization run.</param>
-    /// <returns></returns>
-    public IAsyncEnumerable<GenerationSummary> Optimize(CancellationToken cancellationToken);
+    /// <returns>A stream of events generated during the simulation.</returns>
+    public IAsyncEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken);
 }
-

@@ -26,5 +26,5 @@ public record OptimizationConfiguration(int PopulationSize,
     /// <summary>
     /// Provides a reasonably good default configuration for the optimization process.
     /// </summary>
-    public static OptimizationConfiguration Default { get; } = new(100, 0.1, 0.5, 0.1, 100, 3);
+    public static OptimizationConfiguration Default { get; } = new(200, 0.1, 0.7, 0.1, 200, 3);
 }

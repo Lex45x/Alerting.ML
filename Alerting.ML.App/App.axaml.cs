@@ -1,4 +1,5 @@
-﻿using Alerting.ML.App.ViewModels;
+﻿using Alerting.ML.App.Model.Training;
+using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views;
 
 using Avalonia;
@@ -18,14 +19,13 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        //todo: configure
-        var loggerFactory = LoggerFactory.Create(builder => { });
+        var trainingOrchestrator = new BackgroundTrainingOrchestrator();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(loggerFactory)
+                DataContext = new MainWindowViewModel(trainingOrchestrator)
             };
         }
 

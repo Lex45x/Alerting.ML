@@ -1,6 +1,10 @@
-﻿using Alerting.ML.App.Components.TrainingCreation.FileUpload;
+﻿using System;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
 using Alerting.ML.App.Model.Enums;
+using Alerting.ML.App.Model.Training;
 using Alerting.ML.Engine;
 using Alerting.ML.Sources.Csv;
 using ReactiveUI;
@@ -10,20 +14,54 @@ namespace Alerting.ML.App.Components.TrainingCreation.Outages;
 public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainingCreationStepViewModel
 {
     private readonly TrainingBuilder builder;
+    private TrainingBuilder? builderWithOutagesProvider;
 
     public TrainingCreationFourthStepViewModel(IScreen hostScreen, TrainingBuilder builder)
     {
         this.builder = builder;
         HostScreen = hostScreen;
+        this.WhenAnyValue(model => model.SelectedFilePath)
+            .SelectMany(s => Observable.FromAsync(() => ConfigureBuilder(s)))
+            .Subscribe();
     }
+
 
     public string? UrlPathSegment => "step4";
     public IScreen HostScreen { get; }
 
+    private async Task ConfigureBuilder(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            builderWithOutagesProvider = null;
+            return;
+        }
+
+        var updatedBuilder = builder.WithCsvOutagesProvider(path);
+
+        if (updatedBuilder.KnownOutagesProvider == null)
+        {
+            throw new InvalidOperationException(
+                "Something very wrong happened. KnownOutagesProvider must be non-null here.");
+        }
+
+        var validationResult = await updatedBuilder.KnownOutagesProvider.ImportAndValidate();
+
+        if (!validationResult.IsValid)
+        {
+            //todo: validation errors must be displayed to the user.
+            builderWithOutagesProvider = null;
+        }
+        else
+        {
+            builderWithOutagesProvider = updatedBuilder;
+        }
+    }
+
     public void Continue()
     {
-        var updatedBuilder = builder.WithCsvOutagesProvider(SelectedFilePath);
-        HostScreen.Router.Navigate.Execute(new TrainingCreationFifthStepViewModel(HostScreen, updatedBuilder));
+        HostScreen.Router.Navigate.Execute(
+            new TrainingCreationFifthStepViewModel(HostScreen, builderWithOutagesProvider ?? throw new InvalidOperationException("Most likely CSV file is not selected.")));
     }
 
 

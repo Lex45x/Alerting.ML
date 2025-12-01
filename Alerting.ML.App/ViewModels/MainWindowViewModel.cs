@@ -1,4 +1,5 @@
-﻿using Alerting.ML.App.Views.Overview;
+﻿using Alerting.ML.App.Model.Training;
+using Alerting.ML.App.Views.Overview;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
@@ -6,12 +7,12 @@ namespace Alerting.ML.App.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IScreen
 {
-    private readonly ILoggerFactory loggerFactory;
+    private readonly IBackgroundTrainingOrchestrator trainingOrchestrator;
     public RoutingState Router { get; } = new();
 
-    public MainWindowViewModel(ILoggerFactory loggerFactory)
+    public MainWindowViewModel(IBackgroundTrainingOrchestrator trainingOrchestrator)
     {
-        this.loggerFactory = loggerFactory;
-        Router.NavigateAndReset.Execute(new OverviewViewModel(this, loggerFactory));
+        this.trainingOrchestrator = trainingOrchestrator;
+        Router.NavigateAndReset.Execute(new OverviewViewModel(this, trainingOrchestrator));
     }
 }

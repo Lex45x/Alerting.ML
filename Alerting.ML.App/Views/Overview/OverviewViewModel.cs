@@ -1,5 +1,7 @@
 ﻿using Alerting.ML.App.Components.Overview;
+using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
+using Alerting.ML.App.Views.Training;
 using Alerting.ML.App.Views.TrainingCreation;
 using Avalonia.Controls;
 using Microsoft.Extensions.Logging;
@@ -12,19 +14,23 @@ namespace Alerting.ML.App.Views.Overview;
 
 public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 {
-    private readonly ILoggerFactory loggerFactory;
-
-    public OverviewViewModel(IScreen hostScreen, ILoggerFactory loggerFactory)
+    public OverviewViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator)
     {
-        this.loggerFactory = loggerFactory;
+        this.TrainingOrchestrator = trainingOrchestrator;
         HostScreen = hostScreen;
         WindowSizeChangedCommand = ReactiveCommand.Create<SizeChangedEventArgs>(WindowSizeChanged);
         NewOptimizationCommand = ReactiveCommand.Create(NewOptimization);
+        OpenSessionCommand = ReactiveCommand.Create<ITrainingSession>(OpenSession);
+    }
+
+    private void OpenSession(ITrainingSession session)
+    {
+        HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, session));
     }
 
     private void NewOptimization()
     {
-        HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, loggerFactory));
+        HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, TrainingOrchestrator));
     }
 
     private void WindowSizeChanged(SizeChangedEventArgs e)
@@ -33,10 +39,10 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
         EffectiveHeight = e.NewSize.Height;
     }
 
-    public virtual ObservableCollection<TrainingCardViewModel> Cards { get; } = new();
     public ReactiveCommand<SizeChangedEventArgs, Unit> WindowSizeChangedCommand { get; }
 
     public ReactiveCommand<Unit, Unit> NewOptimizationCommand { get; }
+    public ReactiveCommand<ITrainingSession, Unit> OpenSessionCommand { get; }
 
     public double EffectiveWidth
     {
@@ -49,7 +55,7 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
     }
 
     public int CardsColumns => Math.Max((int)Math.Floor(EffectiveWidth / 450), 1);
-    public int CardsRows => Math.Max((int)Math.Floor(EffectiveHeight / 200), Cards.Count / CardsColumns);
+    public int CardsRows => Math.Max((int)Math.Floor(EffectiveHeight / 200), TrainingOrchestrator.AllSessions.Count / CardsColumns);
 
     public double EffectiveHeight
     {
@@ -63,6 +69,8 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 
     public string? UrlPathSegment => "overview";
     public IScreen HostScreen { get; }
+
+    public IBackgroundTrainingOrchestrator TrainingOrchestrator { get; }
 }
 
 public class OverviewViewModelDesignTime : OverviewViewModel
@@ -71,16 +79,4 @@ public class OverviewViewModelDesignTime : OverviewViewModel
     {
     }
 
-    public override ObservableCollection<TrainingCardViewModel> Cards { get; } = new()
-    {
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-        new TrainingCardViewModelDesignTime(),
-    };
 }

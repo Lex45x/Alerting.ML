@@ -5,8 +5,4 @@ public class TrainingCreationHeaderDesignTimeViewModel : TrainingCreationViewMod
     public TrainingCreationHeaderDesignTimeViewModel() : base(null, null)
     {
     }
-
-    protected void Continue()
-    {
-    }
 }

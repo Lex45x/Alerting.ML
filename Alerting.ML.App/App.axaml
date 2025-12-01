@@ -14,6 +14,7 @@
                 <ResourceInclude Source="Theme/SearchBox.axaml"/>
                 <ResourceInclude Source="Theme/FileUploadButton.axaml"/>
                 <ResourceInclude Source="Theme/TableListBox.axaml"/>
+                <ResourceInclude Source="Theme/TrainingConfigurationSlider.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -86,6 +87,7 @@
             <Setter Property="Background" Value="{StaticResource Color.Bg2}" />
             <Setter Property="BorderBrush" Value="{StaticResource Color.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
         </Style>
 
         <Style Selector="Border.note">

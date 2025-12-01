@@ -1,4 +1,5 @@
 ﻿using Alerting.ML.Engine.Data;
+using FluentValidation.Results;
 
 namespace Alerting.ML.TimeSeries.Sample;
 
@@ -19,5 +20,11 @@ public class SampleOutagesProvider : IKnownOutagesProvider
     public IReadOnlyList<Outage> GetKnownOutages()
     {
         return Outages;
+    }
+
+    /// <inheritdoc />
+    public Task<ValidationResult> ImportAndValidate()
+    {
+        return Task.FromResult(new ValidationResult());
     }
 }
