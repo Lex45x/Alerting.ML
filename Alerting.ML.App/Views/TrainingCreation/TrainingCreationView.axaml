@@ -11,6 +11,11 @@
     <Design.DataContext>
         <trainingCreation:TrainingCreationHeaderDesignTimeViewModel />
     </Design.DataContext>
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
     <Grid RowDefinitions="Auto, Auto, *, Auto">
         <Border Grid.Row="0" Classes="header">
             <StackPanel Margin="24, 16" Orientation="Horizontal"

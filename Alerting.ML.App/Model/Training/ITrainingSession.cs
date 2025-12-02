@@ -16,12 +16,14 @@ public interface ITrainingSession
     ObservableCollection<AlertScoreCard> TopConfigurations { get; }
     int CurrentGeneration { get; }
     double BestFitness { get; }
+    double FitnessDiff { get; }
     int TotalEvaluations { get; }
     double ProgressPercentage { get; }
     CloudProvider AlertProvider {get;}
     DateTime CreatedAt {get;}
     TimeSpan Elapsed { get; }
-    OptimizationConfiguration? CurrentConfiguration { get; }
+    double RemainingMinutes { get; }
+    OptimizationConfiguration CurrentConfiguration { get; }
     void Start(OptimizationConfiguration configuration);
     void Stop();
     bool IsPaused { get; }

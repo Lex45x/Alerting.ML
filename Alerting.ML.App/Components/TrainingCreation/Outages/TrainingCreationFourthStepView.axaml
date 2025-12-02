@@ -8,6 +8,11 @@
     <Design.DataContext>
         <outages:TrainingCreationFourthStepViewModelDesignTime />
     </Design.DataContext>
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
     <Grid RowDefinitions="Auto">
         <StackPanel Spacing="8">
             <TextBlock Classes="h2" Text="Import Outages" />

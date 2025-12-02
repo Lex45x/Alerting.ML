@@ -9,6 +9,11 @@
     <Design.DataContext>
         <trainingCreation:TrainingCreationFirstStepViewModelDesignTime />
     </Design.DataContext>
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
     <StackPanel Spacing="8">
 
         <TextBlock Classes="h2" Text="Choose Data Source" />

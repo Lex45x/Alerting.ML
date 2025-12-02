@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Disposables.Fluent;
 using System.Threading;
 using System.Threading.Tasks;
 using Alerting.ML.App.Model.Enums;
-using static System.Collections.Specialized.BitVector32;
+using Avalonia.Threading;
 
 namespace Alerting.ML.App.Model.Training;
 
@@ -21,6 +22,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     private Task? optimizationTask;
     private CancellationTokenSource? cancellationSource;
     private readonly Stopwatch sessionTimer = new Stopwatch();
+    private readonly DispatcherTimer timer;
 
     public Guid Id => optimizer.Id;
 
@@ -37,10 +39,14 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     private async Task IterateOptimization(OptimizationConfiguration configuration, CancellationToken cancellationToken)
     {
+        IsPaused = false;
+
         await foreach (var @event in optimizer.Optimize(configuration, cancellationToken))
         {
             Apply(@event);
         }
+
+        IsPaused = true;
     }
 
     public void Stop()
@@ -49,31 +55,47 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         sessionTimer.Stop();
     }
 
-    public bool IsPaused => optimizationTask is not { IsCompleted: true };
+    public bool IsPaused
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = true;
 
 
-    private readonly List<AlertScoreCard> currentGenerationScores = new();
+    private readonly List<AlertScoreCard> currentGenerationScores = [];
     private readonly IGeneticOptimizer optimizer;
 
     public TrainingSession(IGeneticOptimizer optimizer)
     {
         this.optimizer = optimizer;
-        this.WhenAnyValue(trainingSession => trainingSession.CurrentGeneration)
-            .Subscribe(_ => { this.RaisePropertyChanged(nameof(ProgressPercentage)); });
-    }
-
-    public double ProgressPercentage
-    {
-        get
-        {
-            if (CurrentConfiguration != null)
+        this.WhenAnyValue(trainingSession => trainingSession.CurrentGeneration,
+                trainingSession => trainingSession.CurrentConfiguration)
+            .Subscribe(_ =>
             {
-                return ((double)CurrentGeneration) / CurrentConfiguration.TotalGenerations;
-            }
-
-            return 0;
-        }
+                this.RaisePropertyChanged(nameof(ProgressPercentage));
+                this.RaisePropertyChanged(nameof(FitnessDiff));
+            })
+            .DisposeWith(Disposables);
+        timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background,
+            (_, _) =>
+            {
+                this.RaisePropertyChanged(nameof(Elapsed));
+                this.RaisePropertyChanged(nameof(RemainingMinutes));
+            });
+        timer.Start();
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            timer.Stop();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    public double ProgressPercentage => (double)CurrentGeneration / CurrentConfiguration.TotalGenerations;
 
     //todo: this value has to be initialized *somehow* during TrainingBuilder configuration.
     public CloudProvider AlertProvider { get; } = CloudProvider.Azure;
@@ -114,7 +136,13 @@ public class TrainingSession : ViewModelBase, ITrainingSession
             case GenerationCompletedEvent:
                 PopulationDiversity.Add(GetCurrentPopulationDiversity());
                 AverageGenerationFitness.Add(GetAverageGenerationFitness());
-                BestGenerationFitness.Add(GetBestGenerationFitness());
+                var bestGenerationFitness = GetBestGenerationFitness();
+                BestGenerationFitness.Add(bestGenerationFitness);
+                if (BestFirstGenerationFitness == 0)
+                {
+                    BestFirstGenerationFitness = bestGenerationFitness;
+                }
+
                 currentGenerationScores.Clear();
                 CurrentGeneration += 1;
                 break;
@@ -131,22 +159,32 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         }
     }
 
-    public ObservableCollection<double> PopulationDiversity { get; } = new();
-    public ObservableCollection<double> AverageGenerationFitness { get; } = new();
-    public ObservableCollection<double> BestGenerationFitness { get; } = new();
-    public ObservableCollection<AlertScoreCard> TopConfigurations { get; } = new();
+    public ObservableCollection<double> PopulationDiversity { get; } = [];
+    public ObservableCollection<double> AverageGenerationFitness { get; } = [];
+    public ObservableCollection<double> BestGenerationFitness { get; } = [];
+    public ObservableCollection<AlertScoreCard> TopConfigurations { get; } = [];
 
     public int CurrentGeneration
     {
         get;
         private set => this.RaiseAndSetIfChanged(ref field, value);
-    } = 1;
+    }
 
     public double BestFitness
     {
         get;
         private set => this.RaiseAndSetIfChanged(ref field, value);
     }
+
+    public double BestFirstGenerationFitness
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public double FitnessDiff => BestFirstGenerationFitness == 0
+        ? 0
+        : (BestFitness - BestFirstGenerationFitness) / BestFirstGenerationFitness;
 
     public int TotalEvaluations
     {
@@ -156,9 +194,23 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public TimeSpan Elapsed => sessionTimer.Elapsed;
 
-    public OptimizationConfiguration? CurrentConfiguration
+    public double RemainingMinutes
+    {
+        get
+        {
+            if (TotalEvaluations != 0)
+            {
+                return (Elapsed.TotalMinutes / TotalEvaluations) *
+                       (CurrentConfiguration.TotalGenerations * CurrentConfiguration.PopulationSize);
+            }
+
+            return 0;
+        }
+    }
+
+    public OptimizationConfiguration CurrentConfiguration
     {
         get;
         private set => this.RaiseAndSetIfChanged(ref field, value);
-    }
+    } = OptimizationConfiguration.Default;
 }

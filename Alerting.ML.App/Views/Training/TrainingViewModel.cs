@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Disposables.Fluent;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
@@ -26,7 +27,8 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
                 {
                     ConfigurationBuilder = TrainingConfigurationBuilder.FromExisting(configuration);
                 }
-            });
+            })
+            .DisposeWith(Disposables);
     }
 
     private void GoBack()
@@ -49,7 +51,7 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
     {
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
-    }
+    } = new();
 }
 
 public class TrainingViewModelDesignTime : TrainingViewModel
@@ -71,11 +73,13 @@ internal class DesignTimeTrainingSession : ITrainingSession
     public ObservableCollection<AlertScoreCard> TopConfigurations { get; }
     public int CurrentGeneration => 25;
     public double BestFitness => 0.7;
+    public double FitnessDiff => 0.03;
     public int TotalEvaluations => 2500;
     public double ProgressPercentage => 25.0 / CurrentConfiguration.TotalGenerations;
     public CloudProvider AlertProvider => CloudProvider.Azure;
     public DateTime CreatedAt => DateTime.UtcNow;
     public TimeSpan Elapsed => TimeSpan.FromSeconds(124);
+    public double RemainingMinutes => 12.5;
     public OptimizationConfiguration CurrentConfiguration => OptimizationConfiguration.Default;
 
     public void Start(OptimizationConfiguration configuration)

@@ -13,8 +13,13 @@
         <training:TrainingViewModelDesignTime />
     </Design.DataContext>
     <UserControl.Resources>
-        <progressBar:ProgressBarColorConverter x:Key="ColorConverter"/>
+        <progressBar:ProgressBarColorConverter x:Key="ColorConverter" />
     </UserControl.Resources>
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}" />
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
     <Grid RowDefinitions="Auto, *">
 
         <Border Grid.Row="0" Grid.ColumnSpan="2" Classes="header">
@@ -127,7 +132,7 @@
                                     <TextBlock Text="Progress"
                                                Classes="p"
                                                Grid.Column="0" />
-                                    <TextBlock Text="{Binding ProgressPercentage, StringFormat={}{0:P}}"
+                                    <TextBlock Text="{Binding Session.ProgressPercentage, StringFormat={}{0:P1}}"
                                                Grid.Column="1"
                                                FontSize="12" />
                                 </Grid>
@@ -135,8 +140,8 @@
                                 <ProgressBar Minimum="0"
                                              Maximum="{Binding Session.CurrentConfiguration.TotalGenerations}"
                                              Value="{Binding Session.CurrentGeneration}"
-                                             Height="8" 
-                                             Foreground="{Binding ProgressPercentage, Converter={StaticResource ColorConverter}}"/>
+                                             Height="8"
+                                             Foreground="{Binding Session.ProgressPercentage, Converter={StaticResource ColorConverter}}" />
                             </StackPanel>
 
                             <!-- Stats -->
@@ -163,7 +168,7 @@
                                     <TextBlock Text="Best Fitness"
                                                Classes="p"
                                                Grid.Column="0" />
-                                    <TextBlock Text="{Binding Session.BestFitness}"
+                                    <TextBlock Text="{Binding Session.BestFitness, StringFormat={}{0:F3}}"
                                                Grid.Column="1"
                                                FontSize="12" />
                                 </Grid>
@@ -171,7 +176,7 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Text="Mutation Rate" Classes="p"
                                                Grid.Column="0" />
-                                    <TextBlock Text="{Binding Session.CurrentConfiguration.MutationProbability}"
+                                    <TextBlock Text="{Binding Session.CurrentConfiguration.MutationProbability, StringFormat={}{0:P0}}"
                                                Grid.Column="1"
                                                FontSize="12" />
                                 </Grid>
@@ -222,7 +227,7 @@
                                                   LabelsPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
                                                   ShowSeparatorLines="True"
                                                   SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}"
-                                                  MinLimit="0"/>
+                                                  MinLimit="0" />
                                 </lvc:CartesianChart.XAxes>
                                 <lvc:CartesianChart.YAxes>
                                     <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
@@ -266,8 +271,8 @@
                                     <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
                                                   LabelsPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
                                                   ShowSeparatorLines="True"
-                                                  SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}" 
-                                                  MinLimit="0"/>
+                                                  SeparatorsPaint="{lvc:SolidColorPaint Color='#5099A1AF'}"
+                                                  MinLimit="0" />
                                 </lvc:CartesianChart.XAxes>
                                 <lvc:CartesianChart.YAxes>
                                     <lvc:XamlAxis TicksPaint="{lvc:SolidColorPaint Color='#99A1AF'}"
@@ -306,36 +311,40 @@
                         <!-- Card 1 -->
                         <Border Padding="12" Grid.Column="0" Classes="panel">
                             <StackPanel Spacing="4">
-                                <TextBlock Text="Best F1 Score"
-                                           FontSize="12" />
-                                <TextBlock Text="0.740"
-                                           FontSize="18" />
-                                <TextBlock Text="+-2.0% from start"
-                                           FontSize="10" />
+                                <TextBlock Classes="p" Text="Best F1 Score" />
+                                <TextBlock Classes="h2" Text="{Binding Session.BestFitness, StringFormat={}{0:F3}}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Classes="p" Text="{Binding Session.FitnessDiff, StringFormat={}+{0:P0}}" />
+                                    <TextBlock Classes="p" Text=" from start" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
                         <!-- Card 2 -->
                         <Border Padding="12" Grid.Column="1" Classes="panel">
                             <StackPanel Spacing="4">
-                                <TextBlock Text="Evaluations"
-                                           FontSize="12" />
-                                <TextBlock Text="{Binding Session.TotalEvaluations}"
-                                           FontSize="18" />
-                                <TextBlock Text="110 per generation"
-                                           FontSize="10" />
+                                <TextBlock Classes="p" Text="Evaluations" />
+                                <TextBlock Classes="h2" Text="{Binding Session.TotalEvaluations}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Classes="p"
+                                               Text="{Binding Session.CurrentConfiguration.TotalGenerations, FallbackValue=100}" />
+                                    <TextBlock Classes="p" Text=" per generation" />
+                                </StackPanel>
+
                             </StackPanel>
                         </Border>
 
                         <!-- Card 3 -->
                         <Border Padding="12" Grid.Column="2" Classes="panel">
                             <StackPanel Spacing="4">
-                                <TextBlock Text="Time Elapsed"
-                                           FontSize="12" />
-                                <TextBlock Text="0m 49s"
-                                           FontSize="18" />
-                                <TextBlock Text="~0m remaining"
-                                           FontSize="10" />
+                                <TextBlock Classes="p" Text="Time Elapsed" />
+                                <TextBlock Classes="h2"
+                                           Text="{Binding Session.Elapsed, StringFormat='{}{0:hh\\:mm\\:ss}'}" />
+
+                                <TextBlock Classes="p"
+                                           Text="{Binding Session.RemainingMinutes, StringFormat='{}~{0:0}m remaining'}" />
+
+
                             </StackPanel>
                         </Border>
                     </Grid>
