@@ -10,6 +10,11 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Alerting.ML.App.Views.MainWindow"
         Title="Alerting.ML.App">
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
     <avalonia:RoutedViewHost Router="{Binding Router}">
         <avalonia:RoutedViewHost.DefaultContent>
             <TextBlock Text="If you see this then something is VERY broken"/>

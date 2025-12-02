@@ -5,6 +5,7 @@ using Alerting.ML.Sources.Azure;
 using Alerting.ML.Sources.Csv;
 using ReactiveUI;
 using System;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Alerting.ML.App.Model.Training;
@@ -82,7 +83,8 @@ public class TrainingCreationCsvSecondStepViewModel : FileUploadViewModel, ITrai
         HostScreen = hostScreen;
         this.WhenAnyValue(model => model.SelectedFilePath)
             .SelectMany(s => Observable.FromAsync(() => ConfigureBuilder(s)))
-            .Subscribe();
+            .Subscribe()
+            .DisposeWith(Disposables);
     }
 }
 

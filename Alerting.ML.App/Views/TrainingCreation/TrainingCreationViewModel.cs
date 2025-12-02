@@ -4,6 +4,7 @@ using Alerting.ML.Engine;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using System.Reactive;
+using System.Reactive.Disposables.Fluent;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.Views.Training;
 using Alerting.ML.Engine.Optimizer;
@@ -31,20 +32,23 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
             {
                 this.RaisePropertyChanged(nameof(IsLastStep));
                 this.RaisePropertyChanged(nameof(IsNotLastStep));
-            });
+            })
+            .DisposeWith(Disposables);
 
         Router.CurrentViewModel.OfType<ITrainingCreationStepViewModel>()
             .Subscribe(model =>
             {
                 ContinueCommand = ReactiveCommand.Create(model.Continue);
                 Step = model.CurrentStep;
-            });
+            })
+            .DisposeWith(Disposables);
 
         Router.CurrentViewModel.OfType<ITrainingCreationLastStepViewModel>()
             .Subscribe(model =>
             {
                 ConfiguredOptimizer = model.ConfiguredOptimizer;
-            });
+            })
+            .DisposeWith(Disposables);
 
         Router.NavigateAndReset.Execute(new TrainingCreationFirstStepViewModel(this, TrainingBuilder.Create()));
     }

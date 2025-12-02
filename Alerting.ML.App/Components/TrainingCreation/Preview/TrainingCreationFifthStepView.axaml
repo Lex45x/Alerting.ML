@@ -9,6 +9,11 @@
     <Design.DataContext>
         <preview:TrainingCreationFifthStepViewModelDesignTime />
     </Design.DataContext>
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
     <UserControl.Resources>
         <trainingBuilder:TrainingBuilderToPreviewTableItemConverter x:Key="TableItemConverter"/> 
     </UserControl.Resources>
@@ -43,7 +48,7 @@
                             Spacing="8"
                             VerticalAlignment="Center">
                     <Svg Width="20" Height="20" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
-                         Css=".lucide { stroke: #07df72; }" />
+                         Svg.Css=".lucide { stroke: #07df72; }" />
                     <StackPanel Spacing="2">
                         <TextBlock Classes="h4" Text="Validation Passed"
                                    Foreground="{StaticResource Color.SuccessPanelForeground}" />
