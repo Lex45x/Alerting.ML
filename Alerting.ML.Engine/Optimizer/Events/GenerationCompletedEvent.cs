@@ -2,12 +2,12 @@
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public class GenerationCompletedEvent : IEvent
+public record GenerationCompletedEvent : IEvent
 {
-    public GenerationCompletedEvent(GenerationSummary summary)
+    public GenerationCompletedEvent(int aggregateVersion)
     {
-        Summary = summary;
+        AggregateVersion = aggregateVersion;
     }
 
-    public GenerationSummary Summary { get; }
+    public int AggregateVersion { get; }
 }

@@ -14,12 +14,20 @@ public interface IEventStore
     /// <param name="event">An event to write.</param>
     /// <typeparam name="T">Type of event.</typeparam>
     /// <returns>Task that completes when event is persisted.</returns>
-    Task Write<T>(Guid aggregateId, T @event) where T: IEvent;
-    
+    void Write<T>(Guid aggregateId, T @event) where T: IEvent;
+
     /// <summary>
     /// Allows to get a steam of all events stored for a particular aggregate.
     /// </summary>
     /// <param name="aggregateId">Unique id of aggregate.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>All events associated with aggregate.</returns>
-    IAsyncEnumerable<IEvent> GetAll(Guid aggregateId);
+    IAsyncEnumerable<IEvent> GetAll(Guid aggregateId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Returns all aggregate Ids that were persisted with a given kind of EventStore.
+    /// Each aggregate has at least one <see cref="IEvent"/>.
+    /// </summary>
+    /// <returns>A list of aggregates.</returns>
+    IAsyncEnumerable<Guid> GetExistingAggregates();
 }

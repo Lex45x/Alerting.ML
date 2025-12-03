@@ -31,7 +31,7 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
     public string? UrlPathSegment => "step4";
     public IScreen HostScreen { get; }
 
-    private async Task ConfigureBuilder(string path)
+    private async Task ConfigureBuilder(string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {

@@ -4,24 +4,45 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public class EvaluationCompletedEvent<T> : EvaluationCompletedEvent where T : AlertConfiguration
+public record EvaluationCompletedEvent<T> : EvaluationCompletedEvent where T : AlertConfiguration
 {
     public T Configuration { get; }
     public IReadOnlyList<Outage> Outages { get; }
 
-    public EvaluationCompletedEvent(T configuration, IReadOnlyList<Outage> outages)
+    public EvaluationCompletedEvent(T configuration, IReadOnlyList<Outage> outages, int aggregateVersion) : base(
+        aggregateVersion)
     {
         Configuration = configuration;
         Outages = outages;
     }
 
-    public override string ToString()
+    public virtual bool Equals(EvaluationCompletedEvent<T>? other)
     {
-        return $"EvaluationCompletedEvent: {nameof(Configuration)}: {Configuration}, {nameof(Outages)}: {Outages.Count}";
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Configuration.Equals(other.Configuration) && Outages.SequenceEqual(other.Outages);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(base.GetHashCode(), Configuration, Outages);
     }
 }
 
-public class EvaluationCompletedEvent : IEvent
+public record EvaluationCompletedEvent : IEvent
 {
+    public EvaluationCompletedEvent(int aggregateVersion)
+    {
+        AggregateVersion = aggregateVersion;
+    }
 
+    public int AggregateVersion { get; }
 }

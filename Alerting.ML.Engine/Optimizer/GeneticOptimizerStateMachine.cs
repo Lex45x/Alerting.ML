@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
@@ -16,8 +17,56 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 {
     private readonly IEventStore store;
 
+    private static readonly ImmutableArray<string> Adjectives =
+    [
+        "Silent",
+        "Quantum",
+        "Crimson",
+        "Azure",
+        "Neon",
+        "Radiant",
+        "Infinite",
+        "Stellar",
+        "Phantom",
+        "Hyper",
+        "Lunar",
+        "Titanium",
+        "Rapid",
+        "Mystic",
+        "Obsidian",
+        "Electric",
+        "Golden",
+        "Arctic",
+        "Synthetic",
+        "Turbo"
+    ];
+
+    private static readonly ImmutableArray<string> Nouns =
+    [
+        "Falcon",
+        "Nova",
+        "Eclipse",
+        "Specter",
+        "Pulse",
+        "Vertex",
+        "Comet",
+        "Horizon",
+        "Catalyst",
+        "Phoenix",
+        "Reactor",
+        "Matrix",
+        "Cyclone",
+        "Sentinel",
+        "Prism",
+        "Kraken",
+        "Orbit",
+        "Cipher",
+        "Titan",
+        "Vortex"
+    ];
+
     /// <summary>
-    /// Creates a new instance of Genetic Optimizer.
+    /// Creates a new instance of Genetic Optimizer with a new training.
     /// </summary>
     /// <param name="alert">Alert rule to be optimized.</param>
     /// <param name="timeSeriesProvider">Provider of the relevant metric.</param>
@@ -30,28 +79,47 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         IConfigurationFactory<T> configurationFactory, IEventStore store)
     {
         this.store = store;
-        current = new GeneticOptimizerState<T>(alert, timeSeriesProvider, knownOutagesProvider,
-            alertScoreCalculator, configurationFactory);
+        current = new GeneticOptimizerState<T>();
+
+        var aggregateId = Guid.NewGuid();
+        var random = Random.Shared;
+        var name =
+            $"{alert.ProviderName}: {Adjectives[random.Next(Adjectives.Length)]} {Nouns[random.Next(Nouns.Length)]} #{random.Next(100, 999)}";
+
+        RaiseEvent(new StateInitializedEvent<T>(aggregateId, DateTime.UtcNow, name, alert.ProviderName, alert,
+            timeSeriesProvider,
+            knownOutagesProvider,
+            alertScoreCalculator,
+            configurationFactory, 0), aggregateId);
     }
 
-    private async Task<(bool, IEvent)> RaiseEvent<TEvent>(TEvent @event) where TEvent : IEvent
+    /// <summary>
+    /// Creates a new instance of GeneticOptimizer to import existing training from <see cref="store"/>
+    /// </summary>
+    /// <param name="store"></param>
+    public GeneticOptimizerStateMachine(IEventStore store)
     {
-        await store.Write(current.Id, @event);
+        this.store = store;
+        current = new GeneticOptimizerState<T>();
+    }
+
+    private (bool, IEvent) RaiseEvent<TEvent>(TEvent @event, Guid? aggregateId = null) where TEvent : IEvent
+    {
+        store.Write(aggregateId ?? current.Id, @event);
         return (current.Apply(@event), @event);
     }
 
     private readonly GeneticOptimizerState<T> current;
 
-    private Task<(bool, IEvent)> RepopulateWithRandom()
+    private (bool, IEvent) RepopulateWithRandom()
     {
-        var randomConfiguration = current.ConfigurationFactory.CreateRandom();
-        return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration));
+        var randomConfiguration = current.ConfigurationFactory!.CreateRandom();
+        return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration, current.Version));
     }
 
-    private Task<(bool, IEvent)> CreateSummary()
+    private (bool, IEvent) CreateSummary()
     {
-        return RaiseEvent(new GenerationCompletedEvent(new GenerationSummary(current.GenerationIndex,
-            current.GenerationScores.OrderBy(card => card.Score).ToList())));
+        return RaiseEvent(new GenerationCompletedEvent(current.Version));
     }
 
     private static T Tournament(OptimizationConfiguration configuration,
@@ -71,9 +139,9 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return (T)winner.Configuration;
     }
 
-    private Task<(bool, IEvent)> RunTournament()
+    private (bool, IEvent) RunTournament()
     {
-        var isEnoughProperConfigurations = current.EligibleForTournament.Count >= current.Configuration.SurvivorCount;
+        var isEnoughProperConfigurations = current.EligibleForTournament.Count >= current.Configuration!.SurvivorCount;
 
         var first = Tournament(current.Configuration, isEnoughProperConfigurations
             ? current.EligibleForTournament
@@ -85,55 +153,81 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
         if (Random.Shared.NextDouble() > current.Configuration.CrossoverProbability)
         {
-            (first, second) = current.ConfigurationFactory.Crossover(first, second);
+            (first, second) = current.ConfigurationFactory!.Crossover(first, second);
         }
 
-        first = current.ConfigurationFactory.Mutate(first, current.Configuration.MutationProbability);
+        first = current.ConfigurationFactory!.Mutate(first, current.Configuration.MutationProbability);
         second = current.ConfigurationFactory.Mutate(second, current.Configuration.MutationProbability);
 
-        return RaiseEvent(new TournamentRoundCompletedEvent<T>(first, second));
+        return RaiseEvent(new TournamentRoundCompletedEvent<T>(first, second, current.Version));
     }
 
-    private Task<(bool, IEvent)> CountSurvivors()
+    private (bool, IEvent) CountSurvivors()
     {
         var survivors = current.GenerationScores
             .Where(card => !card.IsNotFeasible)
             .OrderBy(card => card.Score)
-            .Take(current.Configuration.SurvivorCount)
+            .Take(current.Configuration!.SurvivorCount)
             .Select(card => (T)card.Configuration)
             .ToList();
 
-        return RaiseEvent(new SurvivorsCountedEvent<T>(survivors));
+        return RaiseEvent(new SurvivorsCountedEvent<T>(survivors, current.Version));
     }
 
-    private Task<(bool, IEvent)> ComputeScore()
+    private (bool, IEvent) ComputeScore()
     {
         var (alertConfiguration, outages) = current.NextScoreComputation;
-        var alertScoreCard = current.AlertScoreCalculator.CalculateScore(outages, current.KnownOutagesProvider,
+        var alertScoreCard = current.AlertScoreCalculator!.CalculateScore(outages, current.KnownOutagesProvider!,
             alertConfiguration);
-        return RaiseEvent(new AlertScoreComputedEvent(alertScoreCard));
+        return RaiseEvent(new AlertScoreComputedEvent(alertScoreCard, current.Version));
     }
 
-    private Task<(bool, IEvent)> Evaluate()
+    private (bool, IEvent) Evaluate()
     {
         var configuration = current.NextEvaluation;
-        var outages = current.Alert.Evaluate(current.TimeSeriesProvider, configuration).ToList();
+        var outages = current.Alert.Evaluate(current.TimeSeriesProvider!, configuration).ToList();
 
-        return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages));
+        return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages, current.Version));
     }
 
     /// <inheritdoc />
     public Guid Id => current.Id;
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public string Name => current.Name;
+
+    /// <inheritdoc />
+    public string ProviderName => current.ProviderName;
+
+    /// <inheritdoc />
+    public DateTime CreatedAt => current.CreatedAt;
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<IEvent> Hydrate(Guid aggregateId)
+    {
+        await foreach (var @event in store.GetAll(aggregateId, CancellationToken.None))
+        {
+            if (!current.Apply(@event))
+            {
+                //todo: unless it's the last generation completion event, this might mean that terrible things has happened.
+            }
+
+            yield return @event;
+        }
+
+        await current.KnownOutagesProvider!.ImportAndValidate();
+        await current.TimeSeriesProvider!.ImportAndValidate();
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken)
     {
         if (current.State == GeneticOptimizerStateEnum.Completed)
         {
             yield break;
         }
 
-        (var canContinue, IEvent? @event) = await Reconfigure(configuration);
+        (var canContinue, IEvent? @event) = Reconfigure(configuration);
 
         if (!canContinue)
         {
@@ -141,17 +235,17 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         }
 
         yield return @event;
-        
+
         do
         {
             (canContinue, @event) = current.State switch
             {
-                GeneticOptimizerStateEnum.RandomRepopulation => await RepopulateWithRandom(),
-                GeneticOptimizerStateEnum.Evaluation => await Evaluate(),
-                GeneticOptimizerStateEnum.ScoreComputation => await ComputeScore(),
-                GeneticOptimizerStateEnum.CompletingGeneration => await CreateSummary(),
-                GeneticOptimizerStateEnum.SurvivorsCounting => await CountSurvivors(),
-                GeneticOptimizerStateEnum.Tournament => await RunTournament(),
+                GeneticOptimizerStateEnum.RandomRepopulation => RepopulateWithRandom(),
+                GeneticOptimizerStateEnum.Evaluation => Evaluate(),
+                GeneticOptimizerStateEnum.ScoreComputation => ComputeScore(),
+                GeneticOptimizerStateEnum.CompletingGeneration => CreateSummary(),
+                GeneticOptimizerStateEnum.SurvivorsCounting => CountSurvivors(),
+                GeneticOptimizerStateEnum.Tournament => RunTournament(),
                 GeneticOptimizerStateEnum.Completed => (false, null),
                 GeneticOptimizerStateEnum.Created => throw new InvalidOperationException(),
                 _ => throw new ArgumentOutOfRangeException()
@@ -161,12 +255,11 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             {
                 yield return @event!;
             }
-
         } while (canContinue && !cancellationToken.IsCancellationRequested);
     }
-    
-    private Task<(bool canContinue, IEvent @event)> Reconfigure(OptimizationConfiguration optimizationConfiguration)
+
+    private (bool, IEvent) Reconfigure(OptimizationConfiguration optimizationConfiguration)
     {
-        return RaiseEvent(new OptimizerConfiguredEvent(optimizationConfiguration));
+        return RaiseEvent(new OptimizerConfiguredEvent(optimizationConfiguration, current.Version));
     }
 }

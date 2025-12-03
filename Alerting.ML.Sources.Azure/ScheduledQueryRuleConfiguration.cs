@@ -8,6 +8,57 @@ namespace Alerting.ML.Sources.Azure;
 public class ScheduledQueryRuleConfiguration : AlertConfiguration
 {
     /// <inheritdoc />
+    public override bool Equals(AlertConfiguration? other)
+    {
+        if (other is not ScheduledQueryRuleConfiguration otherAlert)
+        {
+            return false;
+        }
+
+        return Operator == otherAlert.Operator && Threshold == otherAlert.Threshold &&
+               NumberOfEvaluationPeriods == otherAlert.NumberOfEvaluationPeriods &&
+               MinFailingPeriodsToAlert == otherAlert.MinFailingPeriodsToAlert &&
+               TimeAggregation == otherAlert.TimeAggregation && WindowSize.Equals(otherAlert.WindowSize) &&
+               EvaluationFrequency.Equals(otherAlert.EvaluationFrequency);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
+        return Equals((ScheduledQueryRuleConfiguration)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine((int)Operator, Threshold, NumberOfEvaluationPeriods, MinFailingPeriodsToAlert,
+            (int)TimeAggregation, WindowSize, EvaluationFrequency);
+    }
+
+    public static bool operator ==(ScheduledQueryRuleConfiguration? left, ScheduledQueryRuleConfiguration? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(ScheduledQueryRuleConfiguration? left, ScheduledQueryRuleConfiguration? right)
+    {
+        return !Equals(left, right);
+    }
+
+    /// <inheritdoc />
     public override string ToString()
     {
         return

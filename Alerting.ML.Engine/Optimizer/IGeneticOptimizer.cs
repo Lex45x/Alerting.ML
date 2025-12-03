@@ -8,10 +8,17 @@ namespace Alerting.ML.Engine.Optimizer;
 /// </summary>
 public interface IGeneticOptimizer
 {
-    /// <summary>
-    /// Whenever new optimizer is created, a new Id is associated with it.
-    /// </summary>
     public Guid Id { get; }
+    public string Name { get; }
+    public string ProviderName { get; }
+    public DateTime CreatedAt { get; }
+
+    /// <summary>
+    /// Initializes current instance of optimizer from event store.
+    /// </summary>
+    /// <param name="aggregateId"></param>
+    /// <returns></returns>
+    public IAsyncEnumerable<IEvent> Hydrate(Guid aggregateId);
 
     /// <summary>
     /// Every time a change to generation state happens, yields an <see cref="IEvent"/> associated with the change.
@@ -20,5 +27,5 @@ public interface IGeneticOptimizer
     /// <param name="configuration">A configuration to apply to current run.</param>
     /// <param name="cancellationToken">Allows to pause optimization run.</param>
     /// <returns>A stream of events generated during the simulation.</returns>
-    public IAsyncEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken);
+    public IEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken);
 }

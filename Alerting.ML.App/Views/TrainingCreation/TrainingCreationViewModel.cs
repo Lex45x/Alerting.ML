@@ -50,7 +50,7 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
             })
             .DisposeWith(Disposables);
 
-        Router.NavigateAndReset.Execute(new TrainingCreationFirstStepViewModel(this, TrainingBuilder.Create()));
+        Router.NavigateAndReset.Execute(new TrainingCreationFirstStepViewModel(this, trainingOrchestrator.DefaultBuilder));
     }
 
     private void GoBack()

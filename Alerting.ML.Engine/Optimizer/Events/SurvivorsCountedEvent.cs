@@ -3,17 +3,35 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public class SurvivorsCountedEvent<T> : IEvent where T : AlertConfiguration
+public record SurvivorsCountedEvent<T> : IEvent where T : AlertConfiguration
 {
     public IReadOnlyList<T> Survivors { get; }
 
-    public SurvivorsCountedEvent(IReadOnlyList<T> survivors)
+    public SurvivorsCountedEvent(IReadOnlyList<T> survivors, int aggregateVersion)
     {
         Survivors = survivors;
+        AggregateVersion = aggregateVersion;
     }
 
-    public override string ToString()
+    public virtual bool Equals(SurvivorsCountedEvent<T>? other)
     {
-        return $"SurvivorsCountedEvent: SurvivorsCount: {Survivors.Count}";
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Survivors.Equals(other.Survivors);
     }
+
+    public override int GetHashCode()
+    {
+        return Survivors.GetHashCode();
+    }
+
+    public int AggregateVersion { get; }
 }

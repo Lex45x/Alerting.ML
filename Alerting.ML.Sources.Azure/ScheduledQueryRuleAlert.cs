@@ -11,6 +11,9 @@ namespace Alerting.ML.Sources.Azure
     public class ScheduledQueryRuleAlert : IAlert<ScheduledQueryRuleConfiguration>
     {
         /// <inheritdoc />
+        public string ProviderName => "Azure";
+
+        /// <inheritdoc />
         public IEnumerable<Outage> Evaluate(ITimeSeriesProvider provider, ScheduledQueryRuleConfiguration configuration)
         {
             var evaluationPeriods = new Queue<bool>(); //holds last NumberOfEvaluationPeriods results

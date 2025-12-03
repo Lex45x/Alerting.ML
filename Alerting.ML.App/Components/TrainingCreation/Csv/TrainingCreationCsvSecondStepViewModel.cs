@@ -44,7 +44,7 @@ public class TrainingCreationCsvSecondStepViewModel : FileUploadViewModel, ITrai
         HostScreen.Router.Navigate.Execute(new TrainingCreationFourthStepViewModel(HostScreen, updatedBuilder));
     }
 
-    private async Task ConfigureBuilder(string path)
+    private async Task ConfigureBuilder(string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {

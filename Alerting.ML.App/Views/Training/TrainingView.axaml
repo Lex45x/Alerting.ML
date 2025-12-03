@@ -204,8 +204,8 @@
                     <!-- Action Buttons -->
                     <StackPanel Spacing="8">
                         <Button Classes="accent" Theme="{StaticResource ArrowButton}" Content="Resume Training"
-                                HorizontalAlignment="Stretch" />
-                        <Button Theme="{StaticResource ArrowButton}" Content="Pause Training"
+                                HorizontalAlignment="Stretch" Command="{Binding ResumeCommand}"/>
+                        <Button Theme="{StaticResource ArrowButton}" Content="Pause Training" Command="{Binding PauseCommand}"
                                 HorizontalAlignment="Stretch" />
                     </StackPanel>
                 </StackPanel>

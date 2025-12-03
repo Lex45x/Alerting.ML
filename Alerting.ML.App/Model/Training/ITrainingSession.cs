@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
@@ -27,4 +28,5 @@ public interface ITrainingSession
     void Start(OptimizationConfiguration configuration);
     void Stop();
     bool IsPaused { get; }
+    Task Hydrate(Guid aggregateId);
 }

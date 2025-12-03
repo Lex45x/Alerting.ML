@@ -61,12 +61,17 @@ namespace Alerting.ML.Console
 {
     public class NullEventStore : IEventStore
     {
-        public async Task Write<T>(Guid aggregateId, T @event) where T : IEvent
+        public async void Write<T>(Guid aggregateId, T @event) where T : IEvent
         {
             System.Console.WriteLine($"{aggregateId} :: {@event}");
         }
 
-        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId)
+        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId, CancellationToken cancellationToken)
+        {
+            yield break;
+        }
+
+        public async IAsyncEnumerable<Guid> GetExistingAggregates()
         {
             yield break;
         }

@@ -22,26 +22,26 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     private Task? optimizationTask;
     private CancellationTokenSource? cancellationSource;
     private readonly Stopwatch sessionTimer = new Stopwatch();
-    private readonly DispatcherTimer timer;
+    private readonly DispatcherTimer dispatcherTimer;
 
     public Guid Id => optimizer.Id;
-
-    //todo: how to generate a neat name?
-    public string? Name { get; }
-
+    public string Name => optimizer.Name;
+    public CloudProvider AlertProvider => Enum.TryParse<CloudProvider>(optimizer.ProviderName, out var value)?value: CloudProvider.Unknown;
+    public DateTime CreatedAt => optimizer.CreatedAt;
 
     public void Start(OptimizationConfiguration configuration)
     {
         cancellationSource = new CancellationTokenSource();
         sessionTimer.Start();
+        dispatcherTimer.Start();
         optimizationTask = Task.Run(() => IterateOptimization(configuration, cancellationSource.Token));
     }
 
-    private async Task IterateOptimization(OptimizationConfiguration configuration, CancellationToken cancellationToken)
+    private void IterateOptimization(OptimizationConfiguration configuration, CancellationToken cancellationToken)
     {
         IsPaused = false;
 
-        await foreach (var @event in optimizer.Optimize(configuration, cancellationToken))
+        foreach (var @event in optimizer.Optimize(configuration, cancellationToken))
         {
             Apply(@event);
         }
@@ -53,6 +53,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     {
         cancellationSource?.Cancel();
         sessionTimer.Stop();
+        dispatcherTimer.Stop();
     }
 
     public bool IsPaused
@@ -76,20 +77,20 @@ public class TrainingSession : ViewModelBase, ITrainingSession
                 this.RaisePropertyChanged(nameof(FitnessDiff));
             })
             .DisposeWith(Disposables);
-        timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background,
+        dispatcherTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background,
             (_, _) =>
             {
                 this.RaisePropertyChanged(nameof(Elapsed));
                 this.RaisePropertyChanged(nameof(RemainingMinutes));
             });
-        timer.Start();
+        dispatcherTimer.Start();
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            timer.Stop();
+            dispatcherTimer.Stop();
         }
 
         base.Dispose(disposing);
@@ -97,11 +98,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public double ProgressPercentage => (double)CurrentGeneration / CurrentConfiguration.TotalGenerations;
 
-    //todo: this value has to be initialized *somehow* during TrainingBuilder configuration.
-    public CloudProvider AlertProvider { get; } = CloudProvider.Azure;
-
-    //todo: this value has to be initialized *somehow* during TrainingBuilder configuration.
-    public DateTime CreatedAt { get; } = DateTime.UtcNow;
+    
 
     private double GetCurrentPopulationDiversity()
     {
@@ -213,4 +210,12 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         get;
         private set => this.RaiseAndSetIfChanged(ref field, value);
     } = OptimizationConfiguration.Default;
+
+    public async Task Hydrate(Guid aggregateId)
+    {
+        await foreach (var @event in optimizer.Hydrate(aggregateId))
+        {
+            Apply(@event);
+        }
+    }
 }

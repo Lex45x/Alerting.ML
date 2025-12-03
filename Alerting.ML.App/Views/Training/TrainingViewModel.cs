@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
+using System.Threading.Tasks;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
@@ -29,6 +30,9 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
                 }
             })
             .DisposeWith(Disposables);
+
+        ResumeCommand = ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration)));
+        PauseCommand = ReactiveCommand.Create(session.Stop);
     }
 
     private void GoBack()
@@ -37,6 +41,9 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
     }
 
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
+    public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
+    public ReactiveCommand<Unit, Unit> PauseCommand { get; }
+
 
     public string? UrlPathSegment => "training";
     public IScreen HostScreen { get; }
@@ -93,4 +100,8 @@ internal class DesignTimeTrainingSession : ITrainingSession
     }
 
     public bool IsPaused => true;
+    public async Task Hydrate(Guid aggregateId)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -55,11 +55,16 @@ public class TrainingBuilder
     }
 
     private static readonly MethodInfo GenericBuildInfo;
+    private static readonly MethodInfo GenericBuildEmptyInfo;
 
     static TrainingBuilder()
     {
         GenericBuildInfo =
             typeof(TrainingBuilder).GetMethod("GenericBuild", BindingFlags.Instance | BindingFlags.NonPublic, []) ??
+            throw new InvalidOperationException("Unable to find generic build private method.");
+
+        GenericBuildEmptyInfo =
+            typeof(TrainingBuilder).GetMethod("GenericBuildEmpty", BindingFlags.Instance | BindingFlags.NonPublic, []) ??
             throw new InvalidOperationException("Unable to find generic build private method.");
     }
 
@@ -169,6 +174,13 @@ public class TrainingBuilder
             EventStore ?? new InMemoryEventStore());
     }
 
+    // ReSharper disable once UnusedMember.Local
+    // Used via Reflection
+    private IGeneticOptimizer GenericBuildEmpty<T>() where T : AlertConfiguration, new()
+    {
+        return new GeneticOptimizerStateMachine<T>(EventStore ?? new InMemoryEventStore());
+    }
+
     private void CheckConfigurationType(Type incomingType)
     {
         if (AlertConfigurationType == null)
@@ -196,5 +208,15 @@ public class TrainingBuilder
                                 ?? throw new ArgumentNullException(nameof(AlertConfigurationType));
 
         return (IGeneticOptimizer)GenericBuildInfo.MakeGenericMethod(configurationType).Invoke(this, [])!;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="IGeneticOptimizer"/> instance without any configuration;
+    /// </summary>
+    /// <param name="configurationType"></param>
+    /// <returns></returns>
+    public IGeneticOptimizer CreateEmpty(Type configurationType)
+    {
+        return (IGeneticOptimizer)GenericBuildEmptyInfo.MakeGenericMethod(configurationType).Invoke(this, [])!;
     }
 }

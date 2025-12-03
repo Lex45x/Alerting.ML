@@ -20,4 +20,12 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Serialization\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Alerting.ML.Engine\Alerting.ML.Engine.csproj" />
+  </ItemGroup>
+
 </Project>

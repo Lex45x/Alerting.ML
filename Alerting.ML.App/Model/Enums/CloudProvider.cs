@@ -2,7 +2,8 @@
 
 public enum CloudProvider
 {
-    Azure = 0,
+    Unknown = 0,
     Amazon = 1,
-    Google = 2
+    Google = 2,
+    Azure = 3
 }

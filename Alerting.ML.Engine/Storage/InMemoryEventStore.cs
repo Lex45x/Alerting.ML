@@ -11,17 +11,22 @@ public class InMemoryEventStore : IEventStore
     private readonly ConcurrentDictionary<Guid, List<IEvent>> eventsDictionary = new();
 
     /// <inheritdoc />
-    public Task Write<T>(Guid aggregateId, T @event) where T : IEvent
+    public void Write<T>(Guid aggregateId, T @event) where T : IEvent
     {
         eventsDictionary.GetOrAdd(aggregateId, _ => []).Add(@event);
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public IAsyncEnumerable<IEvent> GetAll(Guid aggregateId)
+    public IAsyncEnumerable<IEvent> GetAll(Guid aggregateId, CancellationToken cancellationToken)
     {
         return eventsDictionary.TryGetValue(aggregateId, out var events)
             ? events.ToAsyncEnumerable()
             : Enumerable.Empty<IEvent>().ToAsyncEnumerable();
+    }
+
+    /// <inheritdoc />
+    public IAsyncEnumerable<Guid> GetExistingAggregates()
+    {
+        return eventsDictionary.Keys.ToAsyncEnumerable();
     }
 }

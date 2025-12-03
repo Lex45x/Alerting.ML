@@ -5,7 +5,7 @@ namespace Alerting.ML.Engine.Scoring;
 /// <summary>
 /// Represents a performance score for <see cref="AlertConfiguration"/> in the context of ongoing optimization.
 /// </summary>
-public sealed class AlertScoreCard
+public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
 {
     /// <summary>
     /// A value from 0 to infinity that represents a multidimensional 'distance' from ideal alert performance.
@@ -92,5 +92,44 @@ public sealed class AlertScoreCard
         return $"{nameof(Score)}: {Score:N}, {nameof(OutagesCount)}: {OutagesCount}, " +
                $"{nameof(IsNotFeasible)}: {IsNotFeasible}, {nameof(Precision)}: {Precision:P}, " +
                $"{nameof(MedianDetectionLatency)}: {MedianDetectionLatency:g}, {nameof(FalseNegativeRate)}: {FalseNegativeRate:P}";
+    }
+
+    public bool Equals(AlertScoreCard? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Score.Equals(other.Score) && IsNotFeasible == other.IsNotFeasible && Precision.Equals(other.Precision) &&
+               MedianDetectionLatency.Equals(other.MedianDetectionLatency) &&
+               FalseNegativeRate.Equals(other.FalseNegativeRate) && Configuration.Equals(other.Configuration) &&
+               OutagesCount == other.OutagesCount;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj) || obj is AlertScoreCard other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Score, IsNotFeasible, Precision, MedianDetectionLatency, FalseNegativeRate,
+            Configuration, OutagesCount);
+    }
+
+    public static bool operator ==(AlertScoreCard? left, AlertScoreCard? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(AlertScoreCard? left, AlertScoreCard? right)
+    {
+        return !Equals(left, right);
     }
 }

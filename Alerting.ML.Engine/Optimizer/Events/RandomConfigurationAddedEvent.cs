@@ -3,17 +3,16 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public class RandomConfigurationAddedEvent<T> : IEvent where T : AlertConfiguration
+public record RandomConfigurationAddedEvent<T> : IEvent where T : AlertConfiguration
 {
-    public override string ToString()
-    {
-        return $"RandomConfigurationAddedEvent: {nameof(RandomConfiguration)}: {RandomConfiguration}";
-    }
 
     public T RandomConfiguration { get; }
 
-    public RandomConfigurationAddedEvent(T randomConfiguration)
+    public RandomConfigurationAddedEvent(T randomConfiguration, int aggregateVersion)
     {
         RandomConfiguration = randomConfiguration;
+        AggregateVersion = aggregateVersion;
     }
+
+    public int AggregateVersion { get; }
 }
