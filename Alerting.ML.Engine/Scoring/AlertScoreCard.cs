@@ -8,7 +8,7 @@ namespace Alerting.ML.Engine.Scoring;
 public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
 {
     /// <summary>
-    /// A value from 0 to infinity that represents a multidimensional 'distance' from ideal alert performance.
+    /// A value from 0 to infinity that represents a Euclidean distance from ideal alert performance.
     /// Lower value is better. 
     /// </summary>
     public double Score { get; }
@@ -94,6 +94,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
                $"{nameof(MedianDetectionLatency)}: {MedianDetectionLatency:g}, {nameof(FalseNegativeRate)}: {FalseNegativeRate:P}";
     }
 
+    /// <inheritdoc />
     public bool Equals(AlertScoreCard? other)
     {
         if (other is null)
@@ -112,24 +113,16 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
                OutagesCount == other.OutagesCount;
     }
 
+    /// <inheritdoc />
     public override bool Equals(object? obj)
     {
         return ReferenceEquals(this, obj) || obj is AlertScoreCard other && Equals(other);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode()
     {
         return HashCode.Combine(Score, IsNotFeasible, Precision, MedianDetectionLatency, FalseNegativeRate,
             Configuration, OutagesCount);
-    }
-
-    public static bool operator ==(AlertScoreCard? left, AlertScoreCard? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(AlertScoreCard? left, AlertScoreCard? right)
-    {
-        return !Equals(left, right);
     }
 }

@@ -4,18 +4,18 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public record EvaluationCompletedEvent<T> : EvaluationCompletedEvent where T : AlertConfiguration
+/// <summary>
+/// Indicates completion of the single configuration evaluation.
+/// </summary>
+/// <typeparam name="T">Current alert configuration type.</typeparam>
+/// <param name="Configuration">Configuration that was evaluated.</param>
+/// <param name="Outages">Outages created by configuration.</param>
+/// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>
+public record EvaluationCompletedEvent<T>(T Configuration, IReadOnlyList<Outage> Outages, int AggregateVersion)
+    : EvaluationCompletedEvent(AggregateVersion)
+    where T : AlertConfiguration
 {
-    public T Configuration { get; }
-    public IReadOnlyList<Outage> Outages { get; }
-
-    public EvaluationCompletedEvent(T configuration, IReadOnlyList<Outage> outages, int aggregateVersion) : base(
-        aggregateVersion)
-    {
-        Configuration = configuration;
-        Outages = outages;
-    }
-
+    /// <inheritdoc />
     public virtual bool Equals(EvaluationCompletedEvent<T>? other)
     {
         if (other is null)
@@ -31,18 +31,15 @@ public record EvaluationCompletedEvent<T> : EvaluationCompletedEvent where T : A
         return Configuration.Equals(other.Configuration) && Outages.SequenceEqual(other.Outages);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode()
     {
         return HashCode.Combine(base.GetHashCode(), Configuration, Outages);
     }
 }
 
-public record EvaluationCompletedEvent : IEvent
-{
-    public EvaluationCompletedEvent(int aggregateVersion)
-    {
-        AggregateVersion = aggregateVersion;
-    }
-
-    public int AggregateVersion { get; }
-}
+/// <summary>
+/// Indicates completion of the single configuration evaluation.
+/// </summary>
+/// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>s
+public abstract record EvaluationCompletedEvent(int AggregateVersion) : IEvent;

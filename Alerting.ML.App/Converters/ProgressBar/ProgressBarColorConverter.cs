@@ -7,7 +7,7 @@ namespace Alerting.ML.App.Converters.ProgressBar;
 
 public class ProgressBarColorConverter : IValueConverter
 {
-    public object Convert(object value, Type t, object p, CultureInfo c)
+    public object Convert(object? value, Type t, object? p, CultureInfo c)
     {
         if (value is double v)
         {
@@ -19,6 +19,6 @@ public class ProgressBarColorConverter : IValueConverter
         return Brushes.Gray;
     }
 
-    public object ConvertBack(object v, Type t, object p, CultureInfo c)
+    public object ConvertBack(object? v, Type t, object? p, CultureInfo c)
         => throw new NotImplementedException();
 }

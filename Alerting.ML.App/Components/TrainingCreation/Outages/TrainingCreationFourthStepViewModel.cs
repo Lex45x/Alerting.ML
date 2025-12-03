@@ -73,7 +73,7 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
 
 public class TrainingCreationFourthStepViewModelDesignTime : TrainingCreationFourthStepViewModel
 {
-    public TrainingCreationFourthStepViewModelDesignTime() : base(null, null)
+    public TrainingCreationFourthStepViewModelDesignTime() : base(null!, null!)
     {
     }
 }

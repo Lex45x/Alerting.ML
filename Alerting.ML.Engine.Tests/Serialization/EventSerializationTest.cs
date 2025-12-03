@@ -44,7 +44,7 @@ public class EventSerializationTest
 
         var events = await jsonFileEventStore.GetAll(aggregateId, CancellationToken.None).ToListAsync();
 
-        CollectionAssert.AreEqual(Events, @events);
+        Assert.That(@events, Is.EquivalentTo(Events));
     }
 }
 

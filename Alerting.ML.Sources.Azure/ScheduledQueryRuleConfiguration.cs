@@ -22,6 +22,7 @@ public class ScheduledQueryRuleConfiguration : AlertConfiguration
                EvaluationFrequency.Equals(otherAlert.EvaluationFrequency);
     }
 
+    /// <inheritdoc />
     public override bool Equals(object? obj)
     {
         if (obj is null)
@@ -42,20 +43,11 @@ public class ScheduledQueryRuleConfiguration : AlertConfiguration
         return Equals((ScheduledQueryRuleConfiguration)obj);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode()
     {
         return HashCode.Combine((int)Operator, Threshold, NumberOfEvaluationPeriods, MinFailingPeriodsToAlert,
             (int)TimeAggregation, WindowSize, EvaluationFrequency);
-    }
-
-    public static bool operator ==(ScheduledQueryRuleConfiguration? left, ScheduledQueryRuleConfiguration? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(ScheduledQueryRuleConfiguration? left, ScheduledQueryRuleConfiguration? right)
-    {
-        return !Equals(left, right);
     }
 
     /// <inheritdoc />

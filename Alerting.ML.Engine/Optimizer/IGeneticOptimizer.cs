@@ -8,9 +8,24 @@ namespace Alerting.ML.Engine.Optimizer;
 /// </summary>
 public interface IGeneticOptimizer
 {
+    /// <summary>
+    /// The Id of optimization.
+    /// </summary>
     public Guid Id { get; }
+
+    /// <summary>
+    /// Friendly name of the optimization.
+    /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// Friendly name of the alert provider used in this optimizer.
+    /// </summary>
     public string ProviderName { get; }
+
+    /// <summary>
+    /// DateTime when optimization was created.
+    /// </summary>
     public DateTime CreatedAt { get; }
 
     /// <summary>

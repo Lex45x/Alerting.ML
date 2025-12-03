@@ -67,7 +67,7 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
 
     private void StartOptimization()
     {
-        var trainingSession = trainingOrchestrator.StartNew(ConfiguredOptimizer);
+        var trainingSession = trainingOrchestrator.StartNew(ConfiguredOptimizer ?? throw new InvalidOperationException("Genetic optimizer is not configured yet so creation of training is not possible."));
         HostScreen.Router.NavigateBack.Execute();
         HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, trainingSession));
     }

@@ -5,33 +5,30 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public record StateInitializedEvent<T> : IEvent where T : AlertConfiguration
-{
-    public IAlert<T> Alert { get; }
-    public ITimeSeriesProvider TimeSeriesProvider { get; }
-    public IKnownOutagesProvider KnownOutagesProvider { get; }
-    public IAlertScoreCalculator AlertScoreCalculator { get; }
-    public IConfigurationFactory<T> ConfigurationFactory { get; }
-    public Guid Id { get; }
-    public DateTime CreatedAt { get; }
-    public string Name { get; }
-    public string ProviderName { get; }
-
-    public StateInitializedEvent(Guid id, DateTime createdAt, string name, string providerName, IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
-        IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
-        IConfigurationFactory<T> configurationFactory, int aggregateVersion)
-    {
-        Alert = alert;
-        TimeSeriesProvider = timeSeriesProvider;
-        KnownOutagesProvider = knownOutagesProvider;
-        AlertScoreCalculator = alertScoreCalculator;
-        ConfigurationFactory = configurationFactory;
-        AggregateVersion = aggregateVersion;
-        Id = id;
-        CreatedAt = createdAt;
-        Name = name;
-        ProviderName = providerName;
-    }
-
-    public int AggregateVersion { get; }
-}
+/// <summary>
+/// The first event that initializes <see cref="GeneticOptimizerState{T}"/> <br/>
+/// </summary>
+/// <param name="Id">Id of the optimization session.</param>
+/// <param name="CreatedAt">DateTime of session creation.</param>
+/// <param name="Name">Friendly name of the session.</param>
+/// <param name="ProviderName">FriendlyName of alert provider.</param>
+/// <param name="Alert">Alert rule.</param>
+/// <param name="TimeSeriesProvider">Time series source.</param>
+/// <param name="KnownOutagesProvider">Known outage source.</param>
+/// <param name="AlertScoreCalculator">Score calculator.</param>
+/// <param name="ConfigurationFactory">Configuration Factory</param>
+/// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>
+/// <typeparam name="T">Current alert configuration type.</typeparam>
+public record StateInitializedEvent<T>(
+    Guid Id,
+    DateTime CreatedAt,
+    string Name,
+    string ProviderName,
+    IAlert<T> Alert,
+    ITimeSeriesProvider TimeSeriesProvider,
+    IKnownOutagesProvider KnownOutagesProvider,
+    IAlertScoreCalculator AlertScoreCalculator,
+    IConfigurationFactory<T> ConfigurationFactory,
+    int AggregateVersion)
+    : IEvent
+    where T : AlertConfiguration;

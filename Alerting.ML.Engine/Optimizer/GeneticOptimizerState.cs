@@ -25,15 +25,25 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     /// </summary>
     public Guid Id { get; private set; }
 
+    /// <summary>
+    /// Indicates current version of the state. Practically means a count of applied events.
+    /// </summary>
     public int Version { get; private set; } = 0;
 
-    public string Name { get; private set; }
-    public string ProviderName { get; private set; }
+    /// <summary>
+    /// User-friendly generated name of the session.
+    /// </summary>
+    public string? Name { get; private set; }
+
+    /// <summary>
+    /// Name of the alert provider used in this session.
+    /// </summary>
+    public string? ProviderName { get; private set; }
 
     /// <summary>
     /// Alert rule being optimized.
     /// </summary>
-    public IAlert<T> Alert { get; private set; }
+    public IAlert<T>? Alert { get; private set; }
 
     /// <summary>
     /// Provider of relevant metric.
@@ -148,6 +158,9 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
         return true;
     }
 
+    /// <summary>
+    /// Datetime when optimization was created.
+    /// </summary>
     public DateTime CreatedAt { get; private set; }
 
     private bool Handle(OptimizerConfiguredEvent optimizerConfigured)

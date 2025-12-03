@@ -57,7 +57,7 @@ public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuil
 public class TrainingCreationFirstStepViewModelDesignTime : TrainingCreationFirstStepViewModel
 {
     public TrainingCreationFirstStepViewModelDesignTime()
-        : base(null, null)
+        : base(null!, null!)
     {
     }
 }

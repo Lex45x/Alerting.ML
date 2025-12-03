@@ -90,7 +90,7 @@ public class TrainingCreationCsvSecondStepViewModel : FileUploadViewModel, ITrai
 
 public class TrainingCreationCsvSecondStepViewModelDesignTime : TrainingCreationCsvSecondStepViewModel
 {
-    public TrainingCreationCsvSecondStepViewModelDesignTime() : base(null, null)
+    public TrainingCreationCsvSecondStepViewModelDesignTime() : base(null!, null!)
     {
     }
 }

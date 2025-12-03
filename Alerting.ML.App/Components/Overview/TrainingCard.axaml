@@ -7,8 +7,7 @@
              xmlns:cloudProvider="clr-namespace:Alerting.ML.App.Converters.CloudProvider"
              xmlns:training="clr-namespace:Alerting.ML.App.Views.Training"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Alerting.ML.App.Components.Overview.TrainingCard"
-             x:DataType="vm:TrainingCardViewModel">
+             x:Class="Alerting.ML.App.Components.Overview.TrainingCard">
     <Design.DataContext>
         <training:DesignTimeTrainingSession />
     </Design.DataContext>

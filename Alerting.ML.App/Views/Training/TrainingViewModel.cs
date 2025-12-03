@@ -65,7 +65,7 @@ public class TrainingViewModelDesignTime : TrainingViewModel
 {
     private static readonly ITrainingSession StubSession = new DesignTimeTrainingSession();
 
-    public TrainingViewModelDesignTime() : base(null, StubSession)
+    public TrainingViewModelDesignTime() : base(null!, StubSession)
     {
     }
 }
@@ -77,7 +77,8 @@ internal class DesignTimeTrainingSession : ITrainingSession
     public ObservableCollection<double> PopulationDiversity { get; } = [12, 3, 5, 99, 3.5, 6, 1];
     public ObservableCollection<double> AverageGenerationFitness { get; } = [0.3, 0.1, 0.5, 0.6, 0.66, 0.7];
     public ObservableCollection<double> BestGenerationFitness { get; } = [0.4, 0.4, 0.55, 0.65, 0.8, 0.91];
-    public ObservableCollection<AlertScoreCard> TopConfigurations { get; }
+    // todo: will be initialized later for other views
+    public ObservableCollection<AlertScoreCard> TopConfigurations { get; } = [];
     public int CurrentGeneration => 25;
     public double BestFitness => 0.7;
     public double FitnessDiff => 0.03;

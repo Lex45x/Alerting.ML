@@ -185,7 +185,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     private (bool, IEvent) Evaluate()
     {
         var configuration = current.NextEvaluation;
-        var outages = current.Alert.Evaluate(current.TimeSeriesProvider!, configuration).ToList();
+        var outages = current.Alert!.Evaluate(current.TimeSeriesProvider!, configuration).ToList();
 
         return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages, current.Version));
     }
@@ -194,10 +194,10 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     public Guid Id => current.Id;
 
     /// <inheritdoc />
-    public string Name => current.Name;
+    public string Name => current?.Name ?? "Uninitialized";
 
     /// <inheritdoc />
-    public string ProviderName => current.ProviderName;
+    public string ProviderName => current.ProviderName ?? "Uninitialized";
 
     /// <inheritdoc />
     public DateTime CreatedAt => current.CreatedAt;

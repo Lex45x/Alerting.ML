@@ -75,7 +75,7 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 
 public class OverviewViewModelDesignTime : OverviewViewModel
 {
-    public OverviewViewModelDesignTime() : base(null, null)
+    public OverviewViewModelDesignTime() : base(null!, null!)
     {
     }
 

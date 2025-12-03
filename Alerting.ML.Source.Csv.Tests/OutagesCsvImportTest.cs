@@ -29,7 +29,7 @@ namespace Alerting.ML.Source.Csv.Tests
 
             var validationResult = await csvOutagesProvider.ImportAndValidate();
 
-            ClassicAssert.AreEqual(canImport, validationResult.IsValid);
+            Assert.That(validationResult.IsValid, Is.EqualTo(canImport));
         }
     }
 }

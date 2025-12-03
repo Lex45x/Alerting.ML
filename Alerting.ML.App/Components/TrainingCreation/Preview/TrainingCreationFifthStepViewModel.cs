@@ -46,14 +46,14 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
 
     public bool IsValidationPassed => true;
 
-    public record PreviewSummaryItem(string Name, object? Value);
-
     public IGeneticOptimizer ConfiguredOptimizer { get; }
 }
 
+public record PreviewSummaryItem(string Name, object? Value);
+
 public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
 {
-    public TrainingCreationFifthStepViewModelDesignTime() : base(null, null)
+    public TrainingCreationFifthStepViewModelDesignTime() : base(null!, null!)
     {
         PreviewItems =
         [
