@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:trainingCreation="clr-namespace:Alerting.ML.App.Components.TrainingCreation"
-             xmlns:trainingCreation1="clr-namespace:Alerting.ML.App.Views.TrainingCreation"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
              x:Class="Alerting.ML.App.Components.TrainingCreation.TrainingCreationFirstStepView">
     <Design.DataContext>
@@ -11,7 +10,7 @@
     </Design.DataContext>
     <Interaction.Behaviors>
         <DetachedFromVisualTreeTrigger>
-            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+            <InvokeCommandAction Command="{Binding DisposeCommand}" />
         </DetachedFromVisualTreeTrigger>
     </Interaction.Behaviors>
     <StackPanel Spacing="8">
@@ -78,9 +77,10 @@
                          Theme="{StaticResource DataSourceRadioButton}"
                          IsChecked="{Binding IsCsvSelected}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Border Width="32" Height="32" CornerRadius="8" Padding="8" Background="{StaticResource Color.Pill}">
+                    <Border Width="32" Height="32" CornerRadius="8" Padding="8"
+                            Background="{StaticResource Color.Pill}">
                         <Svg Path="avares://Alerting.ML.App/Assets/csv-icon.svg" VerticalAlignment="Center"
-                             HorizontalAlignment="Center" Svg.Css=".lucide { stroke: #99A1AF; }"/>
+                             HorizontalAlignment="Center" Svg.Css=".lucide { stroke: #99A1AF; }" />
                     </Border>
 
                     <StackPanel Spacing="2">

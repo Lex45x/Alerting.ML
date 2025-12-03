@@ -1,12 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using Alerting.ML.App.Model.Training;
 using Alerting.ML.Engine.Optimizer;
+using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Preview;
 
@@ -28,6 +26,16 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
         ];
     }
 
+    public ObservableCollection<PreviewSummaryItem> PreviewItems
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public bool IsValidationPassed => true;
+
+    public IGeneticOptimizer ConfiguredOptimizer { get; }
+
     public string? UrlPathSegment => "preview";
     public IScreen HostScreen { get; }
 
@@ -36,30 +44,20 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
         throw new InvalidOperationException("This is the last step that can't be continued further");
     }
 
-    public ObservableCollection<PreviewSummaryItem> PreviewItems
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
-
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step5;
-
-    public bool IsValidationPassed => true;
-
-    public record PreviewSummaryItem(string Name, object? Value);
-
-    public IGeneticOptimizer ConfiguredOptimizer { get; }
 }
+
+public record PreviewSummaryItem(string Name, object? Value);
 
 public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
 {
-    public TrainingCreationFifthStepViewModelDesignTime() : base(null, null)
+    public TrainingCreationFifthStepViewModelDesignTime() : base(null!, null!)
     {
         PreviewItems =
         [
-            new("Data Source", "CSV"),
-            new("Alert Type", "Azure Scheduled Query Rule"),
-            new("Outage File", "outages.csv")
+            new PreviewSummaryItem("Data Source", "CSV"),
+            new PreviewSummaryItem("Alert Type", "Azure Scheduled Query Rule"),
+            new PreviewSummaryItem("Outage File", "outages.csv")
         ];
     }
 }

@@ -2,7 +2,7 @@
 
 public class TrainingCreationHeaderDesignTimeViewModel : TrainingCreationViewModel
 {
-    public TrainingCreationHeaderDesignTimeViewModel() : base(null, null)
+    public TrainingCreationHeaderDesignTimeViewModel() : base(null!, null!)
     {
     }
 }

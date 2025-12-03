@@ -14,19 +14,19 @@ public class ViewModelBase : ReactiveObject, IDisposable
         DisposeCommand = ReactiveCommand.Create(Dispose);
     }
 
+    public ReactiveCommand<Unit, Unit> DisposeCommand { get; }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
         {
             Disposables.Dispose();
         }
-    }
-
-    public ReactiveCommand<Unit, Unit> DisposeCommand { get; }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

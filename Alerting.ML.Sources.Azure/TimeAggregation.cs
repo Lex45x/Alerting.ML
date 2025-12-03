@@ -1,7 +1,7 @@
 ﻿namespace Alerting.ML.Sources.Azure;
 
 /// <summary>
-/// Defines an aggregation function to be applied to a specific time-window of metric values.
+///     Defines an aggregation function to be applied to a specific time-window of metric values.
 /// </summary>
 public enum TimeAggregation
 {

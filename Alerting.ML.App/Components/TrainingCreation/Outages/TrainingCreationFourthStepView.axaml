@@ -10,7 +10,7 @@
     </Design.DataContext>
     <Interaction.Behaviors>
         <DetachedFromVisualTreeTrigger>
-            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+            <InvokeCommandAction Command="{Binding DisposeCommand}" />
         </DetachedFromVisualTreeTrigger>
     </Interaction.Behaviors>
     <Grid RowDefinitions="Auto">

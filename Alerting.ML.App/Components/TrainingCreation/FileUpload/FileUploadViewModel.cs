@@ -1,14 +1,15 @@
-﻿using Alerting.ML.App.ViewModels;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Threading.Tasks;
+using Alerting.ML.App.ViewModels;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation.FileUpload;
 
@@ -29,6 +30,23 @@ public abstract class FileUploadViewModel : ViewModelBase
             .DisposeWith(Disposables);
     }
 
+    public string? SelectedFilePath
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public string? SelectedFileName => Path.GetFileName(SelectedFilePath);
+
+    public bool IsFileSelected => !string.IsNullOrWhiteSpace(SelectedFilePath);
+
+    public string UploadTitle => IsFileSelected ? SelectedFileName! : Title;
+    public string UploadSubTitle => IsFileSelected ? "Click to change file" : "Drag and drop or click to browse";
+    public ReactiveCommand<IEnumerable<IStorageItem>, Unit> FileDroppedCommand { get; }
+    public ReactiveCommand<Visual, Unit> PickFileCommand { get; }
+
+    protected abstract string Title { get; }
+
     private async Task PickFile(Visual control)
     {
         var topLevel = TopLevel.GetTopLevel(control);
@@ -47,30 +65,14 @@ public abstract class FileUploadViewModel : ViewModelBase
                 }
             });
 
-        SelectedFilePath = files.First().TryGetLocalPath() ?? throw new InvalidOperationException("Unable to get a full path to CSV file.");
+        SelectedFilePath = files.First().TryGetLocalPath() ??
+                           throw new InvalidOperationException("Unable to get a full path to CSV file.");
     }
 
     private void FileDropped(IEnumerable<IStorageItem> arg)
     {
         SelectedFilePath = arg.First().Path.ToString();
     }
-
-    public string? SelectedFilePath
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
-
-    public string? SelectedFileName => System.IO.Path.GetFileName(SelectedFilePath);
-
-    public bool IsFileSelected => !string.IsNullOrWhiteSpace(SelectedFilePath);
-
-    public string UploadTitle => IsFileSelected ? SelectedFileName! : Title;
-    public string UploadSubTitle => IsFileSelected ? "Click to change file" : "Drag and drop or click to browse";
-    public ReactiveCommand<IEnumerable<IStorageItem>, Unit> FileDroppedCommand { get; }
-    public ReactiveCommand<Visual, Unit> PickFileCommand { get; }
-
-    protected abstract string Title { get; }
 }
 
 public class FileUploadViewModelDesignTime : FileUploadViewModel

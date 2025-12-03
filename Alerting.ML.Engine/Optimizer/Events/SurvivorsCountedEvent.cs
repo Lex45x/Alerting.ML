@@ -3,17 +3,35 @@ using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine.Optimizer.Events;
 
-public class SurvivorsCountedEvent<T> : IEvent where T : AlertConfiguration
+/// <summary>
+///     Contains a list of survivors from current generation according to
+///     <see cref="OptimizationConfiguration.SurvivorPercentage" />
+/// </summary>
+/// <param name="Survivors">Survived configuration.</param>
+/// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>
+/// <typeparam name="T">Current alert configuration type</typeparam>
+public record SurvivorsCountedEvent<T>(IReadOnlyList<T> Survivors, int AggregateVersion) : IEvent
+    where T : AlertConfiguration
 {
-    public IReadOnlyList<T> Survivors { get; }
-
-    public SurvivorsCountedEvent(IReadOnlyList<T> survivors)
+    /// <inheritdoc />
+    public virtual bool Equals(SurvivorsCountedEvent<T>? other)
     {
-        Survivors = survivors;
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Survivors.SequenceEqual(other.Survivors);
     }
 
-    public override string ToString()
+    /// <inheritdoc />
+    public override int GetHashCode()
     {
-        return $"SurvivorsCountedEvent: SurvivorsCount: {Survivors.Count}";
+        return Survivors.GetHashCode();
     }
 }

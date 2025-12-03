@@ -1,7 +1,12 @@
 ﻿namespace Alerting.ML.Sources.Azure;
 
 /// <summary>
-/// Corresponds to Azure Scheduled Query Rule configuration. See: <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/scheduledqueryrules?pivots=deployment-language-bicep#condition">Azure Scheduled Query Rule Bicep</a>
+///     Corresponds to Azure Scheduled Query Rule configuration. See:
+///     <a
+///         href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/scheduledqueryrules?pivots=deployment-language-bicep#condition">
+///         Azure
+///         Scheduled Query Rule Bicep
+///     </a>
 /// </summary>
 public enum Operator
 {

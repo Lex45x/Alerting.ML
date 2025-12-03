@@ -1,9 +1,9 @@
-﻿using Alerting.ML.Sources.Azure;
+﻿using System;
+using System.Globalization;
+using Alerting.ML.Sources.Azure;
 using Alerting.ML.Sources.Csv;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
-using System;
-using System.Globalization;
 
 namespace Alerting.ML.App.Converters.TrainingBuilder;
 
@@ -34,7 +34,7 @@ public class TrainingBuilderToPreviewTableItemConverter : IValueConverter
                 Text = s,
                 Classes = { "h4" }
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, message: null)
         };
     }
 

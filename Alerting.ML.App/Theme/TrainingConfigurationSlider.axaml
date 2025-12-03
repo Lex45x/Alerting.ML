@@ -147,7 +147,7 @@
                 </ControlTemplate>
             </Setter>
         </Style>
-		
+
         <!--  PointerOver State  -->
         <Style Selector="^:pointerover">
             <Style Selector="^ /template/ Thumb">

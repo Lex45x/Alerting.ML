@@ -1,15 +1,14 @@
-﻿using Alerting.ML.App.Components.TrainingCreation.Outages;
+﻿using System;
+using Alerting.ML.App.Components.TrainingCreation;
+using Alerting.ML.App.Components.TrainingCreation.Csv;
+using Alerting.ML.App.Components.TrainingCreation.Outages;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
+using Alerting.ML.App.Views.Overview;
 using Alerting.ML.App.Views.Training;
+using Alerting.ML.App.Views.TrainingCreation;
+using ReactiveUI;
 
 namespace Alerting.ML.App.Routing;
-
-using Components.TrainingCreation;
-using Components.TrainingCreation.Csv;
-using ReactiveUI;
-using System;
-using Views.Overview;
-using Views.TrainingCreation;
 
 public class AppViewLocator : IViewLocator
 {
@@ -24,7 +23,8 @@ public class AppViewLocator : IViewLocator
             TrainingCreationFourthStepViewModel => new TrainingCreationFourthStepView { DataContext = viewModel },
             TrainingCreationFifthStepViewModel => new TrainingCreationFifthStepView { DataContext = viewModel },
             TrainingViewModel => new TrainingView { DataContext = viewModel },
-            _ => throw new ArgumentOutOfRangeException(nameof(viewModel), $"Unsupported ViewModel type {viewModel?.GetType().ToString() ?? "null"}")
+            _ => throw new ArgumentOutOfRangeException(nameof(viewModel),
+                $"Unsupported ViewModel type {viewModel?.GetType().ToString() ?? "null"}")
         };
     }
 }

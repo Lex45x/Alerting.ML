@@ -1,18 +1,16 @@
 ﻿using System.Reflection;
-using Alerting.ML.Engine.Optimizer;
 
 namespace Alerting.ML.Engine.Alert;
 
 /// <summary>
-/// A default implementation of configuration factory. Actions available on configuration parameters are defined by <see cref="ConfigurationParameterAttribute"/>.
+///     A default implementation of configuration factory. Actions available on configuration parameters are defined by
+///     <see cref="ConfigurationParameterAttribute" />.
 /// </summary>
 /// <typeparam name="T">Type of AlertConfiguration</typeparam>
 public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
     where T : AlertConfiguration, new()
 {
     private const double FiftyPercentProbability = 0.5;
-
-    private record Parameter(PropertyInfo Property, ConfigurationParameterAttribute Attribute);
 
     //todo: reflection here is slow. Expression tree that does the same thing can be built instead.
     private static readonly IReadOnlyList<Parameter> Parameters = typeof(T)
@@ -51,8 +49,14 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
 
         foreach (var parameter in Parameters)
         {
-            parameter.Property.SetValue(firstResult, parameter.Attribute.CrossoverRepair(parameter.Property.GetValue(Random.Shared.NextDouble() > FiftyPercentProbability ? first : second)!, firstResult));
-            parameter.Property.SetValue(secondResult, parameter.Attribute.CrossoverRepair(parameter.Property.GetValue(Random.Shared.NextDouble() > FiftyPercentProbability ? first : second)!, firstResult));
+            parameter.Property.SetValue(firstResult,
+                parameter.Attribute.CrossoverRepair(
+                    parameter.Property.GetValue(Random.Shared.NextDouble() > FiftyPercentProbability ? first : second)!,
+                    firstResult));
+            parameter.Property.SetValue(secondResult,
+                parameter.Attribute.CrossoverRepair(
+                    parameter.Property.GetValue(Random.Shared.NextDouble() > FiftyPercentProbability ? first : second)!,
+                    firstResult));
         }
 
         return (firstResult, secondResult);
@@ -70,4 +74,6 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
 
         return result;
     }
+
+    private record Parameter(PropertyInfo Property, ConfigurationParameterAttribute Attribute);
 }

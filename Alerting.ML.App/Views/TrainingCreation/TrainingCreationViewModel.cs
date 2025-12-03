@@ -1,19 +1,16 @@
-﻿using Alerting.ML.App.Model.Enums;
-using Alerting.ML.App.ViewModels;
-using Alerting.ML.Engine;
-using Microsoft.Extensions.Logging;
-using ReactiveUI;
+﻿using System;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
+using Alerting.ML.App.Components.TrainingCreation;
+using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
+using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.Training;
 using Alerting.ML.Engine.Optimizer;
+using ReactiveUI;
 
 namespace Alerting.ML.App.Views.TrainingCreation;
-
-using Alerting.ML.App.Components.TrainingCreation;
-using System;
-using System.Reactive.Linq;
 
 public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScreen
 {
@@ -44,14 +41,44 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
             .DisposeWith(Disposables);
 
         Router.CurrentViewModel.OfType<ITrainingCreationLastStepViewModel>()
-            .Subscribe(model =>
-            {
-                ConfiguredOptimizer = model.ConfiguredOptimizer;
-            })
+            .Subscribe(model => { ConfiguredOptimizer = model.ConfiguredOptimizer; })
             .DisposeWith(Disposables);
 
-        Router.NavigateAndReset.Execute(new TrainingCreationFirstStepViewModel(this, TrainingBuilder.Create()));
+        Router.NavigateAndReset.Execute(
+            new TrainingCreationFirstStepViewModel(this, trainingOrchestrator.DefaultBuilder));
     }
+
+    public IGeneticOptimizer? ConfiguredOptimizer
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
+    public ReactiveCommand<Unit, Unit> StartOptimizationCommand { get; }
+
+    public ReactiveCommand<Unit, Unit>? ContinueCommand
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public TrainingCreationStep Step
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public bool IsLastStep => Step == TrainingCreationStep.Step5;
+    public bool IsNotLastStep => !IsLastStep;
+
+    public string? UrlPathSegment => "new-training";
+
+    public IScreen HostScreen { get; }
+
+    public RoutingState Router { get; } = new();
 
     private void GoBack()
     {
@@ -67,45 +94,15 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
 
     private void StartOptimization()
     {
-        var trainingSession = trainingOrchestrator.StartNew(ConfiguredOptimizer);
+        var trainingSession = trainingOrchestrator.StartNew(ConfiguredOptimizer ??
+                                                            throw new InvalidOperationException(
+                                                                "Genetic optimizer is not configured yet so creation of training is not possible."));
         HostScreen.Router.NavigateBack.Execute();
         HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, trainingSession));
-    }
-
-    public IGeneticOptimizer? ConfiguredOptimizer
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     private void Cancel()
     {
         HostScreen.Router.NavigateBack.Execute();
     }
-
-    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
-    public ReactiveCommand<Unit, Unit> StartOptimizationCommand { get; }
-
-    public ReactiveCommand<Unit, Unit>? ContinueCommand
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
-
-    public string? UrlPathSegment => "new-training";
-
-    public TrainingCreationStep Step
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
-
-    public bool IsLastStep => Step == TrainingCreationStep.Step5;
-    public bool IsNotLastStep => !IsLastStep;
-
-    public IScreen HostScreen { get; }
-
-    public RoutingState Router { get; } = new();
 }

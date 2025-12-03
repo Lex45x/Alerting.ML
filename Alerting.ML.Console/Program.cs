@@ -1,10 +1,5 @@
-﻿using Alerting.ML.Console;
-using Alerting.ML.Engine.Alert;
-using Alerting.ML.Engine.Optimizer;
-using Alerting.ML.Engine.Optimizer.Events;
-using Alerting.ML.Engine.Scoring;
+﻿using System.Runtime.CompilerServices;
 using Alerting.ML.Engine.Storage;
-using Alerting.ML.Sources.Azure;
 using Alerting.ML.TimeSeries.Sample;
 
 var knownOutagesProvider = new SampleOutagesProvider();
@@ -61,12 +56,18 @@ namespace Alerting.ML.Console
 {
     public class NullEventStore : IEventStore
     {
-        public async Task Write<T>(Guid aggregateId, T @event) where T : IEvent
+        public void Write<T>(Guid aggregateId, T @event) where T : IEvent
         {
             System.Console.WriteLine($"{aggregateId} :: {@event}");
         }
 
-        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId)
+        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            yield break;
+        }
+
+        public async IAsyncEnumerable<Guid> GetExistingAggregates()
         {
             yield break;
         }

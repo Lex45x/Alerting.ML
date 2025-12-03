@@ -1,30 +1,41 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using System.Reflection;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
-using Microsoft.Extensions.Logging;
-using System.Reflection;
 using Alerting.ML.Engine.Storage;
 
 namespace Alerting.ML.Engine;
 
 /// <summary>
-/// Enables fluent API for creating GeneticOptimizer. Calling public methods that return <see cref="TrainingBuilder"/> will create a new instance with applied change.
+///     Enables fluent API for creating GeneticOptimizer. Calling public methods that return <see cref="TrainingBuilder" />
+///     will create a new instance with applied change.
 /// </summary>
 public class TrainingBuilder
 {
-    /// <summary>
-    /// Event store used to save optimization progress.
-    /// </summary>
-    public IEventStore? EventStore { get; }
+    private static readonly MethodInfo GenericBuildInfo;
+    private static readonly MethodInfo GenericBuildEmptyInfo;
+
+    static TrainingBuilder()
+    {
+        GenericBuildInfo =
+            typeof(TrainingBuilder).GetMethod("GenericBuild", BindingFlags.Instance | BindingFlags.NonPublic, []) ??
+            throw new InvalidOperationException("Unable to find generic build private method.");
+
+        GenericBuildEmptyInfo =
+            typeof(TrainingBuilder).GetMethod("GenericBuildEmpty", BindingFlags.Instance | BindingFlags.NonPublic,
+                []) ??
+            throw new InvalidOperationException("Unable to find generic build private method.");
+    }
 
     /// <summary>
-    /// Enables fluent API for creating GeneticOptimizer. Calling public methods that return <see cref="TrainingBuilder"/> will create a new instance with applied change.
+    ///     Enables fluent API for creating GeneticOptimizer. Calling public methods that return <see cref="TrainingBuilder" />
+    ///     will create a new instance with applied change.
     /// </summary>
     /// <param name="timeSeriesProvider">Source of the time series.</param>
     /// <param name="knownOutagesProvider">Source of known outages.</param>
     /// <param name="alertScoreCalculator">Defines alert score calculation. </param>
-    /// <param name="configurationFactory">Allows manipulation with <paramref name="alertConfigurationType"/></param>
+    /// <param name="configurationFactory">Allows manipulation with <paramref name="alertConfigurationType" /></param>
     /// <param name="alert">Alert to be evaluated.</param>
     /// <param name="alertConfigurationType">Underlying configuration type.</param>
     /// <param name="eventStore"></param>
@@ -42,59 +53,56 @@ public class TrainingBuilder
         AlertScoreCalculator = alertScoreCalculator;
         ConfigurationFactory = configurationFactory;
         Alert = alert;
-        this.AlertConfigurationType = alertConfigurationType;
+        AlertConfigurationType = alertConfigurationType;
     }
 
     /// <summary>
-    /// Creates an uninitialized instance of <see cref="TrainingBuilder"/>
+    ///     Event store used to save optimization progress.
     /// </summary>
-    /// <returns></returns>
-    public static TrainingBuilder Create()
-    {
-        return new TrainingBuilder(null, null, null, null, null, null, null);
-    }
-
-    private static readonly MethodInfo GenericBuildInfo;
-
-    static TrainingBuilder()
-    {
-        GenericBuildInfo =
-            typeof(TrainingBuilder).GetMethod("GenericBuild", BindingFlags.Instance | BindingFlags.NonPublic, []) ??
-            throw new InvalidOperationException("Unable to find generic build private method.");
-    }
+    public IEventStore? EventStore { get; }
 
     /// <summary>
-    /// Source of the time series.
+    ///     Source of the time series.
     /// </summary>
     public ITimeSeriesProvider? TimeSeriesProvider { get; }
 
     /// <summary>
-    /// Source of known outages.
+    ///     Source of known outages.
     /// </summary>
     public IKnownOutagesProvider? KnownOutagesProvider { get; }
 
     /// <summary>
-    /// Defines alert score calculation.
+    ///     Defines alert score calculation.
     /// </summary>
     public IAlertScoreCalculator? AlertScoreCalculator { get; }
 
     /// <summary>
-    /// Allows manipulation with <see cref="AlertConfiguration"/>
+    ///     Allows manipulation with <see cref="AlertConfiguration" />
     /// </summary>
     public IConfigurationFactory? ConfigurationFactory { get; }
 
     /// <summary>
-    /// Alert to be evaluated.
+    ///     Alert to be evaluated.
     /// </summary>
     public IAlert? Alert { get; }
 
     /// <summary>
-    /// Configuration type used by <see cref="IAlert"/>
+    ///     Configuration type used by <see cref="IAlert" />
     /// </summary>
     public Type? AlertConfigurationType { get; }
 
     /// <summary>
-    /// Configures <see cref="TrainingBuilder"/> with <paramref name="provider"/>
+    ///     Creates an uninitialized instance of <see cref="TrainingBuilder" />
+    /// </summary>
+    /// <returns></returns>
+    public static TrainingBuilder Create()
+    {
+        return new TrainingBuilder(timeSeriesProvider: null, knownOutagesProvider: null, alertScoreCalculator: null,
+            configurationFactory: null, alert: null, alertConfigurationType: null, eventStore: null);
+    }
+
+    /// <summary>
+    ///     Configures <see cref="TrainingBuilder" /> with <paramref name="provider" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithTimeSeriesProvider(ITimeSeriesProvider provider)
@@ -104,7 +112,7 @@ public class TrainingBuilder
     }
 
     /// <summary>
-    /// Configures <see cref="TrainingBuilder"/> with <paramref name="alertInstance"/>
+    ///     Configures <see cref="TrainingBuilder" /> with <paramref name="alertInstance" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithAlert<T>(IAlert<T> alertInstance) where T : AlertConfiguration
@@ -116,7 +124,7 @@ public class TrainingBuilder
     }
 
     /// <summary>
-    /// Configures <see cref="TrainingBuilder"/> with <paramref name="provider"/>
+    ///     Configures <see cref="TrainingBuilder" /> with <paramref name="provider" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithKnownOutagesProvider(IKnownOutagesProvider provider)
@@ -126,7 +134,8 @@ public class TrainingBuilder
     }
 
     /// <summary>
-    /// Overrides <see cref="TrainingBuilder"/> with <paramref name="calculator"/> instead of <see cref="DefaultAlertScoreCalculator"/>
+    ///     Overrides <see cref="TrainingBuilder" /> with <paramref name="calculator" /> instead of
+    ///     <see cref="DefaultAlertScoreCalculator" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithCustomAlertScoreCalculator(IAlertScoreCalculator calculator)
@@ -136,7 +145,8 @@ public class TrainingBuilder
     }
 
     /// <summary>
-    /// Overrides <see cref="TrainingBuilder"/> with <paramref name="factory"/> instead of <see cref="DefaultConfigurationFactory{T}"/>
+    ///     Overrides <see cref="TrainingBuilder" /> with <paramref name="factory" /> instead of
+    ///     <see cref="DefaultConfigurationFactory{T}" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithCustomConfigurationFactory<T>(IConfigurationFactory<T> factory)
@@ -148,7 +158,8 @@ public class TrainingBuilder
     }
 
     /// <summary>
-    /// Overrides <see cref="TrainingBuilder"/> with <paramref name="eventStore"/> instead of <see cref="InMemoryEventStore"/>
+    ///     Overrides <see cref="TrainingBuilder" /> with <paramref name="eventStore" /> instead of
+    ///     <see cref="InMemoryEventStore" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithCustomEventStore(IEventStore eventStore)
@@ -169,6 +180,13 @@ public class TrainingBuilder
             EventStore ?? new InMemoryEventStore());
     }
 
+    // ReSharper disable once UnusedMember.Local
+    // Used via Reflection
+    private IGeneticOptimizer GenericBuildEmpty<T>() where T : AlertConfiguration, new()
+    {
+        return new GeneticOptimizerStateMachine<T>(EventStore ?? new InMemoryEventStore());
+    }
+
     private void CheckConfigurationType(Type incomingType)
     {
         if (AlertConfigurationType == null)
@@ -186,15 +204,28 @@ public class TrainingBuilder
     }
 
     /// <summary>
-    /// Creates a new <see cref="IGeneticOptimizer"/> instance according to configured values.
+    ///     Creates a new <see cref="IGeneticOptimizer" /> instance according to configured values.
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="ArgumentNullException">Indicates that one of the mandatory properties (<see cref="Alert"/>, <see cref="TimeSeriesProvider"/>, <see cref="KnownOutagesProvider"/>) was not configured.</exception>
+    /// <exception cref="ArgumentNullException">
+    ///     Indicates that one of the mandatory properties (<see cref="Alert" />,
+    ///     <see cref="TimeSeriesProvider" />, <see cref="KnownOutagesProvider" />) was not configured.
+    /// </exception>
     public IGeneticOptimizer Build()
     {
         var configurationType = AlertConfigurationType
                                 ?? throw new ArgumentNullException(nameof(AlertConfigurationType));
 
         return (IGeneticOptimizer)GenericBuildInfo.MakeGenericMethod(configurationType).Invoke(this, [])!;
+    }
+
+    /// <summary>
+    ///     Creates a new <see cref="IGeneticOptimizer" /> instance without any configuration;
+    /// </summary>
+    /// <param name="configurationType"></param>
+    /// <returns></returns>
+    public IGeneticOptimizer CreateEmpty(Type configurationType)
+    {
+        return (IGeneticOptimizer)GenericBuildEmptyInfo.MakeGenericMethod(configurationType).Invoke(this, [])!;
     }
 }

@@ -1,17 +1,16 @@
 ﻿namespace Alerting.ML.Engine.Extensions;
 
 /// <summary>
-/// Linq-like extensions for <see cref="Span{T}"/>
+///     Linq-like extensions for <see cref="Span{T}" />
 /// </summary>
 public static class SpanExtensions
 {
-
     /// <param name="source">Source span</param>
     /// <typeparam name="T">Span element type</typeparam>
     extension<T>(ReadOnlySpan<T> source)
     {
         /// <summary>
-        /// Computes an average value in a span
+        ///     Computes an average value in a span
         /// </summary>
         /// <param name="selector">Value selector</param>
         /// <returns></returns>
@@ -26,7 +25,7 @@ public static class SpanExtensions
         }
 
         /// <summary>
-        /// Computes a sum of values in a span
+        ///     Computes a sum of values in a span
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
@@ -44,7 +43,7 @@ public static class SpanExtensions
 
 
         /// <summary>
-        /// Computes minimal value in a span
+        ///     Computes minimal value in a span
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
@@ -54,10 +53,9 @@ public static class SpanExtensions
             if (source.Length == 0)
             {
                 throw new InvalidOperationException("Span is empty");
-
             }
 
-            var min = selector(source[0]);
+            var min = selector(source[index: 0]);
             for (var index = 1; index < source.Length; index++)
             {
                 min = Math.Min(min, selector(source[index]));
@@ -67,7 +65,7 @@ public static class SpanExtensions
         }
 
         /// <summary>
-        /// Computes maximum value in a span
+        ///     Computes maximum value in a span
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
@@ -77,10 +75,9 @@ public static class SpanExtensions
             if (source.Length == 0)
             {
                 throw new InvalidOperationException("Span is empty");
-
             }
 
-            var max = selector(source[0]);
+            var max = selector(source[index: 0]);
 
             for (var index = 1; index < source.Length; index++)
             {
