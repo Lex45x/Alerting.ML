@@ -6,11 +6,10 @@ using Alerting.ML.Engine.Storage;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.Logging;
 
 namespace Alerting.ML.App;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {

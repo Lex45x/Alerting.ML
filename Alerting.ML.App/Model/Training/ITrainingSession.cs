@@ -20,13 +20,13 @@ public interface ITrainingSession
     double FitnessDiff { get; }
     int TotalEvaluations { get; }
     double ProgressPercentage { get; }
-    CloudProvider AlertProvider {get;}
-    DateTime CreatedAt {get;}
+    CloudProvider AlertProvider { get; }
+    DateTime CreatedAt { get; }
     TimeSpan Elapsed { get; }
     double RemainingMinutes { get; }
     OptimizationConfiguration CurrentConfiguration { get; }
+    bool IsPaused { get; }
     void Start(OptimizationConfiguration configuration);
     void Stop();
-    bool IsPaused { get; }
     Task Hydrate(Guid aggregateId);
 }

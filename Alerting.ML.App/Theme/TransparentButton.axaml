@@ -7,7 +7,7 @@
             </StackPanel>
         </Border>
     </Design.PreviewWith>
-    <SolidColorBrush x:Key="Color.TransparentButtonClicked" Color="#191b1E"/>
+    <SolidColorBrush x:Key="Color.TransparentButtonClicked" Color="#191b1E" />
     <ControlTheme x:Key="TransparentButton" TargetType="Button">
         <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
         <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />

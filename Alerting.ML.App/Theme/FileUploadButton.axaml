@@ -44,8 +44,7 @@
                                StrokeDashArray="4,2"
                                HorizontalAlignment="Stretch"
                                VerticalAlignment="Stretch"
-                               RadiusX="10" RadiusY="10">
-                    </Rectangle>
+                               RadiusX="10" RadiusY="10" />
                     <ContentPresenter x:Name="PART_ContentPresenter" Margin="{TemplateBinding Padding}"
                                       Foreground="{TemplateBinding Foreground}"
                                       Content="{TemplateBinding Content}"

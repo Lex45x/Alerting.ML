@@ -8,7 +8,8 @@
                          VerticalContentAlignment="Center"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16"
+                             Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
                 <TextBox Theme="{StaticResource SearchBox}" Width="300"
@@ -16,14 +17,15 @@
                          VerticalContentAlignment="Center"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16"
+                             Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
-    <SolidColorBrush x:Key="Color.SearchBoxBorder" Color="#354052"/>
-    <SolidColorBrush x:Key="Color.SearchBoxBorderFocus" Color="#525252"/>
+    <SolidColorBrush x:Key="Color.SearchBoxBorder" Color="#354052" />
+    <SolidColorBrush x:Key="Color.SearchBoxBorderFocus" Color="#525252" />
     <ControlTheme x:Key="SearchBox" TargetType="TextBox">
         <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
         <Setter Property="Background" Value="{StaticResource Color.InputBackground}" />
@@ -49,19 +51,16 @@
                             CornerRadius="{TemplateBinding CornerRadius}"
                             MinWidth="{TemplateBinding MinWidth}"
                             MinHeight="{TemplateBinding MinHeight}"
-                            Margin="5">
-                        </Border>
+                            Margin="5" />
 
                         <Border
                             Margin="{TemplateBinding BorderThickness}">
                             <Grid ColumnDefinitions="Auto,*,Auto">
                                 <ContentPresenter Grid.Column="0"
-                                                  Grid.ColumnSpan="1"
                                                   VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   Content="{TemplateBinding InnerLeftContent}" />
                                 <DockPanel x:Name="PART_InnerDockPanel"
                                            Grid.Column="1"
-                                           Grid.ColumnSpan="1"
                                            Margin="{TemplateBinding Padding}">
                                     <TextBlock Name="PART_FloatingWatermark"
                                                Foreground="{DynamicResource SystemAccentColor}"
@@ -118,7 +117,6 @@
                                     </ScrollViewer>
                                 </DockPanel>
                                 <ContentPresenter Grid.Column="2"
-                                                  Grid.ColumnSpan="1"
                                                   VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   Content="{TemplateBinding InnerRightContent}" />
                             </Grid>
@@ -146,12 +144,12 @@
         <Style Selector="^:pointerover">
             <Setter Property="Cursor" Value="IBeam" />
         </Style>
-		
+
         <!-- Focused State -->
         <Style Selector="^:focus">
             <Style Selector="^ /template/ Border#PART_BorderElement">
                 <Setter Property="BorderBrush" Value="{StaticResource Color.SearchBoxBorderFocus}" />
-                <Setter Property="BoxShadow" Value="0 0 5 3 #2E3036"/>
+                <Setter Property="BoxShadow" Value="0 0 5 3 #2E3036" />
             </Style>
         </Style>
 

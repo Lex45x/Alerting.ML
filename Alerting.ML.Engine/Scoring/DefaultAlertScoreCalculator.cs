@@ -4,7 +4,7 @@ using Alerting.ML.Engine.Data;
 namespace Alerting.ML.Engine.Scoring;
 
 /// <summary>
-/// Creates a <see cref="AlertScoreCard"/> based on detected outages comparison to known outages.
+///     Creates a <see cref="AlertScoreCard" /> based on detected outages comparison to known outages.
 /// </summary>
 public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 {
@@ -27,7 +27,7 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
             totalCount++;
             var matchingOutage = knownOutages.SingleOrDefault(outage =>
                 TimeSpan.FromTicks(Math.Abs((outage.StartTime - alertOutage.StartTime).Ticks)) <
-                TimeSpan.FromHours(1));
+                TimeSpan.FromHours(hours: 1));
 
             if (matchingOutage == null)
             {
@@ -58,10 +58,10 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
         }
         else
         {
-            median = TimeSpan.FromDays(1);
+            median = TimeSpan.FromDays(days: 1);
         }
 
-        var precision = ((double)truePositiveCount) / (Math.Max(totalCount, 1));
+        var precision = (double)truePositiveCount / Math.Max(totalCount, val2: 1);
         var falseNegativeRate = ((double)knownOutages.Count - detectedOutages.Count) / knownOutages.Count;
         var isNotFeasible = totalCount == 0 || precision < OnePercent;
 

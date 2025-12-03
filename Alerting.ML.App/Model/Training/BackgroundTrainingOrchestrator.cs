@@ -1,13 +1,10 @@
-﻿using Alerting.ML.Engine.Optimizer;
-using DynamicData;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Alerting.ML.Engine;
+using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Storage;
 
@@ -30,12 +27,12 @@ public class BackgroundTrainingOrchestrator : IBackgroundTrainingOrchestrator
         var trainingSession = new TrainingSession(optimizer);
 
         AllSessions.Add(trainingSession);
-        
+
         trainingSession.Start(OptimizationConfiguration.Default);
 
         return trainingSession;
     }
-    
+
     public async Task ImportFromEventStore()
     {
         var hydrationTasks = new List<Task>();

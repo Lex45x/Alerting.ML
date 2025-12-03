@@ -35,12 +35,13 @@
                        ItemSpacing="12" LineSpacing="10"
                        VerticalAlignment="Center">
                 <TextBox Width="300"
-                         VerticalAlignment="Center" 
+                         VerticalAlignment="Center"
                          VerticalContentAlignment="Center"
                          Theme="{StaticResource SearchBox}"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
-                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16" Margin="10,0,0,0" />
+                        <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16"
+                             Margin="10,0,0,0" />
                     </TextBox.InnerLeftContent>
                 </TextBox>
 
@@ -89,7 +90,7 @@
             </Interaction.Behaviors>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <components:TrainingCard Command="{Binding $parent[ListBox].DataContext.OpenSessionCommand}"/>
+                    <components:TrainingCard Command="{Binding $parent[ListBox].DataContext.OpenSessionCommand}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>

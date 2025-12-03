@@ -10,7 +10,7 @@
             </StackPanel>
         </Border>
     </Design.PreviewWith>
-    <SolidColorBrush x:Key="Color.DataSourceRadioButtonDisabled" Color="#E012161D"/>
+    <SolidColorBrush x:Key="Color.DataSourceRadioButtonDisabled" Color="#E012161D" />
     <ControlTheme TargetType="RadioButton" x:Key="DataSourceRadioButton">
         <Setter Property="Background" Value="{StaticResource Color.Bg3}" />
         <Setter Property="CornerRadius" Value="8" />
@@ -63,10 +63,11 @@
                         </Border>
                         <Border x:Name="PART_DisabledBanner" Grid.Column="0" Grid.ColumnSpan="2"
                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                                 Background="{StaticResource Color.DataSourceRadioButtonDisabled}" ZIndex="1"
                                 Margin="-24">
-                            <TextBlock Classes="h3" Text="Coming Soon" Foreground="{StaticResource Color.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"/>
+                            <TextBlock Classes="h3" Text="Coming Soon" Foreground="{StaticResource Color.Foreground}"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5" />
                         </Border>
 
                     </Grid>

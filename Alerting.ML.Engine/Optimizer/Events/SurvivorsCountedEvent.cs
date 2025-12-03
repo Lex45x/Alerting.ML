@@ -4,7 +4,8 @@ using Alerting.ML.Engine.Storage;
 namespace Alerting.ML.Engine.Optimizer.Events;
 
 /// <summary>
-/// Contains a list of survivors from current generation according to <see cref="OptimizationConfiguration.SurvivorPercentage"/>
+///     Contains a list of survivors from current generation according to
+///     <see cref="OptimizationConfiguration.SurvivorPercentage" />
 /// </summary>
 /// <param name="Survivors">Survived configuration.</param>
 /// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>

@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:training="clr-namespace:Alerting.ML.App.Views.Training"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
-             xmlns:effects="clr-namespace:LiveChartsCore.SkiaSharpView.Painting.Effects;assembly=LiveChartsCore.SkiaSharpView"
-             xmlns:cloudProvider="clr-namespace:Alerting.ML.App.Converters.CloudProvider"
              xmlns:progressBar="clr-namespace:Alerting.ML.App.Converters.ProgressBar"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1000"
              x:Class="Alerting.ML.App.Views.Training.TrainingView">
@@ -176,9 +174,10 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Text="Mutation Rate" Classes="p"
                                                Grid.Column="0" />
-                                    <TextBlock Text="{Binding Session.CurrentConfiguration.MutationProbability, StringFormat={}{0:P0}}"
-                                               Grid.Column="1"
-                                               FontSize="12" />
+                                    <TextBlock
+                                        Text="{Binding Session.CurrentConfiguration.MutationProbability, StringFormat={}{0:P0}}"
+                                        Grid.Column="1"
+                                        FontSize="12" />
                                 </Grid>
 
                                 <Grid ColumnDefinitions="*,Auto">
@@ -204,8 +203,9 @@
                     <!-- Action Buttons -->
                     <StackPanel Spacing="8">
                         <Button Classes="accent" Theme="{StaticResource ArrowButton}" Content="Resume Training"
-                                HorizontalAlignment="Stretch" Command="{Binding ResumeCommand}"/>
-                        <Button Theme="{StaticResource ArrowButton}" Content="Pause Training" Command="{Binding PauseCommand}"
+                                HorizontalAlignment="Stretch" Command="{Binding ResumeCommand}" />
+                        <Button Theme="{StaticResource ArrowButton}" Content="Pause Training"
+                                Command="{Binding PauseCommand}"
                                 HorizontalAlignment="Stretch" />
                     </StackPanel>
                 </StackPanel>

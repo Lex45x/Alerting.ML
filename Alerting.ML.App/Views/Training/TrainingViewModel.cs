@@ -8,7 +8,6 @@ using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
-using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Training;
@@ -31,22 +30,14 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
             })
             .DisposeWith(Disposables);
 
-        ResumeCommand = ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration)));
+        ResumeCommand =
+            ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration)));
         PauseCommand = ReactiveCommand.Create(session.Stop);
-    }
-
-    private void GoBack()
-    {
-        HostScreen.Router.NavigateBack.Execute();
     }
 
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
     public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
     public ReactiveCommand<Unit, Unit> PauseCommand { get; }
-
-
-    public string? UrlPathSegment => "training";
-    public IScreen HostScreen { get; }
 
     public ITrainingSession Session
     {
@@ -59,6 +50,15 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
     } = new();
+
+
+    public string? UrlPathSegment => "training";
+    public IScreen HostScreen { get; }
+
+    private void GoBack()
+    {
+        HostScreen.Router.NavigateBack.Execute();
+    }
 }
 
 public class TrainingViewModelDesignTime : TrainingViewModel
@@ -76,7 +76,9 @@ internal class DesignTimeTrainingSession : ITrainingSession
     public string Name => "Design-time Training";
     public ObservableCollection<double> PopulationDiversity { get; } = [12, 3, 5, 99, 3.5, 6, 1];
     public ObservableCollection<double> AverageGenerationFitness { get; } = [0.3, 0.1, 0.5, 0.6, 0.66, 0.7];
+
     public ObservableCollection<double> BestGenerationFitness { get; } = [0.4, 0.4, 0.55, 0.65, 0.8, 0.91];
+
     // todo: will be initialized later for other views
     public ObservableCollection<AlertScoreCard> TopConfigurations { get; } = [];
     public int CurrentGeneration => 25;
@@ -86,7 +88,7 @@ internal class DesignTimeTrainingSession : ITrainingSession
     public double ProgressPercentage => 25.0 / CurrentConfiguration.TotalGenerations;
     public CloudProvider AlertProvider => CloudProvider.Azure;
     public DateTime CreatedAt => DateTime.UtcNow;
-    public TimeSpan Elapsed => TimeSpan.FromSeconds(124);
+    public TimeSpan Elapsed => TimeSpan.FromSeconds(seconds: 124);
     public double RemainingMinutes => 12.5;
     public OptimizationConfiguration CurrentConfiguration => OptimizationConfiguration.Default;
 
@@ -101,6 +103,7 @@ internal class DesignTimeTrainingSession : ITrainingSession
     }
 
     public bool IsPaused => true;
+
     public async Task Hydrate(Guid aggregateId)
     {
         throw new NotImplementedException();

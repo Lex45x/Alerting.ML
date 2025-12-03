@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
 using Alerting.ML.App.Model.Enums;
-using Alerting.ML.App.Model.Training;
 using Alerting.ML.Engine;
 using Alerting.ML.Sources.Csv;
 using ReactiveUI;
@@ -27,9 +26,22 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
             .DisposeWith(Disposables);
     }
 
+    protected override string Title => "Upload Outages CSV";
+
 
     public string? UrlPathSegment => "step4";
     public IScreen HostScreen { get; }
+
+    public void Continue()
+    {
+        HostScreen.Router.Navigate.Execute(
+            new TrainingCreationFifthStepViewModel(HostScreen,
+                builderWithOutagesProvider ??
+                throw new InvalidOperationException("Most likely CSV file is not selected.")));
+    }
+
+
+    public TrainingCreationStep CurrentStep => TrainingCreationStep.Step4;
 
     private async Task ConfigureBuilder(string? path)
     {
@@ -59,16 +71,6 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
             builderWithOutagesProvider = updatedBuilder;
         }
     }
-
-    public void Continue()
-    {
-        HostScreen.Router.Navigate.Execute(
-            new TrainingCreationFifthStepViewModel(HostScreen, builderWithOutagesProvider ?? throw new InvalidOperationException("Most likely CSV file is not selected.")));
-    }
-
-
-    public TrainingCreationStep CurrentStep => TrainingCreationStep.Step4;
-    protected override string Title => "Upload Outages CSV";
 }
 
 public class TrainingCreationFourthStepViewModelDesignTime : TrainingCreationFourthStepViewModel

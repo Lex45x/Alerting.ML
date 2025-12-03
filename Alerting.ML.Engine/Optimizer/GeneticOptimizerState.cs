@@ -7,116 +7,127 @@ using Alerting.ML.Engine.Storage;
 namespace Alerting.ML.Engine.Optimizer;
 
 /// <summary>
-/// Json-serialization-friendly representation of the <see cref="GeneticOptimizerStateMachine{T}"/> internal state.
-/// Can be mutated only by sending supported <see cref="IEvent"/> into <see cref="Apply"/>
+///     Json-serialization-friendly representation of the <see cref="GeneticOptimizerStateMachine{T}" /> internal state.
+///     Can be mutated only by sending supported <see cref="IEvent" /> into <see cref="Apply" />
 /// </summary>
-/// <typeparam name="T">Target <see cref="AlertConfiguration"/> of underlying <see cref="IAlert"/></typeparam>
+/// <typeparam name="T">Target <see cref="AlertConfiguration" /> of underlying <see cref="IAlert" /></typeparam>
 public class GeneticOptimizerState<T> where T : AlertConfiguration
 {
+    private readonly Queue<T> evaluationQueue = new();
+
+    private readonly List<AlertScoreCard> generationScores = new();
+    private readonly Queue<(T, IEnumerable<Outage>)> scoreComputationQueue = new();
+
     /// <summary>
-    /// Creates new instance and initializes the <see cref="State"/>
+    ///     Creates new instance and initializes the <see cref="State" />
     /// </summary>
     public GeneticOptimizerState()
     {
     }
 
     /// <summary>
-    /// An Id of the optimization run. Used for storage purposes.
+    ///     An Id of the optimization run. Used for storage purposes.
     /// </summary>
     public Guid Id { get; private set; }
 
     /// <summary>
-    /// Indicates current version of the state. Practically means a count of applied events.
+    ///     Indicates current version of the state. Practically means a count of applied events.
     /// </summary>
-    public int Version { get; private set; } = 0;
+    public int Version { get; private set; }
 
     /// <summary>
-    /// User-friendly generated name of the session.
+    ///     User-friendly generated name of the session.
     /// </summary>
     public string? Name { get; private set; }
 
     /// <summary>
-    /// Name of the alert provider used in this session.
+    ///     Name of the alert provider used in this session.
     /// </summary>
     public string? ProviderName { get; private set; }
 
     /// <summary>
-    /// Alert rule being optimized.
+    ///     Alert rule being optimized.
     /// </summary>
     public IAlert<T>? Alert { get; private set; }
 
     /// <summary>
-    /// Provider of relevant metric.
+    ///     Provider of relevant metric.
     /// </summary>
     public ITimeSeriesProvider? TimeSeriesProvider { get; private set; }
 
     /// <summary>
-    /// Provider of known outages.
+    ///     Provider of known outages.
     /// </summary>
     public IKnownOutagesProvider? KnownOutagesProvider { get; private set; }
 
     /// <summary>
-    /// Calculates alert score based on detected outages.
+    ///     Calculates alert score based on detected outages.
     /// </summary>
     public IAlertScoreCalculator? AlertScoreCalculator { get; private set; }
 
     /// <summary>
-    /// A relevant factory for <typeparamref name="T"/>
+    ///     A relevant factory for <typeparamref name="T" />
     /// </summary>
     public IConfigurationFactory<T>? ConfigurationFactory { get; private set; }
 
     /// <summary>
-    /// Configuration of the optimization process.
+    ///     Configuration of the optimization process.
     /// </summary>
     public OptimizationConfiguration? Configuration { get; private set; }
 
     /// <summary>
-    /// Indicates a current state for <see cref="GeneticOptimizerStateMachine{T}"/>
+    ///     Indicates a current state for <see cref="GeneticOptimizerStateMachine{T}" />
     /// </summary>
     public GeneticOptimizerStateEnum? State { get; private set; }
 
     /// <summary>
-    /// Has the best score from all generations.
+    ///     Has the best score from all generations.
     /// </summary>
     public AlertScoreCard? BestScore { get; private set; }
 
-    private readonly Queue<T> evaluationQueue = new();
-    private readonly Queue<(T, IEnumerable<Outage>)> scoreComputationQueue = new();
-
     /// <summary>
-    /// When state is <see cref="GeneticOptimizerStateEnum.Evaluation"/> contains the next <see cref="AlertConfiguration"/> to be evaluated.
+    ///     When state is <see cref="GeneticOptimizerStateEnum.Evaluation" /> contains the next
+    ///     <see cref="AlertConfiguration" /> to be evaluated.
     /// </summary>
     public T NextEvaluation => evaluationQueue.Peek();
 
     /// <summary>
-    /// When state is <see cref="GeneticOptimizerStateEnum.ScoreComputation"/> contains <see cref="Configuration"/> and a list of <see cref="Outage"/> to compute score for.
+    ///     When state is <see cref="GeneticOptimizerStateEnum.ScoreComputation" /> contains <see cref="Configuration" /> and a
+    ///     list of <see cref="Outage" /> to compute score for.
     /// </summary>
     public (T, IEnumerable<Outage>) NextScoreComputation => scoreComputationQueue.Peek();
 
-    private readonly List<AlertScoreCard> generationScores = new();
-
     /// <summary>
-    /// After <see cref="GeneticOptimizerStateEnum.ScoreComputation"/> will contain a list of computed scores for a given generations. Resets when <see cref="GeneticOptimizerStateEnum.Tournament"/> is completed.
+    ///     After <see cref="GeneticOptimizerStateEnum.ScoreComputation" /> will contain a list of computed scores for a given
+    ///     generations. Resets when <see cref="GeneticOptimizerStateEnum.Tournament" /> is completed.
     /// </summary>
     public IReadOnlyList<AlertScoreCard> GenerationScores => generationScores;
 
     /// <summary>
-    /// Contains a list of !<see cref="AlertScoreCard.IsNotFeasible"/> scorecards that will participate in tournament.
+    ///     Contains a list of !<see cref="AlertScoreCard.IsNotFeasible" /> scorecards that will participate in tournament.
     /// </summary>
     public IReadOnlyList<AlertScoreCard> EligibleForTournament { get; private set; } = [];
 
     /// <summary>
-    /// Indicates a current generation.
+    ///     Indicates a current generation.
     /// </summary>
     public int GenerationIndex { get; private set; }
 
+    /// <summary>
+    ///     Datetime when optimization was created.
+    /// </summary>
+    public DateTime CreatedAt { get; private set; }
+
 
     /// <summary>
-    /// Applies an <see cref="IEvent"/> to state.
+    ///     Applies an <see cref="IEvent" /> to state.
     /// </summary>
     /// <param name="event">Instance of event.</param>
     /// <typeparam name="TEvent">A type of event.</typeparam>
-    /// <returns>Whether event was applied or not. <value>false</value> when critical error has occured and optimization can't continue.</returns>
+    /// <returns>Whether event was applied or not.
+    ///     <value>false</value>
+    ///     when critical error has occured and optimization can't continue.
+    /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">When unknown event is supplied. Indicates engineer's error.</exception>
     public bool Apply<TEvent>(TEvent @event) where TEvent : IEvent
     {
@@ -139,7 +150,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
             OptimizerConfiguredEvent optimizerConfigured => Handle(optimizerConfigured),
             TournamentRoundCompletedEvent<T> tournamentRoundCompleted => Handle(
                 tournamentRoundCompleted),
-            _ => throw new ArgumentOutOfRangeException(nameof(@event), @event, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(@event), @event, message: null)
         };
     }
 
@@ -157,11 +168,6 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
         State = GeneticOptimizerStateEnum.Created;
         return true;
     }
-
-    /// <summary>
-    /// Datetime when optimization was created.
-    /// </summary>
-    public DateTime CreatedAt { get; private set; }
 
     private bool Handle(OptimizerConfiguredEvent optimizerConfigured)
     {

@@ -13,7 +13,7 @@
     </Design.DataContext>
     <Interaction.Behaviors>
         <DetachedFromVisualTreeTrigger>
-            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+            <InvokeCommandAction Command="{Binding DisposeCommand}" />
         </DetachedFromVisualTreeTrigger>
     </Interaction.Behaviors>
     <Grid RowDefinitions="Auto, Auto, *, Auto">
@@ -21,7 +21,8 @@
             <StackPanel Margin="24, 16" Orientation="Horizontal"
                         Spacing="8"
                         VerticalAlignment="Center">
-                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36" Command="{Binding CancelCommand}">
+                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36"
+                        Command="{Binding CancelCommand}">
                     <Svg Path="avares://Alerting.ML.App/Assets/goback-icon.svg" />
                 </Button>
                 <StackPanel Spacing="2">
@@ -32,17 +33,17 @@
         </Border>
 
         <UniformGrid Grid.Row="1" Columns="5" Margin="24,32">
-            <components:TrainingCreationStepIndicator IndicatorStep="Step1" CurrentStep="{Binding Step}"/>
-            <components:TrainingCreationStepIndicator IndicatorStep="Step2" CurrentStep="{Binding Step}"/>
-            <components:TrainingCreationStepIndicator IndicatorStep="Step3" CurrentStep="{Binding Step}"/>
-            <components:TrainingCreationStepIndicator IndicatorStep="Step4" CurrentStep="{Binding Step}"/>
-            <components:TrainingCreationStepIndicator IndicatorStep="Step5" CurrentStep="{Binding Step}"/>
+            <components:TrainingCreationStepIndicator IndicatorStep="Step1" CurrentStep="{Binding Step}" />
+            <components:TrainingCreationStepIndicator IndicatorStep="Step2" CurrentStep="{Binding Step}" />
+            <components:TrainingCreationStepIndicator IndicatorStep="Step3" CurrentStep="{Binding Step}" />
+            <components:TrainingCreationStepIndicator IndicatorStep="Step4" CurrentStep="{Binding Step}" />
+            <components:TrainingCreationStepIndicator IndicatorStep="Step5" CurrentStep="{Binding Step}" />
         </UniformGrid>
 
         <Border Grid.Row="2" Margin="24, 0, 24, 24" Padding="32, 32" CornerRadius="12" Classes="panel">
             <avalonia:RoutedViewHost Router="{Binding Router}">
                 <avalonia:RoutedViewHost.DefaultContent>
-                    <TextBlock Text="If you see this then something is VERY broken"/>
+                    <TextBlock Text="If you see this then something is VERY broken" />
                 </avalonia:RoutedViewHost.DefaultContent>
                 <avalonia:RoutedViewHost.ViewLocator>
                     <routing:AppViewLocator />
@@ -51,9 +52,13 @@
         </Border>
 
         <Grid Grid.Row="3" Margin="24" VerticalAlignment="Top">
-            <Button Theme="{StaticResource ArrowButton}" Classes="left" Content="Cancel" HorizontalAlignment="Left" Command="{Binding GoBackCommand}"/>
-            <Button Theme="{StaticResource ArrowButton}" Classes="accent right" Content="Continue" HorizontalAlignment="Right" Command="{Binding ContinueCommand}" IsVisible="{Binding IsNotLastStep}"/>
-            <Button Theme="{StaticResource GradientButton}" Classes="check" Content="Start Optimization" HorizontalAlignment="Right" Command="{Binding StartOptimizationCommand}" IsVisible="{Binding IsLastStep}"/>
+            <Button Theme="{StaticResource ArrowButton}" Classes="left" Content="Cancel" HorizontalAlignment="Left"
+                    Command="{Binding GoBackCommand}" />
+            <Button Theme="{StaticResource ArrowButton}" Classes="accent right" Content="Continue"
+                    HorizontalAlignment="Right" Command="{Binding ContinueCommand}" IsVisible="{Binding IsNotLastStep}" />
+            <Button Theme="{StaticResource GradientButton}" Classes="check" Content="Start Optimization"
+                    HorizontalAlignment="Right" Command="{Binding StartOptimizationCommand}"
+                    IsVisible="{Binding IsLastStep}" />
         </Grid>
 
     </Grid>

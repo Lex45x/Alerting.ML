@@ -1,32 +1,33 @@
 ﻿using System.Collections.Immutable;
-using System.Reflection.Metadata.Ecma335;
 using Alerting.ML.Engine.Data;
 using FluentValidation.Results;
 
 namespace Alerting.ML.Sources.Csv;
 
 /// <summary>
-/// Reads known outages from CSV file <paramref name="filePath"/>
+///     Reads known outages from CSV file <paramref name="filePath" />
 /// </summary>
 /// <param name="filePath">Path to CSV file.</param>
 public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
 {
+    private ImmutableArray<Metric>? metrics;
+
     /// <summary>
-    /// <see cref="Path.GetFileName(string?)"/> applied to <see cref="FilePath"/> 
+    ///     <see cref="Path.GetFileName(string?)" /> applied to <see cref="FilePath" />
     /// </summary>
     public string FileName => Path.GetFileName(FilePath);
+
     /// <summary>
-    /// Full path to selected CSV file.
+    ///     Full path to selected CSV file.
     /// </summary>
     public string FilePath { get; } = filePath;
 
     /// <inheritdoc />
     public ImmutableArray<Metric> GetTimeSeries()
     {
-        return metrics ?? throw new InvalidOperationException($"{nameof(CsvTimeSeriesProvider)} is not initialized or invalid! Make sure to call {nameof(ImportAndValidate)} before attempting to retrieve time-series.");
+        return metrics ?? throw new InvalidOperationException(
+            $"{nameof(CsvTimeSeriesProvider)} is not initialized or invalid! Make sure to call {nameof(ImportAndValidate)} before attempting to retrieve time-series.");
     }
-
-    private ImmutableArray<Metric>? metrics;
 
     /// <inheritdoc />
     public async Task<ValidationResult> ImportAndValidate()
@@ -60,7 +61,10 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
 
         if (csvSeparator == null)
         {
-            return new ValidationResult([new ValidationFailure(nameof(FilePath), "Unable to identify CSV file separator. Make sure to use one of the supported values: ';' ',' '\\t'")]);
+            return new ValidationResult([
+                new ValidationFailure(nameof(FilePath),
+                    "Unable to identify CSV file separator. Make sure to use one of the supported values: ';' ',' '\\t'")
+            ]);
         }
 
         // check if header has column names or date-time data.
@@ -69,7 +73,7 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
         for (var index = 0; index < firstLineParts.Length; index++)
         {
             var part = firstLineParts[index];
-            if (!DateTime.TryParse(part, out var _) && !double.TryParse(part, out var _))
+            if (!DateTime.TryParse(part, out _) && !double.TryParse(part, out _))
             {
                 continue;
             }
@@ -88,7 +92,7 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
             {
                 return new ValidationResult([
                     new ValidationFailure(nameof(FilePath),
-                            "CSV File contains only header row and no data!")
+                        "CSV File contains only header row and no data!")
                 ]);
             }
         }
@@ -135,10 +139,10 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
         {
             return new ValidationResult([
                 new ValidationFailure(nameof(FilePath),
-                        $"Line #{lineIndex + 1} does not contain both necessary columns. CSV with time-series must contain exactly 1 date-time value and 1 double value on each row.")
+                    $"Line #{lineIndex + 1} does not contain both necessary columns. CSV with time-series must contain exactly 1 date-time value and 1 double value on each row.")
             ]);
         }
-        
+
         // proceed to CSV parsing
         var errorList = new List<ValidationFailure>();
         while (!string.IsNullOrWhiteSpace(currentLine))
@@ -149,19 +153,22 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
             {
                 if (!DateTime.TryParse(rowParts[timestampIndex], out var timestamp))
                 {
-                    errorList.Add(new ValidationFailure(nameof(FilePath), $"Line #{lineIndex + 1} contains invalid date time at position {timestampIndex}."));
+                    errorList.Add(new ValidationFailure(nameof(FilePath),
+                        $"Line #{lineIndex + 1} contains invalid date time at position {timestampIndex}."));
                 }
 
                 if (!double.TryParse(rowParts[valueIndex], out var value))
                 {
-                    errorList.Add(new ValidationFailure(nameof(FilePath), $"Line #{lineIndex + 1} contains invalid double at position {valueIndex}."));
+                    errorList.Add(new ValidationFailure(nameof(FilePath),
+                        $"Line #{lineIndex + 1} contains invalid double at position {valueIndex}."));
                 }
 
                 result.Add(new Metric(timestamp, value));
             }
             else
             {
-                errorList.Add(new ValidationFailure(nameof(FilePath), $"Line #{lineIndex + 1} contains invalid amount of elements. Expected to find a date time and double at indexes {timestampIndex} and {valueIndex}"));
+                errorList.Add(new ValidationFailure(nameof(FilePath),
+                    $"Line #{lineIndex + 1} contains invalid amount of elements. Expected to find a date time and double at indexes {timestampIndex} and {valueIndex}"));
             }
 
             currentLine = await reader.ReadLineAsync();
@@ -177,5 +184,4 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
 
         return new ValidationResult();
     }
-
 }

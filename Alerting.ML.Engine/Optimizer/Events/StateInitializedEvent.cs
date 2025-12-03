@@ -6,7 +6,7 @@ using Alerting.ML.Engine.Storage;
 namespace Alerting.ML.Engine.Optimizer.Events;
 
 /// <summary>
-/// The first event that initializes <see cref="GeneticOptimizerState{T}"/> <br/>
+///     The first event that initializes <see cref="GeneticOptimizerState{T}" /> <br />
 /// </summary>
 /// <param name="Id">Id of the optimization session.</param>
 /// <param name="CreatedAt">DateTime of session creation.</param>

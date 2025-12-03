@@ -1,11 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using Alerting.ML.Console;
-using Alerting.ML.Engine.Alert;
-using Alerting.ML.Engine.Optimizer;
-using Alerting.ML.Engine.Optimizer.Events;
-using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
-using Alerting.ML.Sources.Azure;
 using Alerting.ML.TimeSeries.Sample;
 
 var knownOutagesProvider = new SampleOutagesProvider();
@@ -67,7 +61,8 @@ namespace Alerting.ML.Console
             System.Console.WriteLine($"{aggregateId} :: {@event}");
         }
 
-        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             yield break;
         }

@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:enums="clr-namespace:Alerting.ML.App.Model.Enums"
              xmlns:local="clr-namespace:Alerting.ML.App.Components.TrainingCreation"
              xmlns:trainingCreation="clr-namespace:Alerting.ML.App.Views.TrainingCreation"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -11,41 +10,41 @@
         <trainingCreation:TrainingCreationHeaderDesignTimeViewModel />
     </Design.DataContext>
     <UserControl.Resources>
-        <SolidColorBrush x:Key="FollowingStepBackground" Color="#1E2939"/>
-        <SolidColorBrush x:Key="CurrentStepBackground" Color="#155DFC"/>
-        <SolidColorBrush x:Key="CurrentStepBorder" Color="#112449"/>
+        <SolidColorBrush x:Key="FollowingStepBackground" Color="#1E2939" />
+        <SolidColorBrush x:Key="CurrentStepBackground" Color="#155DFC" />
+        <SolidColorBrush x:Key="CurrentStepBorder" Color="#112449" />
     </UserControl.Resources>
     <UserControl.Styles>
         <Style Selector="local|TrainingCreationStepIndicator.completed Svg">
-            <Setter Property="Css" Value=".lucide { stroke: #FFFFFF; }"/>
+            <Setter Property="Css" Value=".lucide { stroke: #FFFFFF; }" />
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.current Svg">
-            <Setter Property="Css" Value=".lucide { stroke: #FFFFFF; }"/>
+            <Setter Property="Css" Value=".lucide { stroke: #FFFFFF; }" />
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.following Svg">
-            <Setter Property="Css" Value=".lucide { stroke: #99A1AF; }"/>
+            <Setter Property="Css" Value=".lucide { stroke: #99A1AF; }" />
         </Style>
 
         <Style Selector="local|TrainingCreationStepIndicator.completed TextBlock#TitleBox">
-            <Setter Property="Foreground" Value="{StaticResource Color.MutedForeground}"/>
+            <Setter Property="Foreground" Value="{StaticResource Color.MutedForeground}" />
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.current TextBlock#TitleBox">
-            <Setter Property="Foreground" Value="{StaticResource Color.Foreground}"/>
+            <Setter Property="Foreground" Value="{StaticResource Color.Foreground}" />
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.following TextBlock#TitleBox">
-            <Setter Property="Foreground" Value="{StaticResource Color.MutedForeground}"/>
+            <Setter Property="Foreground" Value="{StaticResource Color.MutedForeground}" />
         </Style>
 
         <Style Selector="local|TrainingCreationStepIndicator.completed Border">
-            <Setter Property="Background" Value="{StaticResource Color.ButtonAccent}"/>
+            <Setter Property="Background" Value="{StaticResource Color.ButtonAccent}" />
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.current Border">
-            <Setter Property="Background" Value="{StaticResource CurrentStepBackground}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource CurrentStepBorder}"/>
-            <Setter Property="BorderThickness" Value="4"/>
+            <Setter Property="Background" Value="{StaticResource CurrentStepBackground}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CurrentStepBorder}" />
+            <Setter Property="BorderThickness" Value="4" />
         </Style>
         <Style Selector="local|TrainingCreationStepIndicator.following Border">
-            <Setter Property="Background" Value="{StaticResource FollowingStepBackground}"/>
+            <Setter Property="Background" Value="{StaticResource FollowingStepBackground}" />
         </Style>
     </UserControl.Styles>
     <StackPanel HorizontalAlignment="Center">
@@ -56,7 +55,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Margin="5">
-            <Svg Width="20" Height="20" x:Name="IconSvg"/>
+            <Svg Width="20" Height="20" x:Name="IconSvg" />
         </Border>
 
         <TextBlock x:Name="TitleBox"

@@ -3,8 +3,8 @@
 namespace Alerting.ML.Engine.Storage;
 
 /// <summary>
-/// Implements <see cref="IEventStore"/> that keeps all events in-memory.
-/// All events are destroyed after event store is collected by GC.
+///     Implements <see cref="IEventStore" /> that keeps all events in-memory.
+///     All events are destroyed after event store is collected by GC.
 /// </summary>
 public class InMemoryEventStore : IEventStore
 {

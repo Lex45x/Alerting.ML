@@ -11,11 +11,11 @@
     </Design.DataContext>
     <Interaction.Behaviors>
         <DetachedFromVisualTreeTrigger>
-            <InvokeCommandAction Command="{Binding DisposeCommand}"/>
+            <InvokeCommandAction Command="{Binding DisposeCommand}" />
         </DetachedFromVisualTreeTrigger>
     </Interaction.Behaviors>
     <UserControl.Resources>
-        <trainingBuilder:TrainingBuilderToPreviewTableItemConverter x:Key="TableItemConverter"/> 
+        <trainingBuilder:TrainingBuilderToPreviewTableItemConverter x:Key="TableItemConverter" />
     </UserControl.Resources>
     <StackPanel Spacing="8">
 
@@ -33,8 +33,11 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*,*">
-                                    <TextBlock Classes="p" Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Left"/>
-                                    <ContentPresenter Grid.Column="1" Content="{Binding Value, Converter={StaticResource TableItemConverter}}" HorizontalAlignment="Right"/>
+                                    <TextBlock Classes="p" Grid.Column="0" Text="{Binding Name}"
+                                               HorizontalAlignment="Left" />
+                                    <ContentPresenter Grid.Column="1"
+                                                      Content="{Binding Value, Converter={StaticResource TableItemConverter}}"
+                                                      HorizontalAlignment="Right" />
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -42,7 +45,7 @@
 
                 </StackPanel>
             </Border>
-			
+
             <Border Classes="success" IsVisible="{Binding IsValidationPassed}">
                 <StackPanel Orientation="Horizontal"
                             Spacing="8"

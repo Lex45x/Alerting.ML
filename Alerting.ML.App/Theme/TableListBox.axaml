@@ -23,7 +23,7 @@
         <Setter Property="ItemContainerTheme" Value="{StaticResource TableListBoxItem}" />
         <Setter Property="ItemsPanel">
             <ItemsPanelTemplate>
-                <StackPanel Spacing="12" Orientation="Vertical"/>
+                <StackPanel Spacing="12" Orientation="Vertical" />
             </ItemsPanelTemplate>
         </Setter>
         <Setter Property="Template">

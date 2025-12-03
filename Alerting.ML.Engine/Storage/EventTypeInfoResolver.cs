@@ -7,14 +7,18 @@ namespace Alerting.ML.Engine.Storage;
 internal class EventTypeInfoResolver : DefaultJsonTypeInfoResolver
 {
     private static readonly IReadOnlyList<Type> KnownEventTypes;
+
     static EventTypeInfoResolver()
     {
         KnownEventTypes = typeof(IEvent).Assembly.GetTypes()
-            .Where(type => type.IsAssignableTo(typeof(IEvent)) && type is { IsAbstract: false, IsGenericTypeDefinition: false }).ToList();
+            .Where(type =>
+                type.IsAssignableTo(typeof(IEvent)) && type is { IsAbstract: false, IsGenericTypeDefinition: false })
+            .ToList();
     }
+
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        var typeInfo =  base.GetTypeInfo(type, options);
+        var typeInfo = base.GetTypeInfo(type, options);
 
         var baseEventType = typeof(IEvent);
 
@@ -27,7 +31,7 @@ internal class EventTypeInfoResolver : DefaultJsonTypeInfoResolver
         {
             TypeDiscriminatorPropertyName = "$event-type",
             IgnoreUnrecognizedTypeDiscriminators = true,
-            UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
+            UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization
         };
 
         foreach (var knownEventType in KnownEventTypes)

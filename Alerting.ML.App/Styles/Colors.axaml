@@ -20,14 +20,14 @@
 
     <SolidColorBrush x:Key="Color.Foreground" Color="#FBFBFB" />
     <SolidColorBrush x:Key="Color.MutedForeground" Color="#99A1AF" />
-    
+
     <SolidColorBrush x:Key="Color.RadioButtonChecked" Color="#0E1623" />
     <SolidColorBrush x:Key="Color.ButtonAccent" Color="#2B7fff" />
-    
+
     <SolidColorBrush x:Key="Color.CardBorderHover" Color="#354052" />
     <SolidColorBrush x:Key="Color.CardBorder" Color="#1E2938" />
     <SolidColorBrush x:Key="Color.NoteBorder" Color="#151D27" />
-    
+
     <SolidColorBrush x:Key="Color.Pill" Color="#1A6B7280" />
     <SolidColorBrush x:Key="Color.Primary" Color="#FBFBFB" />
     <SolidColorBrush x:Key="Color.PrimaryForeground" Color="#343434" />
@@ -44,7 +44,7 @@
     <SolidColorBrush x:Key="Color.SuccessPanelForeground" Color="#07DF72" />
 
     <SolidColorBrush x:Key="Color.ButtonForeground" Color="#FAFAFA" />
-    
+
     <!-- Accent gradient -->
     <LinearGradientBrush x:Key="Color.AccentGradientDark" StartPoint="0%,0%"
                          EndPoint="100%,100%">

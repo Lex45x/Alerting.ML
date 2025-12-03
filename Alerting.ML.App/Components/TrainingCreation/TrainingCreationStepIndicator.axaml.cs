@@ -1,7 +1,7 @@
+using System;
 using Alerting.ML.App.Model.Enums;
 using Avalonia;
 using Avalonia.Controls;
-using System;
 
 namespace Alerting.ML.App.Components.TrainingCreation;
 
@@ -12,6 +12,23 @@ public partial class TrainingCreationStepIndicator : UserControl
 
     public static readonly StyledProperty<TrainingCreationStep> CurrentStepProperty =
         AvaloniaProperty.Register<TrainingCreationStepIndicator, TrainingCreationStep>(nameof(CurrentStep));
+
+    public TrainingCreationStepIndicator()
+    {
+        InitializeComponent();
+        this.GetObservable(IndicatorStepProperty).Subscribe(step =>
+        {
+            UpdateClasses();
+            UpdateTitle();
+            UpdateSubTitle();
+            UpdateIcon();
+        });
+        this.GetObservable(CurrentStepProperty).Subscribe(step =>
+        {
+            UpdateClasses();
+            UpdateIcon();
+        });
+    }
 
     public TrainingCreationStep IndicatorStep
     {
@@ -89,22 +106,5 @@ public partial class TrainingCreationStepIndicator : UserControl
             TrainingCreationStep.Step5 => "Step 5",
             _ => throw new ArgumentOutOfRangeException()
         };
-    }
-
-    public TrainingCreationStepIndicator()
-    {
-        InitializeComponent();
-        this.GetObservable(IndicatorStepProperty).Subscribe(step =>
-        {
-            UpdateClasses();
-            UpdateTitle();
-            UpdateSubTitle();
-            UpdateIcon();
-        });
-        this.GetObservable(CurrentStepProperty).Subscribe(step =>
-        {
-            UpdateClasses();
-            UpdateIcon();
-        });
     }
 }

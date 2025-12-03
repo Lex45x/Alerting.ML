@@ -5,16 +5,16 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="Styles/Colors.axaml"/>
-                <ResourceInclude Source="Theme/GradientButton.axaml"/>
-                <ResourceInclude Source="Theme/TransparentButton.axaml"/>
-                <ResourceInclude Source="Theme/DataSourceRadioButton.axaml"/>
-                <ResourceInclude Source="Theme/FilterRadioButton.axaml"/>
-                <ResourceInclude Source="Theme/ArrowButton.axaml"/>
-                <ResourceInclude Source="Theme/SearchBox.axaml"/>
-                <ResourceInclude Source="Theme/FileUploadButton.axaml"/>
-                <ResourceInclude Source="Theme/TableListBox.axaml"/>
-                <ResourceInclude Source="Theme/TrainingConfigurationSlider.axaml"/>
+                <ResourceInclude Source="Styles/Colors.axaml" />
+                <ResourceInclude Source="Theme/GradientButton.axaml" />
+                <ResourceInclude Source="Theme/TransparentButton.axaml" />
+                <ResourceInclude Source="Theme/DataSourceRadioButton.axaml" />
+                <ResourceInclude Source="Theme/FilterRadioButton.axaml" />
+                <ResourceInclude Source="Theme/ArrowButton.axaml" />
+                <ResourceInclude Source="Theme/SearchBox.axaml" />
+                <ResourceInclude Source="Theme/FileUploadButton.axaml" />
+                <ResourceInclude Source="Theme/TableListBox.axaml" />
+                <ResourceInclude Source="Theme/TrainingConfigurationSlider.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -24,7 +24,7 @@
        ========================= -->
     <Application.Styles>
         <FluentTheme />
-		
+
         <!-- Body (Window) background + default text -->
         <Style Selector="Window">
             <Setter Property="Background" Value="{StaticResource Color.Bg}" />
@@ -73,36 +73,36 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
         </Style>
-		
+
 
         <!-- Utility classes for containers -->
 
         <Style Selector="Border.header">
             <Setter Property="Background" Value="{StaticResource Color.Bg2}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
         </Style>
 
         <Style Selector="Border.panel">
             <Setter Property="Background" Value="{StaticResource Color.Bg2}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Color.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
         </Style>
 
         <Style Selector="Border.note">
             <Setter Property="Background" Value="{StaticResource Color.NoteBorder}" />
-            <Setter Property="Padding" Value="12"/>
-            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="CornerRadius" Value="8" />
         </Style>
 
         <Style Selector="Border.success">
             <Setter Property="Background" Value="{StaticResource Color.SuccessPanel}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Color.SuccessPanelBorder}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="16"/>
-            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Color.SuccessPanelBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="CornerRadius" Value="8" />
         </Style>
-        
+
     </Application.Styles>
 </Application>

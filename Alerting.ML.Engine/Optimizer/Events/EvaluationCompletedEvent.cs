@@ -5,7 +5,7 @@ using Alerting.ML.Engine.Storage;
 namespace Alerting.ML.Engine.Optimizer.Events;
 
 /// <summary>
-/// Indicates completion of the single configuration evaluation.
+///     Indicates completion of the single configuration evaluation.
 /// </summary>
 /// <typeparam name="T">Current alert configuration type.</typeparam>
 /// <param name="Configuration">Configuration that was evaluated.</param>
@@ -39,7 +39,8 @@ public record EvaluationCompletedEvent<T>(T Configuration, IReadOnlyList<Outage>
 }
 
 /// <summary>
-/// Indicates completion of the single configuration evaluation.
+///     Indicates completion of the single configuration evaluation.
 /// </summary>
-/// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>s
+/// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>
+/// s
 public abstract record EvaluationCompletedEvent(int AggregateVersion) : IEvent;

@@ -10,6 +10,11 @@ public partial class TrainingCard : UserControl
     public static readonly StyledProperty<ICommand?> CommandProperty =
         AvaloniaProperty.Register<TrainingCard, ICommand?>(nameof(Command));
 
+    public TrainingCard()
+    {
+        InitializeComponent();
+    }
+
 
     public ICommand? Command
     {
@@ -17,14 +22,11 @@ public partial class TrainingCard : UserControl
         set => SetValue(CommandProperty, value);
     }
 
-    public TrainingCard()
-    {
-        InitializeComponent();
-    }
-
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (Command?.CanExecute(DataContext) == true)
+        {
             Command.Execute(DataContext);
+        }
     }
 }

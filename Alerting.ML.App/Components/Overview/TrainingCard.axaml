@@ -12,18 +12,19 @@
         <training:DesignTimeTrainingSession />
     </Design.DataContext>
     <UserControl.Resources>
-        <progressBar:ProgressBarColorConverter x:Key="ColorConverter"/>
-        <cloudProvider:AlertProviderToIconConverter x:Key="IconConverter"/>
+        <progressBar:ProgressBarColorConverter x:Key="ColorConverter" />
+        <cloudProvider:AlertProviderToIconConverter x:Key="IconConverter" />
     </UserControl.Resources>
     <UserControl.Styles>
         <Style Selector="vm|TrainingCard:pointerover Border.panel">
-            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Color.CardBorderHover}" />
         </Style>
         <Style Selector="vm|TrainingCard:pointerover TextBlock.title">
-            <Setter Property="Foreground" Value="{StaticResource Color.HoverText}"/>
+            <Setter Property="Foreground" Value="{StaticResource Color.HoverText}" />
         </Style>
     </UserControl.Styles>
-    <Border Classes="panel" CornerRadius="{StaticResource Radius.Lg}" Padding="24" PointerReleased="InputElement_OnPointerReleased">
+    <Border Classes="panel" CornerRadius="{StaticResource Radius.Lg}" Padding="24"
+            PointerReleased="InputElement_OnPointerReleased">
         <StackPanel Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="12">
@@ -40,17 +41,19 @@
             </Grid>
             <StackPanel Spacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock FontSize="{StaticResource Text.3Xl}" Text="{Binding BestFitness, StringFormat={}{0:F3}}" VerticalAlignment="Bottom"/>
-                    <TextBlock Classes="p" Text="Best Fitness" VerticalAlignment="Bottom"/>
+                    <TextBlock FontSize="{StaticResource Text.3Xl}" Text="{Binding BestFitness, StringFormat={}{0:F3}}"
+                               VerticalAlignment="Bottom" />
+                    <TextBlock Classes="p" Text="Best Fitness" VerticalAlignment="Bottom" />
                 </StackPanel>
-                <ProgressBar Height="8" Minimum="0" Maximum="1" Value="{Binding ProgressPercentage}" Foreground="{Binding ProgressPercentage, Converter={StaticResource ColorConverter}}"/>
+                <ProgressBar Height="8" Minimum="0" Maximum="1" Value="{Binding ProgressPercentage}"
+                             Foreground="{Binding ProgressPercentage, Converter={StaticResource ColorConverter}}" />
             </StackPanel>
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Classes="p" Text="Generation "/>
-                    <TextBlock Classes="p" Text="{Binding CurrentGeneration}"/>
-                    <TextBlock Classes="p" Text=" / "/>
-                    <TextBlock Classes="p" Text="{Binding CurrentConfiguration.TotalGenerations}"/>
+                    <TextBlock Classes="p" Text="Generation " />
+                    <TextBlock Classes="p" Text="{Binding CurrentGeneration}" />
+                    <TextBlock Classes="p" Text=" / " />
+                    <TextBlock Classes="p" Text="{Binding CurrentConfiguration.TotalGenerations}" />
                 </StackPanel>
                 <TextBlock Grid.Column="1" Classes="p" Text="{Binding ProgressPercentage, StringFormat={}{0:P2}}" />
             </Grid>

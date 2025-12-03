@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
 using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
@@ -9,14 +8,12 @@ using Alerting.ML.Engine.Storage;
 namespace Alerting.ML.Engine.Optimizer;
 
 /// <summary>
-/// A state-machine that operates <see cref="GeneticOptimizerState{T}"/>
+///     A state-machine that operates <see cref="GeneticOptimizerState{T}" />
 /// </summary>
-/// <typeparam name="T">Underlying <see cref="AlertConfiguration"/></typeparam>
+/// <typeparam name="T">Underlying <see cref="AlertConfiguration" /></typeparam>
 public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     where T : AlertConfiguration
 {
-    private readonly IEventStore store;
-
     private static readonly ImmutableArray<string> Adjectives =
     [
         "Silent",
@@ -65,14 +62,17 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         "Vortex"
     ];
 
+    private readonly GeneticOptimizerState<T> current;
+    private readonly IEventStore store;
+
     /// <summary>
-    /// Creates a new instance of Genetic Optimizer with a new training.
+    ///     Creates a new instance of Genetic Optimizer with a new training.
     /// </summary>
     /// <param name="alert">Alert rule to be optimized.</param>
     /// <param name="timeSeriesProvider">Provider of the relevant metric.</param>
     /// <param name="knownOutagesProvider">Provider of known outages.</param>
     /// <param name="alertScoreCalculator">Calculates alert score based on detected outages.</param>
-    /// <param name="configurationFactory">A relevant factory for <typeparamref name="T"/></param>
+    /// <param name="configurationFactory">A relevant factory for <typeparamref name="T" /></param>
     /// <param name="store">An event store to persist all events.</param>
     public GeneticOptimizerStateMachine(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
         IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
@@ -84,17 +84,17 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         var aggregateId = Guid.NewGuid();
         var random = Random.Shared;
         var name =
-            $"{alert.ProviderName}: {Adjectives[random.Next(Adjectives.Length)]} {Nouns[random.Next(Nouns.Length)]} #{random.Next(100, 999)}";
+            $"{alert.ProviderName}: {Adjectives[random.Next(Adjectives.Length)]} {Nouns[random.Next(Nouns.Length)]} #{random.Next(minValue: 100, maxValue: 999)}";
 
         RaiseEvent(new StateInitializedEvent<T>(aggregateId, DateTime.UtcNow, name, alert.ProviderName, alert,
             timeSeriesProvider,
             knownOutagesProvider,
             alertScoreCalculator,
-            configurationFactory, 0), aggregateId);
+            configurationFactory, AggregateVersion: 0), aggregateId);
     }
 
     /// <summary>
-    /// Creates a new instance of GeneticOptimizer to import existing training from <see cref="store"/>
+    ///     Creates a new instance of GeneticOptimizer to import existing training from <see cref="store" />
     /// </summary>
     /// <param name="store"></param>
     public GeneticOptimizerStateMachine(IEventStore store)
@@ -103,13 +103,79 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         current = new GeneticOptimizerState<T>();
     }
 
+    /// <inheritdoc />
+    public Guid Id => current.Id;
+
+    /// <inheritdoc />
+    public string Name => current?.Name ?? "Uninitialized";
+
+    /// <inheritdoc />
+    public string ProviderName => current.ProviderName ?? "Uninitialized";
+
+    /// <inheritdoc />
+    public DateTime CreatedAt => current.CreatedAt;
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<IEvent> Hydrate(Guid aggregateId)
+    {
+        await foreach (var @event in store.GetAll(aggregateId, CancellationToken.None))
+        {
+            if (!current.Apply(@event))
+            {
+                //todo: unless it's the last generation completion event, this might mean that terrible things has happened.
+            }
+
+            yield return @event;
+        }
+
+        await current.KnownOutagesProvider!.ImportAndValidate();
+        await current.TimeSeriesProvider!.ImportAndValidate();
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken)
+    {
+        if (current.State == GeneticOptimizerStateEnum.Completed)
+        {
+            yield break;
+        }
+
+        var (canContinue, @event) = Reconfigure(configuration);
+
+        if (!canContinue)
+        {
+            yield break;
+        }
+
+        yield return @event;
+
+        do
+        {
+            (canContinue, @event) = current.State switch
+            {
+                GeneticOptimizerStateEnum.RandomRepopulation => RepopulateWithRandom(),
+                GeneticOptimizerStateEnum.Evaluation => Evaluate(),
+                GeneticOptimizerStateEnum.ScoreComputation => ComputeScore(),
+                GeneticOptimizerStateEnum.CompletingGeneration => CreateSummary(),
+                GeneticOptimizerStateEnum.SurvivorsCounting => CountSurvivors(),
+                GeneticOptimizerStateEnum.Tournament => RunTournament(),
+                GeneticOptimizerStateEnum.Completed => (false, null),
+                GeneticOptimizerStateEnum.Created => throw new InvalidOperationException(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            if (canContinue)
+            {
+                yield return @event!;
+            }
+        } while (canContinue && !cancellationToken.IsCancellationRequested);
+    }
+
     private (bool, IEvent) RaiseEvent<TEvent>(TEvent @event, Guid? aggregateId = null) where TEvent : IEvent
     {
         store.Write(aggregateId ?? current.Id, @event);
         return (current.Apply(@event), @event);
     }
-
-    private readonly GeneticOptimizerState<T> current;
 
     private (bool, IEvent) RepopulateWithRandom()
     {
@@ -125,11 +191,11 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     private static T Tournament(OptimizationConfiguration configuration,
         IReadOnlyList<AlertScoreCard> generationScore)
     {
-        var winner = generationScore[Random.Shared.Next(0, generationScore.Count)];
+        var winner = generationScore[Random.Shared.Next(minValue: 0, generationScore.Count)];
 
         for (var i = 0; i < configuration.TournamentsCount; i++)
         {
-            var challenger = generationScore[Random.Shared.Next(0, generationScore.Count)];
+            var challenger = generationScore[Random.Shared.Next(minValue: 0, generationScore.Count)];
             if (challenger.Score > winner.Score)
             {
                 winner = challenger;
@@ -188,74 +254,6 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         var outages = current.Alert!.Evaluate(current.TimeSeriesProvider!, configuration).ToList();
 
         return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages, current.Version));
-    }
-
-    /// <inheritdoc />
-    public Guid Id => current.Id;
-
-    /// <inheritdoc />
-    public string Name => current?.Name ?? "Uninitialized";
-
-    /// <inheritdoc />
-    public string ProviderName => current.ProviderName ?? "Uninitialized";
-
-    /// <inheritdoc />
-    public DateTime CreatedAt => current.CreatedAt;
-
-    /// <inheritdoc />
-    public async IAsyncEnumerable<IEvent> Hydrate(Guid aggregateId)
-    {
-        await foreach (var @event in store.GetAll(aggregateId, CancellationToken.None))
-        {
-            if (!current.Apply(@event))
-            {
-                //todo: unless it's the last generation completion event, this might mean that terrible things has happened.
-            }
-
-            yield return @event;
-        }
-
-        await current.KnownOutagesProvider!.ImportAndValidate();
-        await current.TimeSeriesProvider!.ImportAndValidate();
-    }
-
-    /// <inheritdoc />
-    public IEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken)
-    {
-        if (current.State == GeneticOptimizerStateEnum.Completed)
-        {
-            yield break;
-        }
-
-        (var canContinue, IEvent? @event) = Reconfigure(configuration);
-
-        if (!canContinue)
-        {
-            yield break;
-        }
-
-        yield return @event;
-
-        do
-        {
-            (canContinue, @event) = current.State switch
-            {
-                GeneticOptimizerStateEnum.RandomRepopulation => RepopulateWithRandom(),
-                GeneticOptimizerStateEnum.Evaluation => Evaluate(),
-                GeneticOptimizerStateEnum.ScoreComputation => ComputeScore(),
-                GeneticOptimizerStateEnum.CompletingGeneration => CreateSummary(),
-                GeneticOptimizerStateEnum.SurvivorsCounting => CountSurvivors(),
-                GeneticOptimizerStateEnum.Tournament => RunTournament(),
-                GeneticOptimizerStateEnum.Completed => (false, null),
-                GeneticOptimizerStateEnum.Created => throw new InvalidOperationException(),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            if (canContinue)
-            {
-                yield return @event!;
-            }
-        } while (canContinue && !cancellationToken.IsCancellationRequested);
     }
 
     private (bool, IEvent) Reconfigure(OptimizationConfiguration optimizationConfiguration)

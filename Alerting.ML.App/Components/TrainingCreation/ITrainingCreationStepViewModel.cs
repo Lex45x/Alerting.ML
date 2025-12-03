@@ -1,16 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using Alerting.ML.App.Model.Enums;
 using Alerting.ML.Engine.Optimizer;
+using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation;
 
-using Alerting.ML.App.Model.Enums;
-
-using ReactiveUI;
-
 public interface ITrainingCreationStepViewModel : IRoutableViewModel
 {
-    void Continue();
     TrainingCreationStep CurrentStep { get; }
+    void Continue();
 }
 
 public interface ITrainingCreationLastStepViewModel : IRoutableViewModel
