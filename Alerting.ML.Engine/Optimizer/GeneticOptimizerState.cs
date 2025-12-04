@@ -189,6 +189,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     {
         if (Configuration?.TotalGenerations - 1 <= GenerationIndex)
         {
+            State = GeneticOptimizerStateEnum.Completed;
             return false;
         }
 

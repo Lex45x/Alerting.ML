@@ -9,6 +9,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
 {
     private const double IdealPrecision = 1;
     private const double IdealLatencyMinutes = 0;
+    private const double NormalizationCoefficient = 0.001625;
 
     /// <summary>
     ///     Creates a scorecard.
@@ -47,7 +48,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     /// <summary>
     ///     Normalized score value. Is between 0 and 1 where higher is better.
     /// </summary>
-    public double Fitness => 1 / (1 + Math.Log10(1 + Score));
+    public double Fitness => Math.Exp(-NormalizationCoefficient * Score);
 
     /// <summary>
     ///     Indicates that given configuration did not produce any meaningful results and should not be used further.

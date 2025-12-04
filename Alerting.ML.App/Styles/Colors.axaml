@@ -41,7 +41,11 @@
 
     <SolidColorBrush x:Key="Color.SuccessPanelBorder" Color="#3234D080" />
     <SolidColorBrush x:Key="Color.SuccessPanel" Color="#1934D058" />
-    <SolidColorBrush x:Key="Color.SuccessPanelForeground" Color="#07DF72" />
+    <SolidColorBrush x:Key="Color.SuccessForeground" Color="#07DF72" />
+
+    <SolidColorBrush x:Key="Color.FailurePanelBorder" Color="#32D03434" />
+    <SolidColorBrush x:Key="Color.FailurePanel" Color="#19D03434" />
+    <SolidColorBrush x:Key="Color.FailureForeground" Color="#FF5757" />
 
     <SolidColorBrush x:Key="Color.ButtonForeground" Color="#FAFAFA" />
 

@@ -119,7 +119,7 @@ public class CsvOutagesProvider(string filePath) : IKnownOutagesProvider
             {
                 return new ValidationResult([
                     new ValidationFailure(nameof(FilePath),
-                        $"Line #{lineIndex + 1} contains more then 2 date-time columns. CSV with outages must contain exactly 2 date-time values on each row.")
+                        $"Line #{lineIndex + 1} contains more than 2 date-time columns. CSV with outages must contain exactly 2 date-time values on each row.")
                 ]);
             }
         }

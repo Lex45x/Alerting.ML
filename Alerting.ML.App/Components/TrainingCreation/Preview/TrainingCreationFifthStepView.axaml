@@ -54,7 +54,7 @@
                          Svg.Css=".lucide { stroke: #07df72; }" />
                     <StackPanel Spacing="2">
                         <TextBlock Classes="h4" Text="Validation Passed"
-                                   Foreground="{StaticResource Color.SuccessPanelForeground}" />
+                                   Foreground="{StaticResource Color.SuccessForeground}" />
                         <TextBlock Classes="p" Text="Time-series data and outages are successfully imported." />
                     </StackPanel>
                 </StackPanel>

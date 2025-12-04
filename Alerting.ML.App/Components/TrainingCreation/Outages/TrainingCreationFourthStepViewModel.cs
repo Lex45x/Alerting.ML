@@ -1,13 +1,15 @@
-﻿using System;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using Alerting.ML.App.Components.TrainingCreation.FileUpload;
+﻿using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
+using Alerting.ML.App.DesignTimeExtensions;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.Engine;
 using Alerting.ML.Sources.Csv;
+using FluentValidation.Results;
 using ReactiveUI;
+using System;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Outages;
 
@@ -16,10 +18,17 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
     private readonly TrainingBuilder builder;
     private TrainingBuilder? builderWithOutagesProvider;
 
-    public TrainingCreationFourthStepViewModel(IScreen hostScreen, TrainingBuilder builder)
+    public TrainingCreationFourthStepViewModel(IScreen hostScreen, TrainingBuilder builder) : base(hostScreen)
     {
         this.builder = builder;
-        HostScreen = hostScreen;
+
+        var whenValid = this.WhenAnyValue(model => model.ImportResult,
+            (Func<ValidationResult?, bool>)(validationResult => validationResult is { IsValid: true }));
+
+        CanContinue = whenValid
+            .CombineLatest(IsOnTopOfNavigation, (first, second) => first && second)
+            .DistinctUntilChanged();
+
         this.WhenAnyValue(model => model.SelectedFilePath)
             .SelectMany(s => Observable.FromAsync(() => ConfigureBuilder(s)))
             .Subscribe()
@@ -29,17 +38,23 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
     protected override string Title => "Upload Outages CSV";
 
 
-    public string? UrlPathSegment => "step4";
-    public IScreen HostScreen { get; }
+    public override string UrlPathSegment => "step4";
 
-    public void Continue()
+    public async Task Continue()
     {
-        HostScreen.Router.Navigate.Execute(
+        await HostScreen.Router.Navigate.Execute(
             new TrainingCreationFifthStepViewModel(HostScreen,
                 builderWithOutagesProvider ??
                 throw new InvalidOperationException("Most likely CSV file is not selected.")));
     }
 
+    public IObservable<bool> CanContinue { get; }
+
+    public ValidationResult? ImportResult
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step4;
 
@@ -59,9 +74,9 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
                 "Something very wrong happened. KnownOutagesProvider must be non-null here.");
         }
 
-        var validationResult = await updatedBuilder.KnownOutagesProvider.ImportAndValidate();
+        ImportResult = await updatedBuilder.KnownOutagesProvider.ImportAndValidate();
 
-        if (!validationResult.IsValid)
+        if (!ImportResult.IsValid)
         {
             //todo: validation errors must be displayed to the user.
             builderWithOutagesProvider = null;
@@ -75,7 +90,7 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
 
 public class TrainingCreationFourthStepViewModelDesignTime : TrainingCreationFourthStepViewModel
 {
-    public TrainingCreationFourthStepViewModelDesignTime() : base(null!, null!)
+    public TrainingCreationFourthStepViewModelDesignTime() : base(DesignTime.MockScreen, TrainingBuilder.Create())
     {
     }
 }

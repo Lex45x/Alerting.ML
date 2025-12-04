@@ -1,15 +1,15 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Reactive;
 using System.Reactive.Disposables;
-using ReactiveUI;
 
 namespace Alerting.ML.App.ViewModels;
 
-public class ViewModelBase : ReactiveObject, IDisposable
+public abstract class ViewModelBase : ReactiveObject, IDisposable
 {
     protected readonly CompositeDisposable Disposables = new();
 
-    public ViewModelBase()
+    protected ViewModelBase()
     {
         DisposeCommand = ReactiveCommand.Create(Dispose);
     }

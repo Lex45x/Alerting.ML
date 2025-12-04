@@ -24,7 +24,7 @@ public interface ITrainingSession
     DateTime CreatedAt { get; }
     TimeSpan Elapsed { get; }
     double RemainingMinutes { get; }
-    OptimizationConfiguration CurrentConfiguration { get; }
+    OptimizationConfiguration? CurrentConfiguration { get; }
     bool IsPaused { get; }
     void Start(OptimizationConfiguration configuration);
     void Stop();

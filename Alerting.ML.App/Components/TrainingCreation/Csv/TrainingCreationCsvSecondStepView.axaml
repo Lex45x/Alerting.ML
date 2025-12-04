@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:csv="clr-namespace:Alerting.ML.App.Components.TrainingCreation.Csv"
+             xmlns:errorHandling="clr-namespace:Alerting.ML.App.Components.ErrorHandling"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="Alerting.ML.App.Components.TrainingCreation.Csv.TrainingCreationCsvSecondStepView">
     <Design.DataContext>
@@ -43,20 +44,22 @@
                 </Button>
 
                 <!-- Selected file info -->
-                <Border Classes="success" IsVisible="{Binding IsFileSelected}">
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="8"
-                                VerticalAlignment="Center">
-                        <Svg Width="20" Height="20" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
-                             Svg.Css=".lucide { stroke: #07df72; }" />
+                <errorHandling:ErrorPanel ValidationResult="{Binding ImportResult}">
+                    <Border Classes="success">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="8"
+                                    VerticalAlignment="Center">
+                            <Svg Width="20" Height="20" Path="avares://Alerting.ML.App/Assets/check-icon.svg"
+                                 Svg.Css=".lucide { stroke: #07df72; }" />
 
-                        <StackPanel Spacing="2">
-                            <TextBlock Classes="h4" Text="File Selected"
-                                       Foreground="{StaticResource Color.SuccessPanelForeground}" />
-                            <TextBlock Classes="p" Text="{Binding SelectedFileName}" />
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="h4" Text="File Selected"
+                                           Foreground="{StaticResource Color.SuccessForeground}" />
+                                <TextBlock Classes="p" Text="{Binding SelectedFileName}" />
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Border>
+                    </Border>
+                </errorHandling:ErrorPanel>
 
                 <StackPanel Spacing="4">
                     <TextBlock Classes="h3" Text="Alert Configuration Type"
