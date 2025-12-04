@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Threading.Tasks;
+using Alerting.ML.App.DesignTimeExtensions;
 using Alerting.ML.App.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,9 +14,9 @@ using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation.FileUpload;
 
-public abstract class FileUploadViewModel : ViewModelBase
+public abstract class FileUploadViewModel : RoutableViewModelBase
 {
-    public FileUploadViewModel()
+    protected FileUploadViewModel(IScreen hostScreen) : base(hostScreen)
     {
         FileDroppedCommand = ReactiveCommand.Create<IEnumerable<IStorageItem>>(FileDropped);
         PickFileCommand = ReactiveCommand.CreateFromTask<Visual>(PickFile);
@@ -65,6 +66,11 @@ public abstract class FileUploadViewModel : ViewModelBase
                 }
             });
 
+        if (files.Count <= 0)
+        {
+            return;
+        }
+
         SelectedFilePath = files.First().TryGetLocalPath() ??
                            throw new InvalidOperationException("Unable to get a full path to CSV file.");
     }
@@ -77,5 +83,10 @@ public abstract class FileUploadViewModel : ViewModelBase
 
 public class FileUploadViewModelDesignTime : FileUploadViewModel
 {
+    public FileUploadViewModelDesignTime() : base(DesignTime.MockScreen)
+    {
+    }
+
     protected override string Title => "Design-time-title";
+    public override string? UrlPathSegment => "Design-time-view";
 }

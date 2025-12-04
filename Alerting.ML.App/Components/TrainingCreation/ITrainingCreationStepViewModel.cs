@@ -1,4 +1,7 @@
-﻿using Alerting.ML.App.Model.Enums;
+﻿using System;
+using System.Threading.Tasks;
+using Alerting.ML.App.Model.Enums;
+using Alerting.ML.Engine;
 using Alerting.ML.Engine.Optimizer;
 using ReactiveUI;
 
@@ -7,10 +10,11 @@ namespace Alerting.ML.App.Components.TrainingCreation;
 public interface ITrainingCreationStepViewModel : IRoutableViewModel
 {
     TrainingCreationStep CurrentStep { get; }
-    void Continue();
+    Task Continue();
+    IObservable<bool> CanContinue { get; }
 }
 
 public interface ITrainingCreationLastStepViewModel : IRoutableViewModel
 {
-    IGeneticOptimizer ConfiguredOptimizer { get; }
+    TrainingBuilder ConfiguredBuilder { get; }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Alerting.ML.App.Components.TrainingCreation.Csv;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
@@ -7,9 +9,17 @@ using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation;
 
-public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuilder builder)
-    : ViewModelBase, ITrainingCreationStepViewModel
+public class TrainingCreationFirstStepViewModel : ViewModelBase, ITrainingCreationStepViewModel
 {
+    private readonly TrainingBuilder builder;
+
+    public TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuilder builder)
+    {
+        this.builder = builder;
+        HostScreen = hostScreen;
+        CanContinue = this.WhenAnyValue(model => model.IsCsvSelected);
+    }
+
     public bool IsAzureSelected
     {
         get;
@@ -34,9 +44,9 @@ public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuil
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    public void Continue()
+    public async Task Continue()
     {
-        HostScreen.Router.Navigate.Execute(
+        await HostScreen.Router.Navigate.Execute(
             this switch
             {
                 { IsCsvSelected: true } => new TrainingCreationCsvSecondStepViewModel(HostScreen, builder),
@@ -44,11 +54,13 @@ public class TrainingCreationFirstStepViewModel(IScreen hostScreen, TrainingBuil
             });
     }
 
+    public IObservable<bool> CanContinue { get; }
+
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step1;
 
     public string? UrlPathSegment => "step1";
 
-    public IScreen HostScreen { get; } = hostScreen;
+    public IScreen HostScreen { get; }
 }
 
 public class TrainingCreationFirstStepViewModelDesignTime : TrainingCreationFirstStepViewModel

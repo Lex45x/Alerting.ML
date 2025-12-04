@@ -166,7 +166,8 @@
                                     <TextBlock Text="Best Fitness"
                                                Classes="p"
                                                Grid.Column="0" />
-                                    <TextBlock Text="{Binding Session.BestFitness, StringFormat={}{0:F3}}"
+                                    <TextBlock Foreground="{StaticResource Color.SuccessForeground}" 
+                                               Text="{Binding Session.BestFitness, StringFormat={}{0:F3}}"
                                                Grid.Column="1"
                                                FontSize="12" />
                                 </Grid>
@@ -246,14 +247,18 @@
                                         Values="{Binding Session.AverageGenerationFitness}"
                                         SeriesName="Avg Fitness"
                                         Stroke="{lvc:SolidColorPaint Color='#AD46FF'}"
+                                        GeometryStroke="{x:Null}"
                                         Fill="{x:Null}"
+                                        GeometryFill="{x:Null}"
                                         GeometrySize="0"
                                         LineSmoothness="1" />
                                     <lvc:XamlLineSeries
                                         Values="{Binding Session.BestGenerationFitness}"
                                         SeriesName="Best Fitness"
                                         Stroke="{lvc:SolidColorPaint Color='#2B7FFF'}"
+                                        GeometryStroke="{x:Null}"
                                         Fill="{x:Null}"
+                                        GeometryFill="{x:Null}"
                                         GeometrySize="0"
                                         LineSmoothness="1" />
                                 </lvc:CartesianChart.Series>
@@ -292,7 +297,8 @@
                                         SeriesName="Diversity"
                                         Fill="{lvc:SolidColorPaint Color='#51F97316'}"
                                         Stroke="{lvc:SolidColorPaint Color='#F97316'}"
-                                        DataLabelsPaint="Blue"
+                                        GeometryStroke="{x:Null}"
+                                        GeometryFill="{x:Null}"
                                         GeometrySize="0"
                                         LineSmoothness="1" />
                                 </lvc:CartesianChart.Series>
@@ -311,11 +317,11 @@
                         <!-- Card 1 -->
                         <Border Padding="12" Grid.Column="0" Classes="panel">
                             <StackPanel Spacing="4">
-                                <TextBlock Classes="p" Text="Best F1 Score" />
+                                <TextBlock Classes="p" Text="Best Fitness" />
                                 <TextBlock Classes="h2" Text="{Binding Session.BestFitness, StringFormat={}{0:F3}}" />
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Classes="p" Text="{Binding Session.FitnessDiff, StringFormat={}+{0:P0}}" />
-                                    <TextBlock Classes="p" Text=" from start" />
+                                    <TextBlock Foreground="{StaticResource Color.SuccessForeground}" Classes="p" Text="{Binding Session.FitnessDiff, StringFormat={}+{0:P0}}" />
+                                    <TextBlock Foreground="{StaticResource Color.SuccessForeground}" Classes="p" Text=" from start" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>

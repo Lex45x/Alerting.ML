@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
@@ -12,13 +13,12 @@ using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Training;
 
-public class TrainingViewModel : ViewModelBase, IRoutableViewModel
+public class TrainingViewModel : RoutableViewModelBase
 {
-    public TrainingViewModel(IScreen hostScreen, ITrainingSession session)
+    public TrainingViewModel(IScreen hostScreen, ITrainingSession session) : base(hostScreen)
     {
-        HostScreen = hostScreen;
         Session = session;
-        GoBackCommand = ReactiveCommand.Create(GoBack);
+        GoBackCommand = ReactiveCommand.CreateFromTask(GoBack, IsOnTopOfNavigation);
 
         session.WhenAnyValue(trainingSession => trainingSession.CurrentConfiguration)
             .Subscribe(configuration =>
@@ -31,8 +31,10 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
             .DisposeWith(Disposables);
 
         ResumeCommand =
-            ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration)));
-        PauseCommand = ReactiveCommand.Create(session.Stop);
+            ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration!)),
+                this.WhenAnyValue(model => model.Session.IsPaused));
+        PauseCommand = ReactiveCommand.Create(session.Stop,
+            this.WhenAnyValue(model => model.Session.IsPaused).Select(b => !b));
     }
 
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
@@ -52,12 +54,11 @@ public class TrainingViewModel : ViewModelBase, IRoutableViewModel
     } = new();
 
 
-    public string? UrlPathSegment => "training";
-    public IScreen HostScreen { get; }
+    public override string UrlPathSegment => "training";
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        HostScreen.Router.NavigateBack.Execute();
+        await HostScreen.Router.NavigateBack.Execute();
     }
 }
 
@@ -104,7 +105,7 @@ internal class DesignTimeTrainingSession : ITrainingSession
 
     public bool IsPaused => true;
 
-    public async Task Hydrate(Guid aggregateId)
+    public Task Hydrate(Guid aggregateId)
     {
         throw new NotImplementedException();
     }

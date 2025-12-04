@@ -2,27 +2,31 @@
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Alerting.ML.App.Components.TrainingCreation;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.Training;
+using Alerting.ML.Engine;
 using Alerting.ML.Engine.Optimizer;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.TrainingCreation;
 
-public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScreen
+public class TrainingCreationViewModel : RoutableViewModelBase, IScreen
 {
     private readonly IBackgroundTrainingOrchestrator trainingOrchestrator;
 
-    public TrainingCreationViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator)
+    public TrainingCreationViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator):base(hostScreen)
     {
         this.trainingOrchestrator = trainingOrchestrator;
-        HostScreen = hostScreen;
-        CancelCommand = ReactiveCommand.Create(Cancel);
-        GoBackCommand = ReactiveCommand.Create(GoBack);
-        StartOptimizationCommand = ReactiveCommand.Create(StartOptimization);
+        CancelCommand = ReactiveCommand.CreateFromTask(Cancel, IsOnTopOfNavigation);
+        GoBackCommand = ReactiveCommand.CreateFromTask(GoBack, IsOnTopOfNavigation);
+
+        var builderConfigured = this.WhenAnyValue(model => model.ConfiguredBuilder, (Func<TrainingBuilder?, bool>)(source => source != null));
+
+        StartOptimizationCommand = ReactiveCommand.CreateFromTask(StartOptimization, builderConfigured.CombineLatest(IsOnTopOfNavigation, (a, b) => a && b));
 
         this.WhenAnyValue(model => model.Step)
             .Subscribe(step =>
@@ -35,20 +39,20 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
         Router.CurrentViewModel.OfType<ITrainingCreationStepViewModel>()
             .Subscribe(model =>
             {
-                ContinueCommand = ReactiveCommand.Create(model.Continue);
+                ContinueCommand = ReactiveCommand.CreateFromTask(model.Continue, model.CanContinue);
                 Step = model.CurrentStep;
             })
             .DisposeWith(Disposables);
 
         Router.CurrentViewModel.OfType<ITrainingCreationLastStepViewModel>()
-            .Subscribe(model => { ConfiguredOptimizer = model.ConfiguredOptimizer; })
+            .Subscribe(model => { ConfiguredBuilder = model.ConfiguredBuilder; })
             .DisposeWith(Disposables);
 
         Router.NavigateAndReset.Execute(
             new TrainingCreationFirstStepViewModel(this, trainingOrchestrator.DefaultBuilder));
     }
 
-    public IGeneticOptimizer? ConfiguredOptimizer
+    public TrainingBuilder? ConfiguredBuilder
     {
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
@@ -74,35 +78,33 @@ public class TrainingCreationViewModel : ViewModelBase, IRoutableViewModel, IScr
     public bool IsLastStep => Step == TrainingCreationStep.Step5;
     public bool IsNotLastStep => !IsLastStep;
 
-    public string? UrlPathSegment => "new-training";
-
-    public IScreen HostScreen { get; }
+    public override string UrlPathSegment => "new-training";
 
     public RoutingState Router { get; } = new();
 
-    private void GoBack()
+    private async Task GoBack()
     {
         if (Router.NavigationStack.Count > 1)
         {
-            Router.NavigateBack.Execute();
+            await Router.NavigateBack.Execute();
         }
         else
         {
-            Cancel();
+            await Cancel();
         }
     }
 
-    private void StartOptimization()
+    private async Task StartOptimization()
     {
-        var trainingSession = trainingOrchestrator.StartNew(ConfiguredOptimizer ??
-                                                            throw new InvalidOperationException(
-                                                                "Genetic optimizer is not configured yet so creation of training is not possible."));
-        HostScreen.Router.NavigateBack.Execute();
-        HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, trainingSession));
+        var geneticOptimizer = ConfiguredBuilder!.Build();
+
+        var trainingSession = trainingOrchestrator.StartNew(geneticOptimizer);
+        await HostScreen.Router.NavigateBack.Execute();
+        await HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, trainingSession));
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
-        HostScreen.Router.NavigateBack.Execute();
+        await HostScreen.Router.NavigateBack.Execute();
     }
 }

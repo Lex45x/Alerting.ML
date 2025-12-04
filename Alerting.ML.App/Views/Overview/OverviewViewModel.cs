@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.Training;
@@ -9,20 +11,24 @@ using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Overview;
 
-public class OverviewViewModel : ViewModelBase, IRoutableViewModel
+public class OverviewViewModel : RoutableViewModelBase
 {
-    public OverviewViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator)
+    public OverviewViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator) :
+        base(hostScreen)
     {
         TrainingOrchestrator = trainingOrchestrator;
-        HostScreen = hostScreen;
+
         WindowSizeChangedCommand = ReactiveCommand.Create<SizeChangedEventArgs>(WindowSizeChanged);
-        NewOptimizationCommand = ReactiveCommand.Create(NewOptimization);
-        OpenSessionCommand = ReactiveCommand.Create<ITrainingSession>(OpenSession);
+        NewOptimizationCommand = ReactiveCommand.CreateFromObservable(() =>
+                HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, TrainingOrchestrator)),
+            IsOnTopOfNavigation);
+
+        OpenSessionCommand = ReactiveCommand.CreateFromTask<ITrainingSession>(OpenSession, IsOnTopOfNavigation);
     }
 
     public ReactiveCommand<SizeChangedEventArgs, Unit> WindowSizeChangedCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> NewOptimizationCommand { get; }
+    public ReactiveCommand<Unit, IRoutableViewModel> NewOptimizationCommand { get; }
     public ReactiveCommand<ITrainingSession, Unit> OpenSessionCommand { get; }
 
     public double EffectiveWidth
@@ -52,17 +58,11 @@ public class OverviewViewModel : ViewModelBase, IRoutableViewModel
 
     public IBackgroundTrainingOrchestrator TrainingOrchestrator { get; }
 
-    public string? UrlPathSegment => "overview";
-    public IScreen HostScreen { get; }
+    public override string UrlPathSegment => "overview";
 
-    private void OpenSession(ITrainingSession session)
+    private async Task OpenSession(ITrainingSession session)
     {
-        HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, session));
-    }
-
-    private void NewOptimization()
-    {
-        HostScreen.Router.Navigate.Execute(new TrainingCreationViewModel(HostScreen, TrainingOrchestrator));
+        await HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, session));
     }
 
     private void WindowSizeChanged(SizeChangedEventArgs e)

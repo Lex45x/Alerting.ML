@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using Alerting.ML.App.DesignTimeExtensions;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine;
 using Alerting.ML.Engine.Optimizer;
 using ReactiveUI;
+using System;
+using System.Collections.ObjectModel;
+using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Preview;
 
-public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreationStepViewModel,
+public class TrainingCreationFifthStepViewModel : RoutableViewModelBase, ITrainingCreationStepViewModel,
     ITrainingCreationLastStepViewModel
 {
-    private readonly TrainingBuilder builder;
-
-    public TrainingCreationFifthStepViewModel(IScreen hostScreen, TrainingBuilder builder)
+    public TrainingCreationFifthStepViewModel(IScreen hostScreen, TrainingBuilder builder):base(hostScreen)
     {
-        this.builder = builder;
-        HostScreen = hostScreen;
-        ConfiguredOptimizer = this.builder.Build();
+        ConfiguredBuilder = builder;
         PreviewItems =
         [
             new PreviewSummaryItem("Data Source", builder.TimeSeriesProvider),
@@ -34,15 +33,16 @@ public class TrainingCreationFifthStepViewModel : ViewModelBase, ITrainingCreati
 
     public bool IsValidationPassed => true;
 
-    public IGeneticOptimizer ConfiguredOptimizer { get; }
+    public TrainingBuilder ConfiguredBuilder { get; }
 
-    public string? UrlPathSegment => "preview";
-    public IScreen HostScreen { get; }
+    public override string UrlPathSegment => "preview";
 
-    public void Continue()
+    public Task Continue()
     {
         throw new InvalidOperationException("This is the last step that can't be continued further");
     }
+
+    public IObservable<bool> CanContinue { get; } = new Subject<bool>();
 
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step5;
 }
@@ -51,7 +51,7 @@ public record PreviewSummaryItem(string Name, object? Value);
 
 public class TrainingCreationFifthStepViewModelDesignTime : TrainingCreationFifthStepViewModel
 {
-    public TrainingCreationFifthStepViewModelDesignTime() : base(null!, null!)
+    public TrainingCreationFifthStepViewModelDesignTime() : base(DesignTime.MockScreen, TrainingBuilder.Create())
     {
         PreviewItems =
         [

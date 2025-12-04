@@ -113,7 +113,7 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
                 {
                     return new ValidationResult([
                         new ValidationFailure(nameof(FilePath),
-                            $"Line #{lineIndex + 1} contains more then 1 date-time column. CSV with time-series must contain exactly 1 date-time value on each row.")
+                            $"Line #{lineIndex + 1} contains more than 1 date-time column. CSV with time-series must contain exactly 1 date-time value on each row.")
                     ]);
                 }
             }
@@ -128,7 +128,7 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
                 {
                     return new ValidationResult([
                         new ValidationFailure(nameof(FilePath),
-                            $"Line #{lineIndex + 1} contains more then 1 double column. CSV with time-series must contain exactly 1 double value on each row.")
+                            $"Line #{lineIndex + 1} contains more than 1 double column. CSV with time-series must contain exactly 1 double value on each row.")
                     ]);
                 }
             }

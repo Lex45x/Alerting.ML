@@ -14,6 +14,7 @@ using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
 using Avalonia.Threading;
 using ReactiveUI;
+using Splat;
 
 namespace Alerting.ML.App.Model.Training;
 
@@ -117,6 +118,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     {
         get
         {
+            //bug: count evaluations since recent start and not total evaluations.
             if (TotalEvaluations != 0)
             {
                 return Elapsed.TotalMinutes / TotalEvaluations *
@@ -143,14 +145,14 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     private void IterateOptimization(OptimizationConfiguration configuration, CancellationToken cancellationToken)
     {
-        IsPaused = false;
+        Dispatcher.UIThread.Invoke(() => IsPaused = false);
 
         foreach (var @event in optimizer.Optimize(configuration, cancellationToken))
         {
             Apply(@event);
         }
 
-        IsPaused = true;
+        Dispatcher.UIThread.Invoke(() => IsPaused = true);
     }
 
     protected override void Dispose(bool disposing)
