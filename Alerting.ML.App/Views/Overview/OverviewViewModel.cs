@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.Training;
@@ -24,6 +28,56 @@ public class OverviewViewModel : RoutableViewModelBase
             IsOnTopOfNavigation);
 
         OpenSessionCommand = ReactiveCommand.CreateFromTask<ITrainingSession>(OpenSession, IsOnTopOfNavigation);
+
+        this.WhenAnyValue(model => model.TrainingOrchestrator.AllSessions,
+            model => model.IsAllProvidersSelected,
+            model => model.IsAzureProviderSelected,
+            model => model.IsAwsProviderSelected,
+            model => model.IsGcpProviderSelected,
+            model => model.SearchPhrase)
+            .Subscribe(tuple => this.RaisePropertyChanged(nameof(Cards)))
+            .DisposeWith(Disposables);
+    }
+
+    public IReadOnlyList<ITrainingSession> Cards =>
+        TrainingOrchestrator.AllSessions
+            .Where(session => string.IsNullOrWhiteSpace(SearchPhrase) || session.Name.Contains(SearchPhrase, StringComparison.OrdinalIgnoreCase)).Where(session =>
+                session.AlertProvider switch
+                {
+                    CloudProvider.Azure => IsAllProvidersSelected || IsAzureProviderSelected,
+                    CloudProvider.Amazon => IsAllProvidersSelected || IsAwsProviderSelected,
+                    CloudProvider.Google => IsAllProvidersSelected || IsGcpProviderSelected,
+                    _ => IsAllProvidersSelected
+                }).ToList();
+
+    public string? SearchPhrase
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public bool IsAllProvidersSelected
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = true;
+
+    public bool IsAzureProviderSelected
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public bool IsAwsProviderSelected
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public bool IsGcpProviderSelected
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public ReactiveCommand<SizeChangedEventArgs, Unit> WindowSizeChangedCommand { get; }
