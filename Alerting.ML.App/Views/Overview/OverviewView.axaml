@@ -38,6 +38,7 @@
                          VerticalAlignment="Center"
                          VerticalContentAlignment="Center"
                          Theme="{StaticResource SearchBox}"
+                         Text="{Binding SearchPhrase}"
                          Watermark="Search optimization runs...">
                     <TextBox.InnerLeftContent>
                         <Svg Path="avares://Alerting.ML.App/Assets/search-icon.svg" Width="16" Height="16"
@@ -46,23 +47,26 @@
                 </TextBox>
 
                 <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}" Content="All" MinWidth="40"
-                             IsChecked="True" />
+                             IsChecked="{Binding IsAllProvidersSelected}" />
 
-                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}"
+                             IsChecked="{Binding IsAzureProviderSelected}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Svg Path="avares://Alerting.ML.App/Assets/azure-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="Azure" VerticalAlignment="Center" />
                     </StackPanel>
                 </RadioButton>
 
-                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}"
+                             IsChecked="{Binding IsAwsProviderSelected}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Svg Path="avares://Alerting.ML.App/Assets/aws-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="AWS" VerticalAlignment="Center" />
                     </StackPanel>
                 </RadioButton>
 
-                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}">
+                <RadioButton GroupName="Filter" Theme="{StaticResource FilterRadioButton}"
+                             IsChecked="{Binding IsGcpProviderSelected}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Svg Path="avares://Alerting.ML.App/Assets/gcp-icon.svg" Width="16" Height="16" />
                         <TextBlock Text="GCP" VerticalAlignment="Center" />
@@ -82,7 +86,7 @@
 
         <!-- MAIN CONTENT -->
         <ListBox Grid.Row="2" Margin="24, 16"
-                 ItemsSource="{Binding TrainingOrchestrator.AllSessions}" Classes="cardsContainer">
+                 ItemsSource="{Binding Cards}" Classes="cardsContainer">
             <Interaction.Behaviors>
                 <SizeChangedTrigger>
                     <InvokeCommandAction Command="{Binding WindowSizeChangedCommand}" PassEventArgsToCommand="True" />

@@ -185,9 +185,9 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
         return true;
     }
 
-    private bool Handle(GenerationCompletedEvent _)
+    private bool Handle(GenerationCompletedEvent generationCompleted)
     {
-        if (Configuration?.TotalGenerations - 1 <= GenerationIndex)
+        if (generationCompleted is TrainingCompletedEvent)
         {
             State = GeneticOptimizerStateEnum.Completed;
             return false;

@@ -194,9 +194,7 @@
                             <Border Margin="0,8,0,0"
                                     Padding="4"
                                     HorizontalAlignment="Stretch">
-                                <TextBlock Text="Paused"
-                                           HorizontalAlignment="Center"
-                                           FontSize="11" />
+                                <Label Height="24" Padding="8, 2" Classes="trainingState" Content="{Binding Session.State}"/>
                             </Border>
                         </StackPanel>
                     </Border>

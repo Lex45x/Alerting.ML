@@ -77,12 +77,6 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         dispatcherTimer.Stop();
     }
 
-    public bool IsPaused
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    } = true;
-
     public double ProgressPercentage => (double)CurrentGeneration / CurrentConfiguration.TotalGenerations;
 
     public ObservableCollection<double> PopulationDiversity { get; } = [];
@@ -137,22 +131,52 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public async Task Hydrate(Guid aggregateId)
     {
+        IEvent? lastEvent = null;
+
         await foreach (var @event in optimizer.Hydrate(aggregateId))
         {
+            lastEvent = @event;
             Apply(@event);
         }
+
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            State = lastEvent switch
+            {
+                CriticalFailureEvent => TrainingState.Failed,
+                TrainingCompletedEvent => TrainingState.Completed,
+                _ => TrainingState.Paused
+            };
+        });
     }
+
+    public TrainingState State
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = TrainingState.Paused;
 
     private void IterateOptimization(OptimizationConfiguration configuration, CancellationToken cancellationToken)
     {
-        Dispatcher.UIThread.Invoke(() => IsPaused = false);
+        Dispatcher.UIThread.Invoke(() => State = TrainingState.Training);
+
+        IEvent? lastEvent = null;
 
         foreach (var @event in optimizer.Optimize(configuration, cancellationToken))
         {
+            lastEvent = @event;
             Apply(@event);
         }
 
-        Dispatcher.UIThread.Invoke(() => IsPaused = true);
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            State = lastEvent switch
+            {
+                CriticalFailureEvent => TrainingState.Failed,
+                TrainingCompletedEvent => TrainingState.Completed,
+                _ => TrainingState.Paused
+            };
+        });
     }
 
     protected override void Dispose(bool disposing)
