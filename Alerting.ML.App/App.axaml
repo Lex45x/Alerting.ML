@@ -112,5 +112,32 @@
             <Setter Property="CornerRadius" Value="8" />
         </Style>
 
+        <Style Selector="Label.trainingState">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Style Selector="^[Content=Completed]">
+                <Setter Property="Background" Value="{StaticResource Color.SuccessPanel}" />
+                <Setter Property="Foreground" Value="{StaticResource Color.SuccessForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Color.SuccessPanelBorder}" />
+            </Style>
+            <Style Selector="^[Content=Paused]">
+                <Setter Property="Background" Value="{StaticResource Color.PausedPanel}" />
+                <Setter Property="Foreground" Value="{StaticResource Color.PausedForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Color.PausedPanelBorder}" />
+            </Style>
+            <Style Selector="^[Content=Training]">
+                <Setter Property="Background" Value="{StaticResource Color.TrainingPanel}" />
+                <Setter Property="Foreground" Value="{StaticResource Color.TrainingForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Color.TrainingPanelBorder}" />
+            </Style>
+            <Style Selector="^[Content=Failed]">
+                <Setter Property="Background" Value="{StaticResource Color.FailurePanel}" />
+                <Setter Property="Foreground" Value="{StaticResource Color.FailureForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Color.FailurePanelBorder}" />
+            </Style>
+        </Style>
+
     </Application.Styles>
 </Application>

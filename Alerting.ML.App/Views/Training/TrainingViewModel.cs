@@ -32,9 +32,9 @@ public class TrainingViewModel : RoutableViewModelBase
 
         ResumeCommand =
             ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration!)),
-                this.WhenAnyValue(model => model.Session.IsPaused));
+                this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Paused));
         PauseCommand = ReactiveCommand.Create(session.Stop,
-            this.WhenAnyValue(model => model.Session.IsPaused).Select(b => !b));
+            this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Training));
     }
 
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
@@ -103,10 +103,11 @@ internal class DesignTimeTrainingSession : ITrainingSession
         throw new NotImplementedException();
     }
 
-    public bool IsPaused => true;
 
     public Task Hydrate(Guid aggregateId)
     {
         throw new NotImplementedException();
     }
+
+    public TrainingState State => TrainingState.Paused;
 }

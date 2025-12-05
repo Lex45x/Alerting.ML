@@ -47,6 +47,14 @@
     <SolidColorBrush x:Key="Color.FailurePanel" Color="#19D03434" />
     <SolidColorBrush x:Key="Color.FailureForeground" Color="#FF5757" />
 
+    <SolidColorBrush x:Key="Color.PausedPanelBorder" Color="#32D08A34" />
+    <SolidColorBrush x:Key="Color.PausedPanel"       Color="#19D08A34" />
+    <SolidColorBrush x:Key="Color.PausedForeground"  Color="#FFA94D" />
+
+    <SolidColorBrush x:Key="Color.TrainingPanelBorder" Color="#323478D0" />
+    <SolidColorBrush x:Key="Color.TrainingPanel"       Color="#193478D0" />
+    <SolidColorBrush x:Key="Color.TrainingForeground"  Color="#4DA3FF" />
+
     <SolidColorBrush x:Key="Color.ButtonForeground" Color="#FAFAFA" />
 
     <!-- Accent gradient -->

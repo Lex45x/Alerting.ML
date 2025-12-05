@@ -156,10 +156,10 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
                 GeneticOptimizerStateEnum.RandomRepopulation => RepopulateWithRandom(),
                 GeneticOptimizerStateEnum.Evaluation => Evaluate(),
                 GeneticOptimizerStateEnum.ScoreComputation => ComputeScore(),
-                GeneticOptimizerStateEnum.CompletingGeneration => CreateSummary(),
+                GeneticOptimizerStateEnum.CompletingGeneration => CompleteGeneration(),
                 GeneticOptimizerStateEnum.SurvivorsCounting => CountSurvivors(),
                 GeneticOptimizerStateEnum.Tournament => RunTournament(),
-                GeneticOptimizerStateEnum.Completed => (false, null),
+                GeneticOptimizerStateEnum.Completed => (false, null!),
                 GeneticOptimizerStateEnum.Created => throw new InvalidOperationException(),
                 _ => throw new ArgumentOutOfRangeException()
             };
@@ -183,9 +183,11 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration, current.Version));
     }
 
-    private (bool, IEvent) CreateSummary()
+    private (bool, IEvent) CompleteGeneration()
     {
-        return RaiseEvent(new GenerationCompletedEvent(current.Version));
+        return RaiseEvent(current.Configuration?.TotalGenerations - 1 <= current.GenerationIndex
+            ? new TrainingCompletedEvent(current.Version)
+            : new GenerationCompletedEvent(current.Version));
     }
 
     private static T Tournament(OptimizationConfiguration configuration,

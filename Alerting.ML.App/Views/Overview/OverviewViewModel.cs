@@ -39,7 +39,7 @@ public class OverviewViewModel : RoutableViewModelBase
             .DisposeWith(Disposables);
     }
 
-    public IReadOnlyList<ITrainingSession> Cards =>
+    public virtual IReadOnlyList<ITrainingSession> Cards =>
         TrainingOrchestrator.AllSessions
             .Where(session => string.IsNullOrWhiteSpace(SearchPhrase) || session.Name.Contains(SearchPhrase, StringComparison.OrdinalIgnoreCase)).Where(session =>
                 session.AlertProvider switch
@@ -131,4 +131,15 @@ public class OverviewViewModelDesignTime : OverviewViewModel
     public OverviewViewModelDesignTime() : base(null!, null!)
     {
     }
+
+    public override IReadOnlyList<ITrainingSession> Cards { get; } =
+    [
+        new DesignTimeTrainingSession(),
+        new DesignTimeTrainingSession(),
+        new DesignTimeTrainingSession(),
+        new DesignTimeTrainingSession(),
+        new DesignTimeTrainingSession(),
+        new DesignTimeTrainingSession(),
+        new DesignTimeTrainingSession()
+    ];
 }

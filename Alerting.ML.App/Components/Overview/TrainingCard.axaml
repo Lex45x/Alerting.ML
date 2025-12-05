@@ -27,7 +27,7 @@
             PointerReleased="InputElement_OnPointerReleased">
         <StackPanel Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Orientation="Horizontal" Spacing="12">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
                     <Border Padding="8" Width="36" Height="36"
                             CornerRadius="8"
                             VerticalAlignment="Top" Background="{StaticResource Color.Pill}">
@@ -38,6 +38,7 @@
                         <TextBlock Classes="p" Text="{Binding CreatedAt, StringFormat={}{0:d}}" />
                     </StackPanel>
                 </StackPanel>
+                <Label Height="24" Padding="8, 2" Grid.Column="1" Classes="trainingState" Content="{Binding State}"/>
             </Grid>
             <StackPanel Spacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
