@@ -15,6 +15,7 @@
                 <ResourceInclude Source="Theme/FileUploadButton.axaml" />
                 <ResourceInclude Source="Theme/TableListBox.axaml" />
                 <ResourceInclude Source="Theme/TrainingConfigurationSlider.axaml" />
+                <ResourceInclude Source="Theme/TableDataGrid.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -24,6 +25,7 @@
        ========================= -->
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 
         <!-- Body (Window) background + default text -->
         <Style Selector="Window">

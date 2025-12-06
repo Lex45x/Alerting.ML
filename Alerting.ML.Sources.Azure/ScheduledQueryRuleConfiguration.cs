@@ -6,8 +6,7 @@ namespace Alerting.ML.Sources.Azure;
 ///     A configuration for scheduled query rule alert as described in
 ///     <a
 ///         href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/2025-01-01-preview/scheduledqueryrules?pivots=deployment-language-arm-template#condition-1">
-///         Scheduled
-///         Query Rule Alert Conditions
+///         Scheduled Query Rule Alert Conditions
 ///     </a>
 /// </summary>
 public class ScheduledQueryRuleConfiguration : AlertConfiguration
@@ -22,7 +21,7 @@ public class ScheduledQueryRuleConfiguration : AlertConfiguration
     /// <summary>
     ///     Threshold value for comparison in evaluation period.
     /// </summary>
-    [IntParameter(min: -100, max: 100, step: 5)]
+    [IntParameter(min: -100, max: 100, step: 2)]
     public int Threshold { get; init; }
 
     /// <summary>

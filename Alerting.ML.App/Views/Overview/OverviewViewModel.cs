@@ -116,7 +116,20 @@ public class OverviewViewModel : RoutableViewModelBase
 
     private async Task OpenSession(ITrainingSession session)
     {
-        await HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, session));
+        switch (session.State)
+        {
+            case TrainingState.Training:
+            case TrainingState.Paused:
+                await HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, session));
+                break;
+            case TrainingState.Completed:
+            case TrainingState.Failed:
+                await HostScreen.Router.Navigate.Execute(new TrainingResultsViewModel(HostScreen, session));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
     }
 
     private void WindowSizeChanged(SizeChangedEventArgs e)

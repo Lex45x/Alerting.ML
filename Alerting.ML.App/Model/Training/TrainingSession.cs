@@ -82,7 +82,12 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     public ObservableCollection<double> PopulationDiversity { get; } = [];
     public ObservableCollection<double> AverageGenerationFitness { get; } = [];
     public ObservableCollection<double> BestGenerationFitness { get; } = [];
-    public ObservableCollection<AlertScoreCard> TopConfigurations { get; } = [];
+
+    public ObservableCollection<AlertScoreCard> TopConfigurations
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = [];
 
     public int CurrentGeneration
     {
@@ -245,11 +250,25 @@ public class TrainingSession : ViewModelBase, ITrainingSession
                 break;
             case AlertScoreComputedEvent scoreComputed:
                 currentGenerationScores.Add(scoreComputed.AlertScoreCard);
+                UpdateTopConfigurations(scoreComputed.AlertScoreCard);
                 BestFitness = Math.Max(BestFitness, scoreComputed.AlertScoreCard.Fitness);
                 break;
             case OptimizerConfiguredEvent optimizerConfigured:
                 CurrentConfiguration = optimizerConfigured.Configuration;
                 break;
+        }
+    }
+
+    private void UpdateTopConfigurations(AlertScoreCard scoreCard)
+    {
+        if (scoreCard.Precision > 0.7 || scoreCard.Recall < 0.2 || scoreCard.Fitness > 0.7)
+        {
+            TopConfigurations.Add(scoreCard);
+        }
+
+        if (TopConfigurations.Count > 15)
+        {
+            TopConfigurations = new ObservableCollection<AlertScoreCard>(TopConfigurations.OrderByDescending(card => card.Fitness).Take(10).ToList());
         }
     }
 }

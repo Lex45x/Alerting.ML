@@ -21,7 +21,7 @@ public class GenerationSummary
             .BinBy(card => card.Precision, step: 0.1, roundTo: 2)
             .ToList();
         FalseNegativeRateDistribution = generation
-            .BinBy(card => card.FalseNegativeRate, step: 0.1, roundTo: 2)
+            .BinBy(card => card.Recall, step: 0.1, roundTo: 2)
             .ToList();
         DetectionLatencyDistribution = generation
             .BinBy(card => card.MedianDetectionLatency.Ticks, TimeSpan.FromMinutes(minutes: 1).Ticks)
@@ -52,7 +52,7 @@ public class GenerationSummary
     public IReadOnlyList<(int Count, TimeSpan Value)> DetectionLatencyDistribution { get; }
 
     /// <summary>
-    ///     Count of <see cref="AlertScoreCard" /> that falls into each <see cref="AlertScoreCard.FalseNegativeRate" /> bucket.
+    ///     Count of <see cref="AlertScoreCard" /> that falls into each <see cref="AlertScoreCard.Recall" /> bucket.
     /// </summary>
     public IReadOnlyList<(int Count, double Value)> FalseNegativeRateDistribution { get; }
 

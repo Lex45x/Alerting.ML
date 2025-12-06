@@ -16,19 +16,19 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     /// </summary>
     /// <param name="precision">Determines a precision of alert with a given configuration.</param>
     /// <param name="medianDetectionLatency">Median delay between alert firing and a know outage occuring.</param>
-    /// <param name="falseNegativeRate">Percentage of incidents that were not correlated with any known outage.</param>
+    /// <param name="recall">Percentage of undetected known outages.</param>
     /// <param name="outagesCount">Total amount of outages created by alert.</param>
     /// <param name="configuration">A configuration that resulted in a given score.</param>
     /// <param name="isNotFeasible">
     ///     Indicates that given configuration did not produce any meaningful results and should not be
     ///     used further.
     /// </param>
-    public AlertScoreCard(double precision, TimeSpan medianDetectionLatency, double falseNegativeRate, int outagesCount,
+    public AlertScoreCard(double precision, TimeSpan medianDetectionLatency, double recall, int outagesCount,
         AlertConfiguration configuration, bool isNotFeasible)
     {
         Precision = precision;
         MedianDetectionLatency = medianDetectionLatency;
-        FalseNegativeRate = falseNegativeRate;
+        Recall = recall;
         OutagesCount = outagesCount;
         Configuration = configuration;
         IsNotFeasible = isNotFeasible;
@@ -36,7 +36,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
         var precisionDelta = Math.Max(IdealPrecision - Precision, val2: 0);
         var latencyDelta = Math.Abs(IdealLatencyMinutes - MedianDetectionLatency.TotalMinutes);
 
-        Score = ComputeScore(precisionDelta, latencyDelta, FalseNegativeRate);
+        Score = ComputeScore(precisionDelta, latencyDelta, Recall);
     }
 
     /// <summary>
@@ -66,9 +66,9 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     public TimeSpan MedianDetectionLatency { get; }
 
     /// <summary>
-    ///     Percentage of incidents that were not correlated with any known outage.
+    ///     Percentage of undetected known outages.
     /// </summary>
-    public double FalseNegativeRate { get; }
+    public double Recall { get; }
 
     /// <summary>
     ///     A configuration that resulted in a given score.
@@ -95,7 +95,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
 
         return Score.Equals(other.Score) && IsNotFeasible == other.IsNotFeasible && Precision.Equals(other.Precision) &&
                MedianDetectionLatency.Equals(other.MedianDetectionLatency) &&
-               FalseNegativeRate.Equals(other.FalseNegativeRate) && Configuration.Equals(other.Configuration) &&
+               Recall.Equals(other.Recall) && Configuration.Equals(other.Configuration) &&
                OutagesCount == other.OutagesCount;
     }
 
@@ -114,7 +114,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     {
         return $"{nameof(Score)}: {Score:N}, {nameof(OutagesCount)}: {OutagesCount}, " +
                $"{nameof(IsNotFeasible)}: {IsNotFeasible}, {nameof(Precision)}: {Precision:P}, " +
-               $"{nameof(MedianDetectionLatency)}: {MedianDetectionLatency:g}, {nameof(FalseNegativeRate)}: {FalseNegativeRate:P}";
+               $"{nameof(MedianDetectionLatency)}: {MedianDetectionLatency:g}, {nameof(Recall)}: {Recall:P}";
     }
 
     /// <inheritdoc />
@@ -126,7 +126,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        return HashCode.Combine(Score, IsNotFeasible, Precision, MedianDetectionLatency, FalseNegativeRate,
+        return HashCode.Combine(Score, IsNotFeasible, Precision, MedianDetectionLatency, Recall,
             Configuration, OutagesCount);
     }
 }

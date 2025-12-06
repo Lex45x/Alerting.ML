@@ -1,0 +1,129 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:training="clr-namespace:Alerting.ML.App.Views.Training"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Alerting.ML.App.Views.Training.TrainingResultsView">
+    <Design.DataContext>
+        <training:TrainingResultsViewModelDesignTime />
+    </Design.DataContext>
+    <Interaction.Behaviors>
+        <DetachedFromVisualTreeTrigger>
+            <InvokeCommandAction Command="{Binding DisposeCommand}" />
+        </DetachedFromVisualTreeTrigger>
+    </Interaction.Behaviors>
+    <Grid RowDefinitions="Auto, Auto">
+
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Classes="header">
+            <StackPanel Margin="24, 16" Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <Button Theme="{StaticResource TransparentButton}" Width="36" Height="36"
+                        Command="{Binding GoBackCommand}">
+                    <Svg Path="avares://Alerting.ML.App/Assets/goback-icon.svg" />
+                </Button>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="h3" Text="{Binding Session.Name, StringFormat={}{0} - Results}" />
+                    <Label Content="Top configurations from optimization run" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" RowDefinitions="Auto, *" RowSpacing="24" Margin="24"
+              ColumnSpacing="12">
+            <Border Grid.Column="0" Grid.Row="0" Classes="panel" Padding="16">
+                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="12"
+                      HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Padding="8" Width="36" Height="36"
+                            CornerRadius="8"
+                            VerticalAlignment="Top" Background="{StaticResource Color.SuccessPanel}">
+                        <Svg Path="avares://Alerting.ML.App/Assets/circlecheck-icon.svg" Svg.Css=".lucide { stroke: #07df72; }" />
+                    </Border>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Classes="p" Text="Best Fitness" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Classes="h2"
+                               Text="{Binding BestFitness, StringFormat={}{0:F3}}" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Grid.Row="0" Classes="panel" Padding="16">
+                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="12"
+                      HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Padding="8" Width="36" Height="36"
+                            CornerRadius="8"
+                            VerticalAlignment="Top" Background="{StaticResource Color.TrainingPanel}">
+                        <Svg Path="avares://Alerting.ML.App/Assets/trendup-icon.svg" Svg.Css=".lucide { stroke: #50a2ff; }"/>
+                    </Border>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Classes="p" Text="Avg Precision" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Classes="h2"
+                               Text="{Binding AveragePrecision, StringFormat={}{0:P1}}" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Grid.Row="0" Classes="panel" Padding="16">
+                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="12"
+                      HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Padding="8" Width="36" Height="36"
+                            CornerRadius="8"
+                            VerticalAlignment="Top" Background="#1d162f">
+                        <Svg Path="avares://Alerting.ML.App/Assets/pulse-icon.svg" Svg.Css=".lucide { stroke: #c27aff; }"/>
+                    </Border>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Classes="p" Text="Avg Recall" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Classes="h2"
+                               Text="{Binding AverageRecall, StringFormat={}{0:P2}}" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="3" Grid.Row="0" Classes="panel" Padding="16">
+                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="12"
+                      HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Padding="8" Width="36" Height="36"
+                            CornerRadius="8"
+                            VerticalAlignment="Top" Background="{StaticResource Color.PausedPanel}">
+                        <Svg Path="avares://Alerting.ML.App/Assets/chart-icon.svg" Svg.Css=".lucide { stroke: #ff8904; }"/>
+                    </Border>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Classes="p" Text="Top Configs" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Classes="h2" Text="{Binding RankedScoreCards.Count}" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4" Classes="panel">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="h4" Text="Top Configurations" Margin="24"/>
+                    <DataGrid Theme="{StaticResource TableDataGrid}" Margin="-1"
+                              ItemsSource="{Binding RankedScoreCards}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Rank" Width="Auto" Binding="{Binding Rank, StringFormat=#{0}}" />
+                            <DataGridTextColumn Header="Fitness" Width="Auto"
+                                                Binding="{Binding ScoreCard.Fitness, StringFormat={}{0:F3}}" />
+                            <DataGridTextColumn Header="Precision" Width="Auto"
+                                                Binding="{Binding ScoreCard.Precision, StringFormat={}{0:P1}}" />
+                            <DataGridTextColumn Header="Recall" Width="Auto"
+                                                Binding="{Binding ScoreCard.Recall, StringFormat={}{0:P1}}" />
+                            <DataGridTextColumn Header="Median Detection Time" Width="Auto"
+                                                Binding="{Binding ScoreCard.MedianDetectionLatency, StringFormat={}{0:c}}" />
+                             <DataGridTextColumn Header="Outages fired" Width="Auto"
+                                                Binding="{Binding ScoreCard.OutagesCount}" />
+                            <DataGridTemplateColumn Header="Actions" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center"
+                                                    Spacing="4">
+                                            <Button Theme="{StaticResource TransparentButton}" Content="View" Margin="8" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Classes="p" Text="Use actions to review and export configuration details" Margin="12"></TextBlock>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+</UserControl>
