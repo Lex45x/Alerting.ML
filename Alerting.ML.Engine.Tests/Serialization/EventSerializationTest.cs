@@ -12,7 +12,7 @@ public class EventSerializationTest
     public IReadOnlyList<IEvent> Events { get; } = new List<IEvent>
     {
         new AlertScoreComputedEvent(new AlertScoreCard(precision: 0.1, TimeSpan.FromMinutes(minutes: 1),
-            falseNegativeRate: 0.3, outagesCount: 10,
+            recall: 0.3, outagesCount: 10,
             new TestAlertConfiguration(), isNotFeasible: false), AggregateVersion: 0),
         new EvaluationCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(),
             new List<Outage> { new(DateTime.UtcNow, DateTime.UtcNow.AddHours(value: 2)) }, AggregateVersion: 1),

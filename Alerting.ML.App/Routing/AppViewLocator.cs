@@ -23,6 +23,7 @@ public class AppViewLocator : IViewLocator
             TrainingCreationFourthStepViewModel => new TrainingCreationFourthStepView { DataContext = viewModel },
             TrainingCreationFifthStepViewModel => new TrainingCreationFifthStepView { DataContext = viewModel },
             TrainingViewModel => new TrainingView { DataContext = viewModel },
+            TrainingResultsViewModel => new TrainingResultsView { DataContext = viewModel },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel),
                 $"Unsupported ViewModel type {viewModel?.GetType().ToString() ?? "null"}")
         };

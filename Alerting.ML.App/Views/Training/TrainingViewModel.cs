@@ -9,6 +9,7 @@ using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
+using Alerting.ML.Sources.Azure;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Training;
@@ -19,6 +20,7 @@ public class TrainingViewModel : RoutableViewModelBase
     {
         Session = session;
         GoBackCommand = ReactiveCommand.CreateFromTask(GoBack, IsOnTopOfNavigation);
+        ViewResultsCommand = ReactiveCommand.CreateFromTask(ViewResults, IsOnTopOfNavigation);
 
         session.WhenAnyValue(trainingSession => trainingSession.CurrentConfiguration)
             .Subscribe(configuration =>
@@ -37,6 +39,12 @@ public class TrainingViewModel : RoutableViewModelBase
             this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Training));
     }
 
+    private async Task ViewResults()
+    {
+        await HostScreen.Router.Navigate.Execute(new TrainingResultsViewModel(HostScreen, Session));
+    }
+
+    public ReactiveCommand<Unit, Unit> ViewResultsCommand { get; }
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
     public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
     public ReactiveCommand<Unit, Unit> PauseCommand { get; }
@@ -81,7 +89,43 @@ internal class DesignTimeTrainingSession : ITrainingSession
     public ObservableCollection<double> BestGenerationFitness { get; } = [0.4, 0.4, 0.55, 0.65, 0.8, 0.91];
 
     // todo: will be initialized later for other views
-    public ObservableCollection<AlertScoreCard> TopConfigurations { get; } = [];
+    public ObservableCollection<AlertScoreCard> TopConfigurations { get; } =
+    [
+        new(0.9, TimeSpan.FromMinutes(10), 0.01, 12, 
+            new ScheduledQueryRuleConfiguration
+            {
+                EvaluationFrequency = TimeSpan.FromMinutes(1),
+                MinFailingPeriodsToAlert = 2,
+                NumberOfEvaluationPeriods = 5,
+                Operator = Operator.Equals,
+                Threshold = 12,
+                TimeAggregation = TimeAggregation.Average,
+                WindowSize = TimeSpan.FromMinutes(5)
+            }, false),
+        new(0.83, TimeSpan.FromMinutes(8), 0.00, 10,
+            new ScheduledQueryRuleConfiguration
+            {
+                EvaluationFrequency = TimeSpan.FromMinutes(1),
+                MinFailingPeriodsToAlert = 2,
+                NumberOfEvaluationPeriods = 5,
+                Operator = Operator.Equals,
+                Threshold = 15,
+                TimeAggregation = TimeAggregation.Average,
+                WindowSize = TimeSpan.FromMinutes(5)
+            }, false),
+        new(0.81, TimeSpan.FromMinutes(15), 0.00, 10,
+            new ScheduledQueryRuleConfiguration
+            {
+                EvaluationFrequency = TimeSpan.FromMinutes(1),
+                MinFailingPeriodsToAlert = 2,
+                NumberOfEvaluationPeriods = 5,
+                Operator = Operator.Equals,
+                Threshold = 12,
+                TimeAggregation = TimeAggregation.Average,
+                WindowSize = TimeSpan.FromMinutes(5)
+            }, false)
+    ];
+
     public int CurrentGeneration => 25;
     public double BestFitness => 0.7;
     public double FitnessDiff => 0.03;

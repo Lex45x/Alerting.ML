@@ -8,8 +8,8 @@ namespace Alerting.ML.Engine.Scoring;
 /// </summary>
 public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 {
-    private const double OnePercent = 0.01;
-
+    private const double PrecisionFeasibilityLimit = 0.1;
+    private const double RecallFeasibilityLimit = 0.1;
 
     /// <inheritdoc />
     public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IKnownOutagesProvider knownOutagesProvider,
@@ -62,10 +62,10 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
         }
 
         var precision = (double)truePositiveCount / Math.Max(totalCount, val2: 1);
-        var falseNegativeRate = ((double)knownOutages.Count - detectedOutages.Count) / knownOutages.Count;
-        var isNotFeasible = totalCount == 0 || precision < OnePercent;
+        var recall = ((double)truePositiveCount) / (truePositiveCount + (knownOutages.Count - detectedOutages.Count));
+        var isNotFeasible = totalCount == 0 || precision < PrecisionFeasibilityLimit || recall < RecallFeasibilityLimit;
 
         return new AlertScoreCard(precision, median,
-            falseNegativeRate, totalCount, configuration, isNotFeasible);
+            recall, totalCount, configuration, isNotFeasible);
     }
 }
