@@ -73,7 +73,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public void Stop()
     {
-        State = eventBasedState ?? State;
+        State = eventBasedState ?? TrainingState.Paused;
         cancellationSource?.Cancel();
         sessionTimer.Stop();
         dispatcherTimer.Stop();

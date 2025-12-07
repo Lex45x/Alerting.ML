@@ -1,4 +1,5 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Scoring;
@@ -13,7 +14,7 @@ namespace Alerting.ML.Engine.Optimizer;
 /// <typeparam name="T">Target <see cref="AlertConfiguration" /> of underlying <see cref="IAlert" /></typeparam>
 public class GeneticOptimizerState<T> where T : AlertConfiguration
 {
-    private readonly Queue<T> evaluationQueue = new();
+    private readonly List<T> configurationsForEvaluation = new();
 
     private readonly List<AlertScoreCard> generationScores = new();
     private readonly Queue<(T, IEnumerable<Outage>)> scoreComputationQueue = new();
@@ -53,12 +54,12 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     /// <summary>
     ///     Provider of relevant metric.
     /// </summary>
-    public ITimeSeriesProvider? TimeSeriesProvider { get; private set; }
+    public ImmutableArray<Metric> TimeSeries { get; private set; }
 
     /// <summary>
     ///     Provider of known outages.
     /// </summary>
-    public IKnownOutagesProvider? KnownOutagesProvider { get; private set; }
+    public IReadOnlyList<Outage> KnownOutages { get; private set; }
 
     /// <summary>
     ///     Calculates alert score based on detected outages.
@@ -89,7 +90,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     ///     When state is <see cref="GeneticOptimizerStateEnum.Evaluation" /> contains the next
     ///     <see cref="AlertConfiguration" /> to be evaluated.
     /// </summary>
-    public T NextEvaluation => evaluationQueue.Peek();
+    public IReadOnlyList<T> WaitingEvaluation => configurationsForEvaluation.ToList();
 
     /// <summary>
     ///     When state is <see cref="GeneticOptimizerStateEnum.ScoreComputation" /> contains <see cref="Configuration" /> and a
@@ -161,8 +162,8 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
         Name = stateInitialized.Name;
         ProviderName = stateInitialized.ProviderName;
         Alert = stateInitialized.Alert;
-        TimeSeriesProvider = stateInitialized.TimeSeriesProvider;
-        KnownOutagesProvider = stateInitialized.KnownOutagesProvider;
+        TimeSeries = stateInitialized.TimeSeries;
+        KnownOutages = stateInitialized.KnownOutages;
         AlertScoreCalculator = stateInitialized.AlertScoreCalculator;
         ConfigurationFactory = stateInitialized.ConfigurationFactory;
         State = GeneticOptimizerStateEnum.Created;
@@ -200,21 +201,21 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
 
     private bool Handle(TournamentRoundCompletedEvent<T> tournamentRoundCompleted)
     {
-        evaluationQueue.Enqueue(tournamentRoundCompleted.FirstWinner);
+        configurationsForEvaluation.Add(tournamentRoundCompleted.FirstWinner);
 
-        if (evaluationQueue.Count < Configuration?.PopulationSize)
+        if (configurationsForEvaluation.Count < Configuration?.PopulationSize)
         {
-            evaluationQueue.Enqueue(tournamentRoundCompleted.SecondWinner);
+            configurationsForEvaluation.Add(tournamentRoundCompleted.SecondWinner);
         }
 
-        if (evaluationQueue.Count >= Configuration?.PopulationSize)
+        if (configurationsForEvaluation.Count >= Configuration?.PopulationSize)
         {
             generationScores.Clear();
             State = GeneticOptimizerStateEnum.Evaluation;
         }
 
         if (EligibleForTournament.Count < Configuration?.SurvivorCount &&
-            evaluationQueue.Count >= Configuration.PopulationSize / 2)
+            configurationsForEvaluation.Count >= Configuration.PopulationSize / 2)
         {
             generationScores.Clear();
             State = GeneticOptimizerStateEnum.RandomRepopulation;
@@ -227,7 +228,7 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     {
         foreach (var survivor in survivorsCounted.Survivors)
         {
-            evaluationQueue.Enqueue(survivor);
+            configurationsForEvaluation.Add(survivor);
         }
 
         EligibleForTournament = GenerationScores.Where(scoreCard => !scoreCard.IsNotFeasible).ToList();
@@ -264,15 +265,17 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
 
     private bool Handle(EvaluationCompletedEvent<T> evaluationCompleted)
     {
-        if (!evaluationQueue.Dequeue().Equals(evaluationCompleted.Configuration))
+        if (!configurationsForEvaluation.Contains(evaluationCompleted.Configuration))
         {
             throw new InvalidOperationException(
                 "Evaluated configuration is not coming from the top of the evaluation queue!");
         }
 
+        configurationsForEvaluation.Remove(evaluationCompleted.Configuration);
+
         scoreComputationQueue.Enqueue((evaluationCompleted.Configuration, evaluationCompleted.Outages));
 
-        if (evaluationQueue.Count == 0)
+        if (configurationsForEvaluation.Count == 0)
         {
             State = GeneticOptimizerStateEnum.ScoreComputation;
         }
@@ -282,8 +285,8 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
 
     private bool Handle(RandomConfigurationAddedEvent<T> configurationAdded)
     {
-        evaluationQueue.Enqueue(configurationAdded.RandomConfiguration);
-        if (evaluationQueue.Count >= Configuration?.PopulationSize)
+        configurationsForEvaluation.Add(configurationAdded.RandomConfiguration);
+        if (configurationsForEvaluation.Count >= Configuration?.PopulationSize)
         {
             State = GeneticOptimizerStateEnum.Evaluation;
         }

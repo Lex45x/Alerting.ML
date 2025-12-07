@@ -1,4 +1,5 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
@@ -13,8 +14,8 @@ namespace Alerting.ML.Engine.Optimizer.Events;
 /// <param name="Name">Friendly name of the session.</param>
 /// <param name="ProviderName">FriendlyName of alert provider.</param>
 /// <param name="Alert">Alert rule.</param>
-/// <param name="TimeSeriesProvider">Time series source.</param>
-/// <param name="KnownOutagesProvider">Known outage source.</param>
+/// <param name="TimeSeries">Time series.</param>
+/// <param name="KnownOutages">Known outages.</param>
 /// <param name="AlertScoreCalculator">Score calculator.</param>
 /// <param name="ConfigurationFactory">Configuration Factory</param>
 /// <param name="AggregateVersion">Version of the aggregate current event is applied.</param>
@@ -25,8 +26,8 @@ public record StateInitializedEvent<T>(
     string Name,
     string ProviderName,
     IAlert<T> Alert,
-    ITimeSeriesProvider TimeSeriesProvider,
-    IKnownOutagesProvider KnownOutagesProvider,
+    ImmutableArray<Metric> TimeSeries,
+    IReadOnlyList<Outage> KnownOutages,
     IAlertScoreCalculator AlertScoreCalculator,
     IConfigurationFactory<T> ConfigurationFactory,
     int AggregateVersion)
