@@ -7,9 +7,8 @@ namespace Alerting.ML.Engine.Scoring;
 /// </summary>
 public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
 {
-    private const double IdealPrecision = 1;
-    private const double IdealLatencyMinutes = 0;
-    private const double NormalizationCoefficient = 0.001625;
+    private const double Ideal = 1;
+    private const double NormalizationCoefficient = 2;
 
     /// <summary>
     ///     Creates a scorecard.
@@ -33,14 +32,21 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
         Configuration = configuration;
         IsNotFeasible = isNotFeasible;
 
-        var precisionDelta = Math.Max(IdealPrecision - Precision, val2: 0);
-        var latencyDelta = Math.Abs(IdealLatencyMinutes - MedianDetectionLatency.TotalMinutes);
+        var precisionDelta = Math.Max(Ideal - Precision, val2: 0);
+        var recallDelta = Math.Max(Ideal - Recall, val2: 0);
+        var latencyDelta = Math.Max(Ideal - LatencyToFitness(MedianDetectionLatency), val2: 0f);
 
-        Score = ComputeScore(precisionDelta, latencyDelta, Recall);
+        Score = ComputeScore(precisionDelta, latencyDelta, recallDelta);
+    }
+
+    private static double LatencyToFitness(TimeSpan latency)
+    {
+        const double k = 0.010536; // calibrated so 10 min -> 0.9 and 20 min -> 0.8
+        return Math.Exp(-k * latency.TotalMinutes);
     }
 
     /// <summary>
-    ///     A value from 0 to infinity that represents a Euclidean distance from ideal alert performance.
+    ///     A value from 0 to sqrt(3) that represents a Euclidean distance from ideal alert performance.
     ///     Lower value is better.
     /// </summary>
     public double Score { get; }
@@ -48,7 +54,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     /// <summary>
     ///     Normalized score value. Is between 0 and 1 where higher is better.
     /// </summary>
-    public double Fitness => Math.Exp(-NormalizationCoefficient * Score);
+    public double Fitness => Math.Exp(-NormalizationCoefficient * (Score/Math.Sqrt(3)));
 
     /// <summary>
     ///     Indicates that given configuration did not produce any meaningful results and should not be used further.
@@ -100,13 +106,13 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     }
 
     /// <summary>
-    ///     Computes pythagorean distance from ideal performance according to given parameters
+    ///     Computes Euclidean distance from ideal performance according to given parameters
     /// </summary>
-    private static double ComputeScore(double precisionDelta, double latencyDelta, double falseNegativeRate)
+    private static double ComputeScore(double precisionDelta, double latencyFitness, double recall)
     {
-        return Math.Sqrt(Math.Pow(precisionDelta * 100, y: 2) +
-                         Math.Pow(latencyDelta, y: 2) +
-                         Math.Pow(falseNegativeRate * 100, y: 2));
+        return Math.Sqrt(Math.Pow(precisionDelta, y: 2) +
+                         Math.Pow(latencyFitness, y: 2) +
+                         Math.Pow(recall, y: 2));
     }
 
     /// <inheritdoc />

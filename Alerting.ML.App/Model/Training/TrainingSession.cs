@@ -68,10 +68,12 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         sessionTimer.Start();
         dispatcherTimer.Start();
         optimizationTask = Task.Run(() => IterateOptimization(configuration, cancellationSource.Token));
+        State = TrainingState.Training;
     }
 
     public void Stop()
     {
+        State = eventBasedState ?? State;
         cancellationSource?.Cancel();
         sessionTimer.Stop();
         dispatcherTimer.Stop();
@@ -136,23 +138,12 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public async Task Hydrate(Guid aggregateId)
     {
-        IEvent? lastEvent = null;
-
         await foreach (var @event in optimizer.Hydrate(aggregateId))
         {
-            lastEvent = @event;
             Apply(@event);
         }
 
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            State = lastEvent switch
-            {
-                CriticalFailureEvent => TrainingState.Failed,
-                TrainingCompletedEvent => TrainingState.Completed,
-                _ => TrainingState.Paused
-            };
-        });
+        State = eventBasedState ?? State;
     }
 
     public TrainingState State
@@ -163,26 +154,15 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     private void IterateOptimization(OptimizationConfiguration configuration, CancellationToken cancellationToken)
     {
-        Dispatcher.UIThread.Invoke(() => State = TrainingState.Training);
-
-        IEvent? lastEvent = null;
-
         foreach (var @event in optimizer.Optimize(configuration, cancellationToken))
         {
-            lastEvent = @event;
             Apply(@event);
         }
 
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            State = lastEvent switch
-            {
-                CriticalFailureEvent => TrainingState.Failed,
-                TrainingCompletedEvent => TrainingState.Completed,
-                _ => TrainingState.Paused
-            };
-        });
+        Dispatcher.UIThread.Invoke(Stop);
     }
+
+    private TrainingState? eventBasedState;
 
     protected override void Dispose(bool disposing)
     {
@@ -232,7 +212,14 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     {
         switch (@event)
         {
-            case GenerationCompletedEvent:
+            case CriticalFailureEvent:
+                eventBasedState = TrainingState.Failed;
+                break;
+            case GenerationCompletedEvent generationCompleted:
+                if (generationCompleted is TrainingCompletedEvent)
+                {
+                    eventBasedState = TrainingState.Completed;
+                }
                 PopulationDiversity.Add(GetCurrentPopulationDiversity());
                 AverageGenerationFitness.Add(GetAverageGenerationFitness());
                 var bestGenerationFitness = GetBestGenerationFitness();
@@ -261,7 +248,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     private void UpdateTopConfigurations(AlertScoreCard scoreCard)
     {
-        if (scoreCard.Precision > 0.7 || scoreCard.Recall < 0.2 || scoreCard.Fitness > 0.7)
+        if (scoreCard.Precision > 0.7 || scoreCard.Recall > 0.7 || scoreCard.Fitness > 0.9)
         {
             TopConfigurations.Add(scoreCard);
         }

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:training="clr-namespace:Alerting.ML.App.Views.Training"
+             xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="Alerting.ML.App.Views.Training.TrainingResultsView">
     <Design.DataContext>
@@ -93,6 +94,7 @@
                     <DataGrid Theme="{StaticResource TableDataGrid}" Margin="-1"
                               ItemsSource="{Binding RankedScoreCards}"
                               AutoGenerateColumns="False"
+                              CanUserResizeColumns="True"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Rank" Width="Auto" Binding="{Binding Rank, StringFormat=#{0}}" />
@@ -106,14 +108,12 @@
                                                 Binding="{Binding ScoreCard.MedianDetectionLatency, StringFormat={}{0:c}}" />
                              <DataGridTextColumn Header="Outages fired" Width="Auto"
                                                 Binding="{Binding ScoreCard.OutagesCount}" />
-                            <DataGridTemplateColumn Header="Actions" Width="*">
+                            <DataGridTemplateColumn Header="Configuration" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal"
-                                                    HorizontalAlignment="Center"
-                                                    Spacing="4">
-                                            <Button Theme="{StaticResource TransparentButton}" Content="View" Margin="8" />
-                                        </StackPanel>
+                                        <Expander Header="View JSON" Margin="5">
+                                            <TextBox Text="{Binding ConfigurationJson}" IsReadOnly="True"/>
+                                        </Expander>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alerting.ML.Engine.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alerting.ML.Source.Csv.Tests", "Alerting.ML.Source.Csv.Tests\Alerting.ML.Source.Csv.Tests.csproj", "{6D1E22E1-172E-47EA-AFB3-57669DF69FFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alerting.ML.Sources.Azure.Tests", "Alerting.ML.Sources.Azure.Tests\Alerting.ML.Sources.Azure.Tests.csproj", "{57C3C783-49E5-40EE-880B-232E91570972}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,10 @@ Global
 		{6D1E22E1-172E-47EA-AFB3-57669DF69FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D1E22E1-172E-47EA-AFB3-57669DF69FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D1E22E1-172E-47EA-AFB3-57669DF69FFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57C3C783-49E5-40EE-880B-232E91570972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57C3C783-49E5-40EE-880B-232E91570972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57C3C783-49E5-40EE-880B-232E91570972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57C3C783-49E5-40EE-880B-232E91570972}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{6FE60C90-9284-4D8E-848A-46F08C487CBF} = {86BEE4C7-5AF5-4532-B6FB-CB0CD3830D32}
 		{B02D327D-75CF-44B5-A3D0-9FBA98311BCD} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{6D1E22E1-172E-47EA-AFB3-57669DF69FFA} = {86BEE4C7-5AF5-4532-B6FB-CB0CD3830D32}
+		{57C3C783-49E5-40EE-880B-232E91570972} = {86BEE4C7-5AF5-4532-B6FB-CB0CD3830D32}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33AE6616-A8E7-4CB2-8DA3-8B6595AA1151}

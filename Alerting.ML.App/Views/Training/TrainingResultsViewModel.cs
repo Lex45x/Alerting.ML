@@ -12,6 +12,8 @@ using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
 using Avalonia.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Training;
@@ -23,10 +25,13 @@ public class TrainingResultsViewModel : RoutableViewModelBase
         Session = session;
         GoBackCommand = ReactiveCommand.CreateFromTask(GoBack, IsOnTopOfNavigation);
         this.WhenAnyValue(model => model.Session.TopConfigurations)
+            .Where(cards => cards.Any())
             .Subscribe(cards =>
             {
-                RankedScoreCards = cards.OrderByDescending(card => card.Fitness).Select((card, i) => new RankedScoreCard(i+1, card))
-                    .ToList();
+                RankedScoreCards = new ObservableCollection<RankedScoreCard>(cards
+                    .OrderByDescending(card => card.Fitness)
+                    .Select((card, i) =>
+                        new RankedScoreCard(i + 1, card, JsonConvert.SerializeObject(card.Configuration, Formatting.Indented, new StringEnumConverter()))));
                 BestFitness = cards.Max(card => card.Fitness);
                 AveragePrecision = cards.Average(card => card.Precision);
                 AverageRecall = cards.Average(card => card.Recall);
@@ -43,22 +48,37 @@ public class TrainingResultsViewModel : RoutableViewModelBase
     }
 
     public override string UrlPathSegment => "results";
-    public double BestFitness { get; private set => this.RaiseAndSetIfChanged(ref field, value); }
-    public double AveragePrecision { get; private set => this.RaiseAndSetIfChanged(ref field, value); }
-    public double AverageRecall { get; private set => this.RaiseAndSetIfChanged(ref field, value); }
+
+    public double BestFitness
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public double AveragePrecision
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public double AverageRecall
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
     private async Task GoBack()
     {
         await HostScreen.Router.NavigateBack.Execute();
     }
 
-    public IReadOnlyList<RankedScoreCard> RankedScoreCards
+    public ObservableCollection<RankedScoreCard> RankedScoreCards
     {
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
     } = [];
 
-    public record RankedScoreCard(int Rank, AlertScoreCard ScoreCard);
+    public record RankedScoreCard(int Rank, AlertScoreCard ScoreCard, string ConfigurationJson);
 }
 
 public class TrainingResultsViewModelDesignTime : TrainingResultsViewModel
@@ -68,6 +88,4 @@ public class TrainingResultsViewModelDesignTime : TrainingResultsViewModel
     public TrainingResultsViewModelDesignTime() : base(null!, StubSession)
     {
     }
-
-    
 }
