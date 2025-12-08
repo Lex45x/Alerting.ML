@@ -9,8 +9,6 @@ using Alerting.ML.App.Model.Enums;
 using Alerting.ML.Engine;
 using Alerting.ML.Sources.Azure;
 using Alerting.ML.Sources.Csv;
-using Avalonia.Controls;
-using Avalonia.Platform;
 using FluentValidation.Results;
 using ReactiveUI;
 

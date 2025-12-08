@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
@@ -63,6 +64,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     ];
 
     private readonly GeneticOptimizerState<T> current;
+
+    private readonly ConcurrentDictionary<T, WeakReference<IReadOnlyList<Outage>>> EvaluationCache = new();
     private readonly IEventStore store;
 
     /// <summary>
@@ -87,8 +90,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             $"{alert.ProviderName}: {Adjectives[random.Next(Adjectives.Length)]} {Nouns[random.Next(Nouns.Length)]} #{random.Next(minValue: 100, maxValue: 999)}";
 
         RaiseEvent(new StateInitializedEvent<T>(aggregateId, DateTime.UtcNow, name, alert.ProviderName, alert,
-            timeSeriesProvider,
-            knownOutagesProvider,
+            timeSeriesProvider.GetTimeSeries(),
+            knownOutagesProvider.GetKnownOutages(),
             alertScoreCalculator,
             configurationFactory, AggregateVersion: 0), aggregateId);
     }
@@ -127,9 +130,6 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
             yield return @event;
         }
-
-        await current.KnownOutagesProvider!.ImportAndValidate();
-        await current.TimeSeriesProvider!.ImportAndValidate();
     }
 
     /// <inheritdoc />
@@ -140,21 +140,24 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             yield break;
         }
 
-        var (canContinue, @event) = Reconfigure(configuration);
+        var (canContinue, bag) = Reconfigure(configuration);
 
         if (!canContinue)
         {
             yield break;
         }
 
-        yield return @event;
+        foreach (var @event in bag.Events)
+        {
+            yield return @event;
+        }
 
         do
         {
-            (canContinue, @event) = current.State switch
+            (canContinue, bag) = current.State switch
             {
                 GeneticOptimizerStateEnum.RandomRepopulation => RepopulateWithRandom(),
-                GeneticOptimizerStateEnum.Evaluation => Evaluate(),
+                GeneticOptimizerStateEnum.Evaluation => Evaluate(cancellationToken),
                 GeneticOptimizerStateEnum.ScoreComputation => ComputeScore(),
                 GeneticOptimizerStateEnum.CompletingGeneration => CompleteGeneration(),
                 GeneticOptimizerStateEnum.SurvivorsCounting => CountSurvivors(),
@@ -166,25 +169,36 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
             if (canContinue)
             {
-                yield return @event!;
+                foreach (var @event in bag.Events)
+                {
+                    yield return @event!;
+                }
             }
         } while (canContinue && !cancellationToken.IsCancellationRequested);
     }
 
-    private (bool, IEvent) RaiseEvent<TEvent>(TEvent @event, Guid? aggregateId = null) where TEvent : IEvent
+    private (bool, EventBag) RaiseEvent<TEvent>(TEvent @event, Guid? aggregateId = null) where TEvent : IEvent
     {
         store.Write(aggregateId ?? current.Id, @event);
-        return (current.Apply(@event), @event);
+        return (current.Apply(@event), EventBag.FromSingle(@event));
     }
 
-    private (bool, IEvent) RepopulateWithRandom()
+    private (bool, EventBag) RepopulateWithRandom()
     {
         var randomConfiguration = current.ConfigurationFactory!.CreateRandom();
         return RaiseEvent(new RandomConfigurationAddedEvent<T>(randomConfiguration, current.Version));
     }
 
-    private (bool, IEvent) CompleteGeneration()
+    private (bool, EventBag) CompleteGeneration()
     {
+        foreach (var (configuration, weakOutagesList) in EvaluationCache)
+        {
+            if (!weakOutagesList.TryGetTarget(out _))
+            {
+                EvaluationCache.Remove(configuration, out _);
+            }
+        }
+
         return RaiseEvent(current.Configuration?.TotalGenerations - 1 <= current.GenerationIndex
             ? new TrainingCompletedEvent(current.Version)
             : new GenerationCompletedEvent(current.Version));
@@ -207,7 +221,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return (T)winner.Configuration;
     }
 
-    private (bool, IEvent) RunTournament()
+    private (bool, EventBag) RunTournament()
     {
         var isEnoughProperConfigurations = current.EligibleForTournament.Count >= current.Configuration!.SurvivorCount;
 
@@ -230,7 +244,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return RaiseEvent(new TournamentRoundCompletedEvent<T>(first, second, current.Version));
     }
 
-    private (bool, IEvent) CountSurvivors()
+    private (bool, EventBag) CountSurvivors()
     {
         var survivors = current.GenerationScores
             .Where(card => !card.IsNotFeasible)
@@ -242,24 +256,71 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         return RaiseEvent(new SurvivorsCountedEvent<T>(survivors, current.Version));
     }
 
-    private (bool, IEvent) ComputeScore()
+    private (bool, EventBag) ComputeScore()
     {
         var (alertConfiguration, outages) = current.NextScoreComputation;
-        var alertScoreCard = current.AlertScoreCalculator!.CalculateScore(outages, current.KnownOutagesProvider!,
+        var alertScoreCard = current.AlertScoreCalculator!.CalculateScore(outages, current.KnownOutages!,
             alertConfiguration);
         return RaiseEvent(new AlertScoreComputedEvent(alertScoreCard, current.Version));
     }
 
-    private (bool, IEvent) Evaluate()
+    private (bool, EventBag) Evaluate(CancellationToken cancellationToken)
     {
-        var configuration = current.NextEvaluation;
-        var outages = current.Alert!.Evaluate(current.TimeSeriesProvider!, configuration).ToList();
+        var events = current.WaitingEvaluation
+            .AsParallel()
+            .WithCancellation(cancellationToken)
+            .Select(configuration =>
+            {
+                var cachedOutages = EvaluationCache.GetOrAdd(configuration,
+                    alertConfiguration =>
+                        new WeakReference<IReadOnlyList<Outage>>(ValueFactory(alertConfiguration).ToList()));
 
-        return RaiseEvent(new EvaluationCompletedEvent<T>(configuration, outages, current.Version));
+                if (!cachedOutages.TryGetTarget(out var outages))
+                {
+                    outages = ValueFactory(configuration);
+                }
+
+                return new
+                {
+                    Outages = outages,
+                    Configuration = configuration
+                };
+            })
+            .AsSequential()
+            .Select(tuple =>
+                RaiseEvent(new EvaluationCompletedEvent<T>(tuple.Configuration, tuple.Outages, current.Version)))
+            .Select(tuple => tuple.Item2);
+
+        return (true, EventBag.Merge(events));
+
+        List<Outage> ValueFactory(T cfg)
+        {
+            return current.Alert!.Evaluate(current.TimeSeries!, cfg).ToList();
+        }
     }
 
-    private (bool, IEvent) Reconfigure(OptimizationConfiguration optimizationConfiguration)
+    private (bool, EventBag) Reconfigure(OptimizationConfiguration optimizationConfiguration)
     {
         return RaiseEvent(new OptimizerConfiguredEvent(optimizationConfiguration, current.Version));
+    }
+}
+
+internal class EventBag
+{
+    public EventBag(IEnumerable<IEvent> events)
+    {
+        Events = events;
+    }
+
+    public IEnumerable<IEvent> Events { get; }
+
+    public static EventBag Merge(IEnumerable<EventBag> bags)
+    {
+        return new EventBag(bags.SelectMany(bag => bag.Events));
+    }
+
+    public static EventBag FromSingle(IEvent @event)
+    {
+        return new EventBag([@event]);
     }
 }

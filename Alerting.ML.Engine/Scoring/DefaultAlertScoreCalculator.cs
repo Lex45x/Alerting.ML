@@ -12,10 +12,9 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
     private const double RecallFeasibilityLimit = 0.1;
 
     /// <inheritdoc />
-    public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IKnownOutagesProvider knownOutagesProvider,
+    public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IReadOnlyList<Outage> knownOutages,
         AlertConfiguration configuration)
     {
-        var knownOutages = knownOutagesProvider.GetKnownOutages();
         var latencies = new List<TimeSpan>();
         var truePositiveCount = 0;
         var totalCount = 0;
@@ -62,7 +61,7 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
         }
 
         var precision = (double)truePositiveCount / Math.Max(totalCount, val2: 1);
-        var recall = ((double)truePositiveCount) / (truePositiveCount + (knownOutages.Count - detectedOutages.Count));
+        var recall = (double)truePositiveCount / (truePositiveCount + (knownOutages.Count - detectedOutages.Count));
         var isNotFeasible = totalCount == 0 || precision < PrecisionFeasibilityLimit || recall < RecallFeasibilityLimit;
 
         return new AlertScoreCard(precision, median,

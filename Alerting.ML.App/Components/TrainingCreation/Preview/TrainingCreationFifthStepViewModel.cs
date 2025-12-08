@@ -1,20 +1,19 @@
-﻿using Alerting.ML.App.DesignTimeExtensions;
-using Alerting.ML.App.Model.Enums;
-using Alerting.ML.App.ViewModels;
-using Alerting.ML.Engine;
-using Alerting.ML.Engine.Optimizer;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using Alerting.ML.App.DesignTimeExtensions;
+using Alerting.ML.App.Model.Enums;
+using Alerting.ML.App.ViewModels;
+using Alerting.ML.Engine;
+using ReactiveUI;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Preview;
 
 public class TrainingCreationFifthStepViewModel : RoutableViewModelBase, ITrainingCreationStepViewModel,
     ITrainingCreationLastStepViewModel
 {
-    public TrainingCreationFifthStepViewModel(IScreen hostScreen, TrainingBuilder builder):base(hostScreen)
+    public TrainingCreationFifthStepViewModel(IScreen hostScreen, TrainingBuilder builder) : base(hostScreen)
     {
         ConfiguredBuilder = builder;
         PreviewItems =

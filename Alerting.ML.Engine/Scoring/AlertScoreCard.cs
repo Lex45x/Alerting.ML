@@ -39,12 +39,6 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
         Score = ComputeScore(precisionDelta, latencyDelta, recallDelta);
     }
 
-    private static double LatencyToFitness(TimeSpan latency)
-    {
-        const double k = 0.010536; // calibrated so 10 min -> 0.9 and 20 min -> 0.8
-        return Math.Exp(-k * latency.TotalMinutes);
-    }
-
     /// <summary>
     ///     A value from 0 to sqrt(3) that represents a Euclidean distance from ideal alert performance.
     ///     Lower value is better.
@@ -54,7 +48,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     /// <summary>
     ///     Normalized score value. Is between 0 and 1 where higher is better.
     /// </summary>
-    public double Fitness => Math.Exp(-NormalizationCoefficient * (Score/Math.Sqrt(3)));
+    public double Fitness => Math.Exp(-NormalizationCoefficient * (Score / Math.Sqrt(d: 3)));
 
     /// <summary>
     ///     Indicates that given configuration did not produce any meaningful results and should not be used further.
@@ -103,6 +97,12 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
                MedianDetectionLatency.Equals(other.MedianDetectionLatency) &&
                Recall.Equals(other.Recall) && Configuration.Equals(other.Configuration) &&
                OutagesCount == other.OutagesCount;
+    }
+
+    private static double LatencyToFitness(TimeSpan latency)
+    {
+        const double k = 0.010536; // calibrated so 10 min -> 0.9 and 20 min -> 0.8
+        return Math.Exp(-k * latency.TotalMinutes);
     }
 
     /// <summary>

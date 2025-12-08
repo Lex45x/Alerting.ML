@@ -8,8 +8,10 @@
     <UserControl.Template>
         <ControlTemplate>
             <Grid>
-                <ContentPresenter Content="{TemplateBinding Content}" IsVisible="{Binding $parent[errorHandling:ErrorPanel].ValidationResult.IsValid, FallbackValue=False}"/>
-                <Border Classes="failure" IsVisible="{Binding !$parent[errorHandling:ErrorPanel].ValidationResult.IsValid, FallbackValue=False}">
+                <ContentPresenter Content="{TemplateBinding Content}"
+                                  IsVisible="{Binding $parent[errorHandling:ErrorPanel].ValidationResult.IsValid, FallbackValue=False}" />
+                <Border Classes="failure"
+                        IsVisible="{Binding !$parent[errorHandling:ErrorPanel].ValidationResult.IsValid, FallbackValue=False}">
                     <StackPanel Orientation="Horizontal"
                                 Spacing="8"
                                 VerticalAlignment="Center">
@@ -19,11 +21,12 @@
                         <StackPanel Spacing="2">
                             <TextBlock Classes="h4" Text="Error!"
                                        Foreground="{StaticResource Color.FailureForeground}" />
-                            <ListBox Theme="{StaticResource TableListBox}" ItemsSource="{Binding $parent[errorHandling:ErrorPanel].ValidationResult.Errors, FallbackValue=[]}">
+                            <ListBox Theme="{StaticResource TableListBox}"
+                                     ItemsSource="{Binding $parent[errorHandling:ErrorPanel].ValidationResult.Errors, FallbackValue=[]}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
-                                            <TextBlock Classes="p" Text="{Binding ErrorMessage}"/>
+                                            <TextBlock Classes="p" Text="{Binding ErrorMessage}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>

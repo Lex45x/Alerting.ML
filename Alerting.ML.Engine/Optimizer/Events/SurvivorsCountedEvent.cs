@@ -13,25 +13,4 @@ namespace Alerting.ML.Engine.Optimizer.Events;
 public record SurvivorsCountedEvent<T>(IReadOnlyList<T> Survivors, int AggregateVersion) : IEvent
     where T : AlertConfiguration
 {
-    /// <inheritdoc />
-    public virtual bool Equals(SurvivorsCountedEvent<T>? other)
-    {
-        if (other is null)
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return Survivors.SequenceEqual(other.Survivors);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        return Survivors.GetHashCode();
-    }
 }

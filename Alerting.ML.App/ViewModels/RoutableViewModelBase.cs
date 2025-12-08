@@ -11,6 +11,7 @@ public abstract class RoutableViewModelBase : ViewModelBase, IRoutableViewModel
         HostScreen = hostScreen;
         IsOnTopOfNavigation = hostScreen?.Router.CurrentViewModel.Select(model => model?.GetType() == GetType());
     }
+
     protected IObservable<bool> IsOnTopOfNavigation { get; }
     public abstract string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }

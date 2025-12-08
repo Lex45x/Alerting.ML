@@ -1,4 +1,8 @@
-﻿using Alerting.ML.App.Components.TrainingCreation.FileUpload;
+﻿using System;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using Alerting.ML.App.Components.TrainingCreation.FileUpload;
 using Alerting.ML.App.Components.TrainingCreation.Preview;
 using Alerting.ML.App.DesignTimeExtensions;
 using Alerting.ML.App.Model.Enums;
@@ -6,10 +10,6 @@ using Alerting.ML.Engine;
 using Alerting.ML.Sources.Csv;
 using FluentValidation.Results;
 using ReactiveUI;
-using System;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace Alerting.ML.App.Components.TrainingCreation.Outages;
 
@@ -37,6 +37,12 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
 
     protected override string Title => "Upload Outages CSV";
 
+    public ValidationResult? ImportResult
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
 
     public override string UrlPathSegment => "step4";
 
@@ -49,12 +55,6 @@ public class TrainingCreationFourthStepViewModel : FileUploadViewModel, ITrainin
     }
 
     public IObservable<bool> CanContinue { get; }
-
-    public ValidationResult? ImportResult
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
 
     public TrainingCreationStep CurrentStep => TrainingCreationStep.Step4;
 

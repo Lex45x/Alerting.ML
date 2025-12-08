@@ -25,10 +25,10 @@ public interface ITrainingSession
     TimeSpan Elapsed { get; }
     double RemainingMinutes { get; }
     OptimizationConfiguration? CurrentConfiguration { get; }
+    TrainingState State { get; }
     void Start(OptimizationConfiguration configuration);
     void Stop();
     Task Hydrate(Guid aggregateId);
-    TrainingState State { get; }
 }
 
 public enum TrainingState

@@ -30,18 +30,19 @@ public class OverviewViewModel : RoutableViewModelBase
         OpenSessionCommand = ReactiveCommand.CreateFromTask<ITrainingSession>(OpenSession, IsOnTopOfNavigation);
 
         this.WhenAnyValue(model => model.TrainingOrchestrator.AllSessions,
-            model => model.IsAllProvidersSelected,
-            model => model.IsAzureProviderSelected,
-            model => model.IsAwsProviderSelected,
-            model => model.IsGcpProviderSelected,
-            model => model.SearchPhrase)
+                model => model.IsAllProvidersSelected,
+                model => model.IsAzureProviderSelected,
+                model => model.IsAwsProviderSelected,
+                model => model.IsGcpProviderSelected,
+                model => model.SearchPhrase)
             .Subscribe(tuple => this.RaisePropertyChanged(nameof(Cards)))
             .DisposeWith(Disposables);
     }
 
     public virtual IReadOnlyList<ITrainingSession> Cards =>
         TrainingOrchestrator.AllSessions
-            .Where(session => string.IsNullOrWhiteSpace(SearchPhrase) || session.Name.Contains(SearchPhrase, StringComparison.OrdinalIgnoreCase)).Where(session =>
+            .Where(session => string.IsNullOrWhiteSpace(SearchPhrase) ||
+                              session.Name.Contains(SearchPhrase, StringComparison.OrdinalIgnoreCase)).Where(session =>
                 session.AlertProvider switch
                 {
                     CloudProvider.Azure => IsAllProvidersSelected || IsAzureProviderSelected,
@@ -129,7 +130,6 @@ public class OverviewViewModel : RoutableViewModelBase
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
     }
 
     private void WindowSizeChanged(SizeChangedEventArgs e)

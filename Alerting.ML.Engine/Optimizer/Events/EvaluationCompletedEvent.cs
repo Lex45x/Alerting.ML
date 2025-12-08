@@ -15,27 +15,6 @@ public record EvaluationCompletedEvent<T>(T Configuration, IReadOnlyList<Outage>
     : EvaluationCompletedEvent(AggregateVersion)
     where T : AlertConfiguration
 {
-    /// <inheritdoc />
-    public virtual bool Equals(EvaluationCompletedEvent<T>? other)
-    {
-        if (other is null)
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return Configuration.Equals(other.Configuration) && Outages.SequenceEqual(other.Outages);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(base.GetHashCode(), Configuration, Outages);
-    }
 }
 
 /// <summary>

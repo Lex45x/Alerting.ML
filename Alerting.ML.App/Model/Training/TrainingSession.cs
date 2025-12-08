@@ -14,7 +14,6 @@ using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
 using Avalonia.Threading;
 using ReactiveUI;
-using Splat;
 
 namespace Alerting.ML.App.Model.Training;
 
@@ -25,6 +24,8 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     private readonly IGeneticOptimizer optimizer;
     private readonly Stopwatch sessionTimer = new();
     private CancellationTokenSource? cancellationSource;
+
+    private TrainingState? eventBasedState;
     private Task? optimizationTask;
 
     public TrainingSession(IGeneticOptimizer optimizer)
@@ -73,7 +74,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public void Stop()
     {
-        State = eventBasedState ?? State;
+        State = eventBasedState ?? TrainingState.Paused;
         cancellationSource?.Cancel();
         sessionTimer.Stop();
         dispatcherTimer.Stop();
@@ -162,8 +163,6 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         Dispatcher.UIThread.Invoke(Stop);
     }
 
-    private TrainingState? eventBasedState;
-
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -220,6 +219,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
                 {
                     eventBasedState = TrainingState.Completed;
                 }
+
                 PopulationDiversity.Add(GetCurrentPopulationDiversity());
                 AverageGenerationFitness.Add(GetAverageGenerationFitness());
                 var bestGenerationFitness = GetBestGenerationFitness();
@@ -255,7 +255,8 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
         if (TopConfigurations.Count > 15)
         {
-            TopConfigurations = new ObservableCollection<AlertScoreCard>(TopConfigurations.OrderByDescending(card => card.Fitness).Take(10).ToList());
+            TopConfigurations = new ObservableCollection<AlertScoreCard>(TopConfigurations
+                .OrderByDescending(card => card.Fitness).Take(count: 10).ToList());
         }
     }
 }

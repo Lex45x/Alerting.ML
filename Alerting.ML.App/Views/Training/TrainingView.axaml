@@ -6,6 +6,7 @@
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
              xmlns:progressBar="clr-namespace:Alerting.ML.App.Converters.ProgressBar"
              xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
+             xmlns:training1="clr-namespace:Alerting.ML.App.Model.Training"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1000"
              x:Class="Alerting.ML.App.Views.Training.TrainingView">
     <Design.DataContext>
@@ -13,7 +14,7 @@
     </Design.DataContext>
     <UserControl.Resources>
         <progressBar:ProgressBarColorConverter x:Key="ColorConverter" />
-        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
     </UserControl.Resources>
     <Interaction.Behaviors>
         <DetachedFromVisualTreeTrigger>
@@ -37,7 +38,8 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Button Margin="24, 16" Theme="{StaticResource ArrowButton}" Grid.Column="1" Content="View Results" Command="{Binding ViewResultsCommand}" />
+                <Button Margin="24, 16" Theme="{StaticResource ArrowButton}" Grid.Column="1" Content="View Results"
+                        Command="{Binding ViewResultsCommand}" />
 
             </Grid>
         </Border>
@@ -70,7 +72,7 @@
                                            Classes="p" />
 
                                 <Slider Theme="{StaticResource TrainingConfigurationSlider}" Grid.Column="0"
-                                        IsEnabled="{Binding Session.State, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Paused }"
+                                        IsEnabled="{Binding Session.State, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static training1:TrainingState.Paused} }"
                                         Grid.Row="1" Grid.ColumnSpan="2" Minimum="50"
                                         TickFrequency="50"
                                         IsSnapToTickEnabled="True"
@@ -89,7 +91,7 @@
                                            Classes="p" />
 
                                 <Slider Theme="{StaticResource TrainingConfigurationSlider}" Grid.Column="0"
-                                        IsEnabled="{Binding Session.State, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Paused }"
+                                        IsEnabled="{Binding Session.State, Converter={StaticResource EnumToBoolConverter},  ConverterParameter={x:Static training1:TrainingState.Paused} }"
                                         Grid.Row="1" Grid.ColumnSpan="2" Minimum="0.01"
                                         TickFrequency="0.01"
                                         IsSnapToTickEnabled="True"
@@ -108,7 +110,7 @@
                                            Classes="p" />
 
                                 <Slider Theme="{StaticResource TrainingConfigurationSlider}" Grid.Column="0"
-                                        IsEnabled="{Binding Session.State, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Paused }"
+                                        IsEnabled="{Binding Session.State, Converter={StaticResource EnumToBoolConverter},  ConverterParameter={x:Static training1:TrainingState.Paused} }"
                                         Grid.Row="1" Grid.ColumnSpan="2" Minimum="0.01"
                                         TickFrequency="0.01"
                                         IsSnapToTickEnabled="True"

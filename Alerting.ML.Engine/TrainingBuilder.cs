@@ -15,6 +15,7 @@ public class TrainingBuilder
 {
     private static readonly MethodInfo GenericBuildInfo;
     private static readonly MethodInfo GenericBuildEmptyInfo;
+    private readonly IConfigurationTypeRegistry typeRegistry;
 
     static TrainingBuilder()
     {
@@ -39,14 +40,16 @@ public class TrainingBuilder
     /// <param name="alert">Alert to be evaluated.</param>
     /// <param name="alertConfigurationType">Underlying configuration type.</param>
     /// <param name="eventStore"></param>
+    /// <param name="typeRegistry"></param>
     private TrainingBuilder(ITimeSeriesProvider? timeSeriesProvider,
         IKnownOutagesProvider? knownOutagesProvider,
         IAlertScoreCalculator? alertScoreCalculator,
         IConfigurationFactory? configurationFactory,
         IAlert? alert,
         Type? alertConfigurationType,
-        IEventStore? eventStore)
+        IEventStore? eventStore, IConfigurationTypeRegistry? typeRegistry)
     {
+        this.typeRegistry = typeRegistry ?? KnownTypeInfoResolver.Instance;
         EventStore = eventStore;
         TimeSeriesProvider = timeSeriesProvider;
         KnownOutagesProvider = knownOutagesProvider;
@@ -98,7 +101,8 @@ public class TrainingBuilder
     public static TrainingBuilder Create()
     {
         return new TrainingBuilder(timeSeriesProvider: null, knownOutagesProvider: null, alertScoreCalculator: null,
-            configurationFactory: null, alert: null, alertConfigurationType: null, eventStore: null);
+            configurationFactory: null, alert: null, alertConfigurationType: null, eventStore: null,
+            typeRegistry: null);
     }
 
     /// <summary>
@@ -108,7 +112,7 @@ public class TrainingBuilder
     public TrainingBuilder WithTimeSeriesProvider(ITimeSeriesProvider provider)
     {
         return new TrainingBuilder(provider, KnownOutagesProvider, AlertScoreCalculator,
-            ConfigurationFactory, Alert, AlertConfigurationType, EventStore);
+            ConfigurationFactory, Alert, AlertConfigurationType, EventStore, typeRegistry);
     }
 
     /// <summary>
@@ -117,10 +121,12 @@ public class TrainingBuilder
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
     public TrainingBuilder WithAlert<T>(IAlert<T> alertInstance) where T : AlertConfiguration
     {
+        typeRegistry.RegisterConfigurationType<T>();
+        typeRegistry.RegisterAlertType(alertInstance.GetType());
         CheckConfigurationType(typeof(T));
 
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
-            ConfigurationFactory, alertInstance, typeof(T), EventStore);
+            ConfigurationFactory, alertInstance, typeof(T), EventStore, typeRegistry);
     }
 
     /// <summary>
@@ -130,7 +136,7 @@ public class TrainingBuilder
     public TrainingBuilder WithKnownOutagesProvider(IKnownOutagesProvider provider)
     {
         return new TrainingBuilder(TimeSeriesProvider, provider, AlertScoreCalculator,
-            ConfigurationFactory, Alert, AlertConfigurationType, EventStore);
+            ConfigurationFactory, Alert, AlertConfigurationType, EventStore, typeRegistry);
     }
 
     /// <summary>
@@ -138,10 +144,11 @@ public class TrainingBuilder
     ///     <see cref="DefaultAlertScoreCalculator" />
     /// </summary>
     /// <returns>New instance of TrainingBuilder with updated value.</returns>
-    public TrainingBuilder WithCustomAlertScoreCalculator(IAlertScoreCalculator calculator)
+    public TrainingBuilder WithCustomAlertScoreCalculator<T>(T calculator) where T : IAlertScoreCalculator
     {
+        typeRegistry.RegisterScoreCalculatorType<T>();
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, calculator,
-            ConfigurationFactory, Alert, AlertConfigurationType, EventStore);
+            ConfigurationFactory, Alert, AlertConfigurationType, EventStore, typeRegistry);
     }
 
     /// <summary>
@@ -152,9 +159,11 @@ public class TrainingBuilder
     public TrainingBuilder WithCustomConfigurationFactory<T>(IConfigurationFactory<T> factory)
         where T : AlertConfiguration
     {
+        typeRegistry.RegisterConfigurationType<T>();
+        typeRegistry.RegisterConfigurationFactoryType(factory.GetType());
         CheckConfigurationType(typeof(T));
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
-            factory, Alert, typeof(T), EventStore);
+            factory, Alert, typeof(T), EventStore, typeRegistry);
     }
 
     /// <summary>
@@ -165,7 +174,7 @@ public class TrainingBuilder
     public TrainingBuilder WithCustomEventStore(IEventStore eventStore)
     {
         return new TrainingBuilder(TimeSeriesProvider, KnownOutagesProvider, AlertScoreCalculator,
-            ConfigurationFactory, Alert, AlertConfigurationType, eventStore);
+            ConfigurationFactory, Alert, AlertConfigurationType, eventStore, typeRegistry);
     }
 
     // ReSharper disable once UnusedMember.Local

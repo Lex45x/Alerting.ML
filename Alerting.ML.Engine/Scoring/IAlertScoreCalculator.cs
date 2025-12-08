@@ -15,9 +15,9 @@ public interface IAlertScoreCalculator
     ///     Outages detected by <see cref="IAlert{T}" /> with configuration
     ///     <paramref name="configuration" />
     /// </param>
-    /// <param name="knownOutagesProvider">A set of known outages associated with that time-series.</param>
+    /// <param name="knownOutages"></param>
     /// <param name="configuration">A configuration that was used by <see cref="IAlert{T}" /></param>
     /// <returns>Score evaluation of the alert.</returns>
-    public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IKnownOutagesProvider knownOutagesProvider,
+    public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IReadOnlyList<Outage> knownOutages,
         AlertConfiguration configuration);
 }

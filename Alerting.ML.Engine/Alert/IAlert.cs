@@ -1,4 +1,5 @@
-﻿using Alerting.ML.Engine.Data;
+﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Data;
 
 namespace Alerting.ML.Engine.Alert;
 
@@ -14,14 +15,15 @@ public interface IAlert<in T> : IAlert where T : AlertConfiguration
     public string ProviderName { get; }
 
     /// <summary>
-    ///     Takes a time-series from <paramref name="provider" /> and runs anomaly detection with given
+    ///     Takes <paramref name="timeSeries" /> and runs anomaly detection with given
     ///     <paramref name="configuration" />.
     ///     Produces a list of <see cref="Outage" />s that represent a set of time-windows when this alert would fire.
+    ///     Evaluations must be thread-safe.
     /// </summary>
-    /// <param name="provider">A source of time-series.</param>
+    /// <param name="timeSeries"></param>
     /// <param name="configuration">Alert configuration</param>
     /// <returns></returns>
-    IEnumerable<Outage> Evaluate(ITimeSeriesProvider provider, T configuration);
+    IEnumerable<Outage> Evaluate(ImmutableArray<Metric> timeSeries, T configuration);
 }
 
 /// <summary>

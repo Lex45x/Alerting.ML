@@ -1,6 +1,6 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
-using Alerting.ML.Engine.Extensions;
 
 namespace Alerting.ML.Sources.Azure;
 
@@ -18,25 +18,40 @@ public class ScheduledQueryRuleAlert : IAlert<ScheduledQueryRuleConfiguration>
     /// <inheritdoc />
     public string ProviderName => "Azure";
 
+
     /// <inheritdoc />
-    public IEnumerable<Outage> Evaluate(ITimeSeriesProvider provider, ScheduledQueryRuleConfiguration configuration)
+    public IEnumerable<Outage> Evaluate(ImmutableArray<Metric> timeSeries,
+        ScheduledQueryRuleConfiguration configuration)
     {
         var evaluationPeriods = new Queue<bool>(); //holds last NumberOfEvaluationPeriods results
 
         DateTime? ongoingOutageStart = null;
         var timeWindowStartIndex = 0;
+        var raisedOutages = new List<Outage>();
+        ISlidingWindowCalculator calculator = configuration.TimeAggregation switch
+        {
+            TimeAggregation.Average => new SlidingWindowAverageCalculator(),
+            TimeAggregation.Minimum => new SlidingWindowMaxCalculator(),
+            TimeAggregation.Maximum => new SlidingWindowMinCalculator(),
+            TimeAggregation.Total => new SlidingWindowTotalCalculator(),
+            TimeAggregation.Count => new SlidingWindowCountCalculator(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
-        var timeSeries = provider.GetTimeSeries();
+        var timeSeriesSpan = timeSeries.AsSpan();
         var lastEvaluation = timeSeries[index: 0].Timestamp;
 
         for (var timeWindowEndIndex = 0; timeWindowEndIndex < timeSeries.Length; timeWindowEndIndex++)
         {
+            var timeWindow = timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex];
             var currentMetric = timeSeries[timeWindowEndIndex];
+            calculator.Add(currentMetric.Value, timeWindow);
 
             //shift beginning of the time window until matched configured WindowSize
             while (currentMetric.Timestamp - timeSeries[timeWindowStartIndex].Timestamp > configuration.WindowSize)
             {
                 timeWindowStartIndex++;
+                calculator.Remove(timeSeriesSpan[timeWindowStartIndex - 1].Value, timeWindow);
             }
 
             //wait until EvaluationFrequency interval has passed since last rule execution
@@ -47,29 +62,13 @@ public class ScheduledQueryRuleAlert : IAlert<ScheduledQueryRuleConfiguration>
 
             lastEvaluation = currentMetric.Timestamp;
 
-            var timeSeriesSpan = timeSeries.AsSpan();
-
-            var value = configuration.TimeAggregation switch
-            {
-                TimeAggregation.Average => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex]
-                    .Average(metric => metric.Value),
-                TimeAggregation.Minimum => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex]
-                    .Min(metric => metric.Value),
-                TimeAggregation.Maximum => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex]
-                    .Max(metric => metric.Value),
-                TimeAggregation.Total => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex]
-                    .Sum(metric => metric.Value),
-                TimeAggregation.Count => timeSeriesSpan[timeWindowStartIndex..timeWindowEndIndex].Length,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
             var result = configuration.Operator switch
             {
-                Operator.Equals => Math.Abs(value - configuration.Threshold) < double.Epsilon,
-                Operator.GreaterThan => value > configuration.Threshold,
-                Operator.GreaterThanOrEqual => value >= configuration.Threshold,
-                Operator.LessThan => value < configuration.Threshold,
-                Operator.LessThanOrEqual => value <= configuration.Threshold,
+                Operator.Equals => Math.Abs(calculator.Value - configuration.Threshold) < double.Epsilon,
+                Operator.GreaterThan => calculator.Value > configuration.Threshold,
+                Operator.GreaterThanOrEqual => calculator.Value >= configuration.Threshold,
+                Operator.LessThan => calculator.Value < configuration.Threshold,
+                Operator.LessThanOrEqual => calculator.Value <= configuration.Threshold,
                 _ => throw new ArgumentOutOfRangeException()
             };
 
@@ -80,18 +79,36 @@ public class ScheduledQueryRuleAlert : IAlert<ScheduledQueryRuleConfiguration>
                 evaluationPeriods.Dequeue();
             }
 
-            if (evaluationPeriods.Count(b => b) >= configuration.MinFailingPeriodsToAlert &&
-                ongoingOutageStart == null)
+            var successEvaluationPeriods = evaluationPeriods.Count(b => b);
+
+            // condition for determining outage start.
+            if (successEvaluationPeriods >= configuration.MinFailingPeriodsToAlert &&
+                !ongoingOutageStart.HasValue)
             {
                 ongoingOutageStart = currentMetric.Timestamp;
             }
 
-            if (evaluationPeriods.Count(b => b) < configuration.MinFailingPeriodsToAlert &&
-                ongoingOutageStart != null)
+            // condition for determining outage end.
+            if (successEvaluationPeriods == 0 && ongoingOutageStart.HasValue)
             {
-                yield return new Outage(ongoingOutageStart.Value, currentMetric.Timestamp);
+                raisedOutages.Add(new Outage(ongoingOutageStart.Value, currentMetric.Timestamp));
                 ongoingOutageStart = null;
             }
         }
+
+        return raisedOutages;
+    }
+
+    /// <summary>
+    ///     Public non-interface member for benchmarking purposes. <see cref="Evaluate" /> method is copied here to apply
+    ///     changes and compare outcomes with baseline.
+    /// </summary>
+    /// <param name="timeSeries"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public IEnumerable<Outage> EvaluateOptimized(ImmutableArray<Metric> timeSeries,
+        ScheduledQueryRuleConfiguration configuration)
+    {
+        return Evaluate(timeSeries, configuration);
     }
 }
