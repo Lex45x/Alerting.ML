@@ -9,7 +9,6 @@ using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.Training;
 using Alerting.ML.Engine;
-using Alerting.ML.Engine.Optimizer;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.TrainingCreation;
@@ -18,15 +17,18 @@ public class TrainingCreationViewModel : RoutableViewModelBase, IScreen
 {
     private readonly IBackgroundTrainingOrchestrator trainingOrchestrator;
 
-    public TrainingCreationViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator):base(hostScreen)
+    public TrainingCreationViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator) :
+        base(hostScreen)
     {
         this.trainingOrchestrator = trainingOrchestrator;
         CancelCommand = ReactiveCommand.CreateFromTask(Cancel, IsOnTopOfNavigation);
         GoBackCommand = ReactiveCommand.CreateFromTask(GoBack, IsOnTopOfNavigation);
 
-        var builderConfigured = this.WhenAnyValue(model => model.ConfiguredBuilder, (Func<TrainingBuilder?, bool>)(source => source != null));
+        var builderConfigured = this.WhenAnyValue(model => model.ConfiguredBuilder,
+            (Func<TrainingBuilder?, bool>)(source => source != null));
 
-        StartOptimizationCommand = ReactiveCommand.CreateFromTask(StartOptimization, builderConfigured.CombineLatest(IsOnTopOfNavigation, (a, b) => a && b));
+        StartOptimizationCommand = ReactiveCommand.CreateFromTask(StartOptimization,
+            builderConfigured.CombineLatest(IsOnTopOfNavigation, (a, b) => a && b));
 
         this.WhenAnyValue(model => model.Step)
             .Subscribe(step =>

@@ -15,7 +15,7 @@ public interface IAlert<in T> : IAlert where T : AlertConfiguration
     public string ProviderName { get; }
 
     /// <summary>
-    ///     Takes <paramref name="timeSeries"/> and runs anomaly detection with given
+    ///     Takes <paramref name="timeSeries" /> and runs anomaly detection with given
     ///     <paramref name="configuration" />.
     ///     Produces a list of <see cref="Outage" />s that represent a set of time-windows when this alert would fire.
     ///     Evaluations must be thread-safe.

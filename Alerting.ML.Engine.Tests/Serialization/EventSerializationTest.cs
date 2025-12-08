@@ -26,11 +26,13 @@ public class EventSerializationTest
         new TournamentRoundCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(),
             new TestAlertConfiguration(), AggregateVersion: 6),
         new StateInitializedEvent<TestAlertConfiguration>(Guid.NewGuid(), DateTime.UtcNow, "Serialization testing",
-            "Testing", new TestAlert(), [new Metric(DateTime.UtcNow, 0)], new List<Outage>(),
-            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<TestAlertConfiguration>(), 7),
-        new CriticalFailureEvent(8, new ValidationResult()),
-        new EvaluationCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(), new List<Outage>(), 9),
-        new TrainingCompletedEvent(10)
+            "Testing", new TestAlert(), [new Metric(DateTime.UtcNow, value: 0)], new List<Outage>(),
+            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<TestAlertConfiguration>(),
+            AggregateVersion: 7),
+        new CriticalFailureEvent(AggregateVersion: 8, new ValidationResult()),
+        new EvaluationCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(), new List<Outage>(),
+            AggregateVersion: 9),
+        new TrainingCompletedEvent(AggregateVersion: 10)
     };
 
     [Test]
@@ -64,7 +66,8 @@ public class EventSerializationTest
                      .Where(type => type.IsAssignableTo(typeof(IEvent)) && !type.IsAbstract))
         {
             if (!Events.Select(@event => @event.GetType()).Any(knownType =>
-                    knownType == eventType || (knownType.IsConstructedGenericType && knownType.GetGenericTypeDefinition() == eventType)))
+                    knownType == eventType || (knownType.IsConstructedGenericType &&
+                                               knownType.GetGenericTypeDefinition() == eventType)))
             {
                 Assert.Fail($"Event of type {eventType} is not covered by serialization tests.");
             }

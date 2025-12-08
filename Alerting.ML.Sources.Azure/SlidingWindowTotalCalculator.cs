@@ -4,6 +4,9 @@ namespace Alerting.ML.Sources.Azure;
 
 internal class SlidingWindowTotalCalculator : SlidingWindowCountCalculator
 {
+    public double Total { get; private set; }
+    public override double Value => Total;
+
     public override void Add(double value, ReadOnlySpan<Metric> timeWindow)
     {
         base.Add(value, timeWindow);
@@ -15,7 +18,4 @@ internal class SlidingWindowTotalCalculator : SlidingWindowCountCalculator
         base.Remove(value, timeWindow);
         Total -= value;
     }
-
-    public double Total { get; private set; }
-    public override double Value => Total;
 }

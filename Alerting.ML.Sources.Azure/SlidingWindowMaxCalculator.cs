@@ -5,6 +5,8 @@ namespace Alerting.ML.Sources.Azure;
 
 internal class SlidingWindowMaxCalculator : ISlidingWindowCalculator
 {
+    public double Maximum { get; private set; }
+
     public void Add(double value, ReadOnlySpan<Metric> timeWindow)
     {
         Maximum = value >= Maximum ? value : Maximum;
@@ -16,6 +18,4 @@ internal class SlidingWindowMaxCalculator : ISlidingWindowCalculator
     }
 
     public double Value => Maximum;
-
-    public double Maximum { get; private set; }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
@@ -14,6 +13,8 @@ namespace Alerting.ML.Benchmarking.Serialization;
 [MemoryDiagnoser]
 public class StateInitializedEventSerialization
 {
+    public StateInitializedEvent<SampleConfiguration> Event { get; set; }
+
     [GlobalSetup]
     public async Task Setup()
     {
@@ -28,10 +29,9 @@ public class StateInitializedEventSerialization
 
         Event = new StateInitializedEvent<SampleConfiguration>(Guid.NewGuid(), DateTime.UtcNow, "Benchmarking", "None",
             new SampleAlert(), csvTimeSeriesProvider.GetTimeSeries(), csvOutagesProvider.GetKnownOutages(),
-            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<SampleConfiguration>(), 0);
+            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<SampleConfiguration>(),
+            AggregateVersion: 0);
     }
-
-    public StateInitializedEvent<SampleConfiguration> Event { get; set; }
 
     [Benchmark]
     public async Task<ImmutableArray<Metric>> ReadFromCsv()
@@ -51,10 +51,10 @@ public class StateInitializedEventSerialization
             Converters = { new MetricsListConverter() }
         };
 
-        var @eventString = JsonSerializer.Serialize(Event, jsonSerializerOptions);
+        var eventString = JsonSerializer.Serialize(Event, jsonSerializerOptions);
 
         var @event =
-            JsonSerializer.Deserialize<StateInitializedEvent<SampleConfiguration>>(@eventString, jsonSerializerOptions);
+            JsonSerializer.Deserialize<StateInitializedEvent<SampleConfiguration>>(eventString, jsonSerializerOptions);
 
         return @event!;
     }

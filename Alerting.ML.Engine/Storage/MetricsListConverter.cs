@@ -7,12 +7,14 @@ using Alerting.ML.Engine.Optimizer.Events;
 namespace Alerting.ML.Engine.Storage;
 
 /// <summary>
-/// Optimized JSON Serialization for <see cref="ImmutableArray{T}"/> of <see cref="Metric"/>.
-/// Used for <see cref="StateInitializedEvent{T}"/> serialization and deserialization. <br/>
-/// Instead of writing plain array, creates an object with recorded Length property for allocating result array of a given size.<br/>
-/// Each <see cref="Metric"/> struct is serialized as two sequential numbers: <see cref="Metric.Timestamp"/>.Ticks and <see cref="Metric.Value"/> allowing to avoid excessive strings parsing.<br/>
-/// Resulting json looks like:
-/// <code>
+///     Optimized JSON Serialization for <see cref="ImmutableArray{T}" /> of <see cref="Metric" />.
+///     Used for <see cref="StateInitializedEvent{T}" /> serialization and deserialization. <br />
+///     Instead of writing plain array, creates an object with recorded Length property for allocating result array of a
+///     given size.<br />
+///     Each <see cref="Metric" /> struct is serialized as two sequential numbers: <see cref="Metric.Timestamp" />.Ticks
+///     and <see cref="Metric.Value" /> allowing to avoid excessive strings parsing.<br />
+///     Resulting json looks like:
+///     <code>
 /// {
 ///   "Length": 2,
 ///   "Values": [ticks, value, ticks, value]
@@ -82,7 +84,7 @@ public class MetricsListConverter : JsonConverter<ImmutableArray<Metric>>
         writer.WriteStartObject();
         writer.WriteNumber("Length", value.Length);
         writer.WriteStartArray("Values");
-        for (int i = 0; i < value.Length; i++)
+        for (var i = 0; i < value.Length; i++)
         {
             writer.WriteNumberValue(value[i].Timestamp.Ticks);
             writer.WriteNumberValue(value[i].Value);

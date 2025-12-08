@@ -25,7 +25,7 @@ public static class ConfigurationExtensions
     extension(IConfigurationTypeRegistry registry)
     {
         /// <summary>
-        /// Registers Azure-specific types for polymorphic deserialization. 
+        ///     Registers Azure-specific types for polymorphic deserialization.
         /// </summary>
         /// <returns></returns>
         public IConfigurationTypeRegistry WithAzureTypes()

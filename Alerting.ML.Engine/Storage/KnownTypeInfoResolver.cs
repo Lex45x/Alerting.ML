@@ -8,15 +8,10 @@ using Alerting.ML.Engine.Scoring;
 namespace Alerting.ML.Engine.Storage;
 
 /// <summary>
-/// Informs <see cref="JsonSerializer"/> about hierarchical data types and allows extension with additional types.
+///     Informs <see cref="JsonSerializer" /> about hierarchical data types and allows extension with additional types.
 /// </summary>
 public class KnownTypeInfoResolver : DefaultJsonTypeInfoResolver, IConfigurationTypeRegistry
 {
-    /// <summary>
-    /// Represent a global registry of configuration types.
-    /// </summary>
-    public static KnownTypeInfoResolver Instance { get; } = new();
-
     private static readonly ConcurrentDictionary<Type, HashSet<Type>> KnownTypes = new()
     {
         [typeof(IAlertScoreCalculator)] = [typeof(DefaultAlertScoreCalculator)],
@@ -25,6 +20,41 @@ public class KnownTypeInfoResolver : DefaultJsonTypeInfoResolver, IConfiguration
             .Where(type => type.IsAssignableTo(typeof(IEvent)) && type is { IsAbstract: false })
             .ToHashSet()
     };
+
+    /// <summary>
+    ///     Represent a global registry of configuration types.
+    /// </summary>
+    public static KnownTypeInfoResolver Instance { get; } = new();
+
+    /// <inheritdoc />
+    public void RegisterConfigurationType<T>() where T : AlertConfiguration
+    {
+        KnownTypes.GetOrAdd(typeof(AlertConfiguration), _ => []).Add(typeof(T));
+    }
+
+    /// <inheritdoc />
+    public void RegisterAlertType<T>() where T : IAlert
+    {
+        RegisterAlertType(typeof(T));
+    }
+
+    /// <inheritdoc />
+    public void RegisterAlertType(Type alertType)
+    {
+        KnownTypes.GetOrAdd(typeof(IAlert), _ => []).Add(alertType);
+    }
+
+    /// <inheritdoc />
+    public void RegisterConfigurationFactoryType(Type factoryType)
+    {
+        KnownTypes.GetOrAdd(typeof(IConfigurationFactory), _ => []).Add(factoryType);
+    }
+
+    /// <inheritdoc />
+    public void RegisterScoreCalculatorType<T>() where T : IAlertScoreCalculator
+    {
+        KnownTypes.GetOrAdd(typeof(IAlertScoreCalculator), _ => []).Add(typeof(T));
+    }
 
 
     /// <inheritdoc />
@@ -128,69 +158,39 @@ public class KnownTypeInfoResolver : DefaultJsonTypeInfoResolver, IConfiguration
 
         return typeInfo;
     }
-
-    /// <inheritdoc />
-    public void RegisterConfigurationType<T>() where T : AlertConfiguration
-    {
-        KnownTypes.GetOrAdd(typeof(AlertConfiguration), _ => []).Add(typeof(T));
-    }
-
-    /// <inheritdoc />
-    public void RegisterAlertType<T>() where T : IAlert
-    {
-        RegisterAlertType(typeof(T));
-    }
-
-    /// <inheritdoc />
-    public void RegisterAlertType(Type alertType)
-    {
-        KnownTypes.GetOrAdd(typeof(IAlert), _ => []).Add(alertType);
-    }
-
-    /// <inheritdoc />
-    public void RegisterConfigurationFactoryType(Type factoryType)
-    {
-        KnownTypes.GetOrAdd(typeof(IConfigurationFactory), _ => []).Add(factoryType);
-    }
-
-    /// <inheritdoc />
-    public void RegisterScoreCalculatorType<T>() where T : IAlertScoreCalculator
-    {
-        KnownTypes.GetOrAdd(typeof(IAlertScoreCalculator), _ => []).Add(typeof(T));
-    }
 }
 
 /// <summary>
-/// Configures polymorphic serialization of events by supplying descendants of known types in runtime.
+///     Configures polymorphic serialization of events by supplying descendants of known types in runtime.
 /// </summary>
 public interface IConfigurationTypeRegistry
 {
     /// <summary>
-    /// Registers known configuration type. 
+    ///     Registers known configuration type.
     /// </summary>
     /// <typeparam name="T">Exact configuration type.</typeparam>
     void RegisterConfigurationType<T>() where T : AlertConfiguration;
 
     /// <summary>
-    /// Registers known alert type.
+    ///     Registers known alert type.
     /// </summary>
     /// <typeparam name="T">Exact alert type.</typeparam>
     void RegisterAlertType<T>() where T : IAlert;
 
     /// <summary>
-    /// Registers known alert type outside generic context.
+    ///     Registers known alert type outside generic context.
     /// </summary>
     /// <param name="alertType"></param>
     void RegisterAlertType(Type alertType);
 
     /// <summary>
-    /// Registers known AlertScoreCalculator type.
+    ///     Registers known AlertScoreCalculator type.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     void RegisterScoreCalculatorType<T>() where T : IAlertScoreCalculator;
 
     /// <summary>
-    /// Registers open generic configuration factory type.
+    ///     Registers open generic configuration factory type.
     /// </summary>
     /// <param name="factoryType"></param>
     void RegisterConfigurationFactoryType(Type factoryType);

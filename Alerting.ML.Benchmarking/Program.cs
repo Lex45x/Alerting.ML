@@ -3,6 +3,6 @@ using BenchmarkDotNet.Running;
 
 BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args
 #if DEBUG
-    ,new DebugInProcessConfig()
+    , new DebugInProcessConfig()
 #endif
-    );
+);

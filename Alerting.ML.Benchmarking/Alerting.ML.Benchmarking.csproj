@@ -30,4 +30,4 @@
   <ItemGroup>
     <Folder Include="SampleInputs\" />
   </ItemGroup>
-  </Project>
+</Project>

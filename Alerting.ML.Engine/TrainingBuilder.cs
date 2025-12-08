@@ -13,9 +13,9 @@ namespace Alerting.ML.Engine;
 /// </summary>
 public class TrainingBuilder
 {
-    private readonly IConfigurationTypeRegistry typeRegistry;
     private static readonly MethodInfo GenericBuildInfo;
     private static readonly MethodInfo GenericBuildEmptyInfo;
+    private readonly IConfigurationTypeRegistry typeRegistry;
 
     static TrainingBuilder()
     {

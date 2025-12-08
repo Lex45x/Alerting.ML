@@ -39,11 +39,6 @@ public class TrainingViewModel : RoutableViewModelBase
             this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Training));
     }
 
-    private async Task ViewResults()
-    {
-        await HostScreen.Router.Navigate.Execute(new TrainingResultsViewModel(HostScreen, Session));
-    }
-
     public ReactiveCommand<Unit, Unit> ViewResultsCommand { get; }
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
     public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
@@ -63,6 +58,11 @@ public class TrainingViewModel : RoutableViewModelBase
 
 
     public override string UrlPathSegment => "training";
+
+    private async Task ViewResults()
+    {
+        await HostScreen.Router.Navigate.Execute(new TrainingResultsViewModel(HostScreen, Session));
+    }
 
     private async Task GoBack()
     {
@@ -91,39 +91,39 @@ internal class DesignTimeTrainingSession : ITrainingSession
     // todo: will be initialized later for other views
     public ObservableCollection<AlertScoreCard> TopConfigurations { get; } =
     [
-        new(0.9, TimeSpan.FromMinutes(10), 0.01, 12, 
+        new(precision: 0.9, TimeSpan.FromMinutes(minutes: 10), recall: 0.01, outagesCount: 12,
             new ScheduledQueryRuleConfiguration
             {
-                EvaluationFrequency = TimeSpan.FromMinutes(1),
+                EvaluationFrequency = TimeSpan.FromMinutes(minutes: 1),
                 MinFailingPeriodsToAlert = 2,
                 NumberOfEvaluationPeriods = 5,
                 Operator = Operator.Equals,
                 Threshold = 12,
                 TimeAggregation = TimeAggregation.Average,
-                WindowSize = TimeSpan.FromMinutes(5)
-            }, false),
-        new(0.83, TimeSpan.FromMinutes(8), 0.00, 10,
+                WindowSize = TimeSpan.FromMinutes(minutes: 5)
+            }, isNotFeasible: false),
+        new(precision: 0.83, TimeSpan.FromMinutes(minutes: 8), recall: 0.00, outagesCount: 10,
             new ScheduledQueryRuleConfiguration
             {
-                EvaluationFrequency = TimeSpan.FromMinutes(1),
+                EvaluationFrequency = TimeSpan.FromMinutes(minutes: 1),
                 MinFailingPeriodsToAlert = 2,
                 NumberOfEvaluationPeriods = 5,
                 Operator = Operator.Equals,
                 Threshold = 15,
                 TimeAggregation = TimeAggregation.Average,
-                WindowSize = TimeSpan.FromMinutes(5)
-            }, false),
-        new(0.81, TimeSpan.FromMinutes(15), 0.00, 10,
+                WindowSize = TimeSpan.FromMinutes(minutes: 5)
+            }, isNotFeasible: false),
+        new(precision: 0.81, TimeSpan.FromMinutes(minutes: 15), recall: 0.00, outagesCount: 10,
             new ScheduledQueryRuleConfiguration
             {
-                EvaluationFrequency = TimeSpan.FromMinutes(1),
+                EvaluationFrequency = TimeSpan.FromMinutes(minutes: 1),
                 MinFailingPeriodsToAlert = 2,
                 NumberOfEvaluationPeriods = 5,
                 Operator = Operator.Equals,
                 Threshold = 12,
                 TimeAggregation = TimeAggregation.Average,
-                WindowSize = TimeSpan.FromMinutes(5)
-            }, false)
+                WindowSize = TimeSpan.FromMinutes(minutes: 5)
+            }, isNotFeasible: false)
     ];
 
     public int CurrentGeneration => 25;

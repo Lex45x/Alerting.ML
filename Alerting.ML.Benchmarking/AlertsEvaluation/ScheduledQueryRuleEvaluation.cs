@@ -7,6 +7,16 @@ namespace Alerting.ML.Benchmarking.AlertsEvaluation;
 
 public class ScheduledQueryRuleEvaluation
 {
+    private ScheduledQueryRuleAlert alert;
+    private SampleTimeSeriesProvider sampleTimeSeriesProvider;
+
+    [Params(TimeAggregation.Count, TimeAggregation.Average, TimeAggregation.Minimum, TimeAggregation.Maximum,
+        TimeAggregation.Total)]
+    public TimeAggregation TimeAggregation { get; set; }
+
+    [ParamsSource(nameof(WindowSizeAndFrequencySource))]
+    public (TimeSpan WindowSize, TimeSpan EvaluationFrequency) WindowSizeAndFrequency { get; set; }
+
     [GlobalSetup]
     public void InitializeAlert()
     {
@@ -14,9 +24,6 @@ public class ScheduledQueryRuleEvaluation
         sampleTimeSeriesProvider = new SampleTimeSeriesProvider(outagesProvider);
         alert = new ScheduledQueryRuleAlert();
     }
-
-    private ScheduledQueryRuleAlert alert;
-    private SampleTimeSeriesProvider sampleTimeSeriesProvider;
 
     [Benchmark(Baseline = true)]
     public List<Outage> Evaluate()
@@ -56,16 +63,10 @@ public class ScheduledQueryRuleEvaluation
         return outages;
     }
 
-    [Params(TimeAggregation.Count, TimeAggregation.Average, TimeAggregation.Minimum, TimeAggregation.Maximum, TimeAggregation.Total)]
-    public TimeAggregation TimeAggregation { get; set; }
-
-    [ParamsSource(nameof(WindowSizeAndFrequencySource))]
-    public (TimeSpan WindowSize, TimeSpan EvaluationFrequency) WindowSizeAndFrequency { get; set; }
-
     public static IEnumerable<(TimeSpan WindowSize, TimeSpan EvaluationFrequency)> WindowSizeAndFrequencySource()
     {
-        yield return (TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(1));
-        yield return (TimeSpan.FromHours(1), TimeSpan.FromMinutes(1));
-        yield return (TimeSpan.FromHours(2), TimeSpan.FromHours(1));
+        yield return (TimeSpan.FromMinutes(minutes: 5), TimeSpan.FromMinutes(minutes: 1));
+        yield return (TimeSpan.FromHours(hours: 1), TimeSpan.FromMinutes(minutes: 1));
+        yield return (TimeSpan.FromHours(hours: 2), TimeSpan.FromHours(hours: 1));
     }
 }

@@ -39,8 +39,6 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         "Turbo"
     ];
 
-    private readonly ConcurrentDictionary<T, WeakReference<IReadOnlyList<Outage>>> EvaluationCache = new();
-
     private static readonly ImmutableArray<string> Nouns =
     [
         "Falcon",
@@ -66,6 +64,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     ];
 
     private readonly GeneticOptimizerState<T> current;
+
+    private readonly ConcurrentDictionary<T, WeakReference<IReadOnlyList<Outage>>> EvaluationCache = new();
     private readonly IEventStore store;
 
     /// <summary>
@@ -271,7 +271,9 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             .WithCancellation(cancellationToken)
             .Select(configuration =>
             {
-                var cachedOutages = EvaluationCache.GetOrAdd(configuration, alertConfiguration => new WeakReference<IReadOnlyList<Outage>>(ValueFactory(alertConfiguration).ToList()));
+                var cachedOutages = EvaluationCache.GetOrAdd(configuration,
+                    alertConfiguration =>
+                        new WeakReference<IReadOnlyList<Outage>>(ValueFactory(alertConfiguration).ToList()));
 
                 if (!cachedOutages.TryGetTarget(out var outages))
                 {
@@ -291,7 +293,10 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
         return (true, EventBag.Merge(events));
 
-        List<Outage> ValueFactory(T cfg) => current.Alert!.Evaluate(current.TimeSeries!, cfg).ToList();
+        List<Outage> ValueFactory(T cfg)
+        {
+            return current.Alert!.Evaluate(current.TimeSeries!, cfg).ToList();
+        }
     }
 
     private (bool, EventBag) Reconfigure(OptimizationConfiguration optimizationConfiguration)
@@ -302,12 +307,12 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
 internal class EventBag
 {
-    public IEnumerable<IEvent> Events { get; }
-
     public EventBag(IEnumerable<IEvent> events)
     {
         Events = events;
     }
+
+    public IEnumerable<IEvent> Events { get; }
 
     public static EventBag Merge(IEnumerable<EventBag> bags)
     {

@@ -125,7 +125,8 @@ public class GeneticOptimizerState<T> where T : AlertConfiguration
     /// </summary>
     /// <param name="event">Instance of event.</param>
     /// <typeparam name="TEvent">A type of event.</typeparam>
-    /// <returns>Whether event was applied or not.
+    /// <returns>
+    ///     Whether event was applied or not.
     ///     <value>false</value>
     ///     when critical error has occured and optimization can't continue.
     /// </returns>

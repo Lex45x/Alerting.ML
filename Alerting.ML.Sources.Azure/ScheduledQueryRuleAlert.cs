@@ -100,7 +100,8 @@ public class ScheduledQueryRuleAlert : IAlert<ScheduledQueryRuleConfiguration>
     }
 
     /// <summary>
-    /// Public non-interface member for benchmarking purposes. <see cref="Evaluate"/> method is copied here to apply changes and compare outcomes with baseline.
+    ///     Public non-interface member for benchmarking purposes. <see cref="Evaluate" /> method is copied here to apply
+    ///     changes and compare outcomes with baseline.
     /// </summary>
     /// <param name="timeSeries"></param>
     /// <param name="configuration"></param>
