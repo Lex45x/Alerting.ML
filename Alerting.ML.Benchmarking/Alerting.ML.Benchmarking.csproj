@@ -12,13 +12,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AlertsEvaluation\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Alerting.ML.Engine\Alerting.ML.Engine.csproj" />
     <ProjectReference Include="..\Alerting.ML.Sources.Azure\Alerting.ML.Sources.Azure.csproj" />
+    <ProjectReference Include="..\Alerting.ML.Sources.Csv\Alerting.ML.Sources.Csv.csproj" />
     <ProjectReference Include="..\Alerting.ML.TimeSeries.Sample\Alerting.ML.TimeSeries.Sample.csproj" />
   </ItemGroup>
 
-</Project>
+  <ItemGroup>
+    <None Include="..\Sample Inputs\1 - Success Rate\timeseries_1.csv" Link="SampleInputs\timeseries_1.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Sample Inputs\1 - Success Rate\outages_1.csv" Link="SampleInputs\outages_1.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SampleInputs\" />
+  </ItemGroup>
+  </Project>

@@ -32,4 +32,6 @@ public record StateInitializedEvent<T>(
     IConfigurationFactory<T> ConfigurationFactory,
     int AggregateVersion)
     : IEvent
-    where T : AlertConfiguration;
+    where T : AlertConfiguration
+{
+}

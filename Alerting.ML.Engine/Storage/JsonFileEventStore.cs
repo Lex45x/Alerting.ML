@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Alerting.ML.Engine.Storage;
 
@@ -11,9 +11,10 @@ namespace Alerting.ML.Engine.Storage;
 /// </summary>
 public class JsonFileEventStore : IEventStore, IDisposable
 {
-    private static readonly JsonSerializerSettings SerializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new()
     {
-        TypeNameHandling = TypeNameHandling.All
+        TypeInfoResolver = KnownTypeInfoResolver.Instance,
+        Converters = { new MetricsListConverter() }
     };
 
     private readonly string folder;
@@ -59,7 +60,7 @@ public class JsonFileEventStore : IEventStore, IDisposable
         while (!string.IsNullOrWhiteSpace(eventJson) && !cancellationToken.IsCancellationRequested)
         {
             //todo: implement repair strategy. Offload all valid events into new file and purge old.
-            yield return JsonConvert.DeserializeObject<IEvent>(eventJson, SerializerOptions) ??
+            yield return JsonSerializer.Deserialize<IEvent>(eventJson, SerializerOptions) ??
                          throw new InvalidOperationException($"Null event deserialized for aggregate {aggregateId}!");
             eventJson = await streamReader.ReadLineAsync(cancellationToken);
         }
@@ -87,7 +88,7 @@ public class JsonFileEventStore : IEventStore, IDisposable
                 }
 
                 var serializedEvents =
-                    DequeueAll().Select(@event => JsonConvert.SerializeObject(@event, SerializerOptions));
+                    DequeueAll().Select(@event => JsonSerializer.Serialize(@event, SerializerOptions));
 
                 await File.AppendAllLinesAsync(GetAggregateFileName(aggregateId), serializedEvents);
 

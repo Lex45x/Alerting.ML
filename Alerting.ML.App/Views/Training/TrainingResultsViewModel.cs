@@ -5,15 +5,15 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Scoring;
+using Alerting.ML.Engine.Storage;
 using Avalonia.Controls;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Training;
@@ -31,7 +31,7 @@ public class TrainingResultsViewModel : RoutableViewModelBase
                 RankedScoreCards = new ObservableCollection<RankedScoreCard>(cards
                     .OrderByDescending(card => card.Fitness)
                     .Select((card, i) =>
-                        new RankedScoreCard(i + 1, card, JsonConvert.SerializeObject(card.Configuration, Formatting.Indented, new StringEnumConverter()))));
+                        new RankedScoreCard(i + 1, card, JsonSerializer.Serialize(card.Configuration, new JsonSerializerOptions{ WriteIndented = true, TypeInfoResolver = KnownTypeInfoResolver.Instance}))));
                 BestFitness = cards.Max(card => card.Fitness);
                 AveragePrecision = cards.Average(card => card.Precision);
                 AverageRecall = cards.Average(card => card.Recall);

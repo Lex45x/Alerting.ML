@@ -3,7 +3,7 @@
 /// <summary>
 ///     A single point of a time-series.
 /// </summary>
-public readonly struct Metric
+public readonly struct Metric : IEquatable<Metric>
 {
     /// <summary>
     ///     Creates a new instance of Metric with a time point and a metric value
@@ -25,4 +25,22 @@ public readonly struct Metric
     ///     Value of the metric.
     /// </summary>
     public double Value { get; }
+
+    /// <inheritdoc />
+    public bool Equals(Metric other)
+    {
+        return Timestamp.Equals(other.Timestamp) && Value.Equals(other.Value);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return obj is Metric other && Equals(other);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Timestamp, Value);
+    }
 }

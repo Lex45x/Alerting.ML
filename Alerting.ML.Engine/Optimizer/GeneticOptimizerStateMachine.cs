@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
@@ -37,6 +38,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         "Synthetic",
         "Turbo"
     ];
+
+    private readonly ConcurrentDictionary<T, WeakReference<IReadOnlyList<Outage>>> EvaluationCache = new();
 
     private static readonly ImmutableArray<string> Nouns =
     [
@@ -188,6 +191,14 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
     private (bool, EventBag) CompleteGeneration()
     {
+        foreach (var (configuration, weakOutagesList) in EvaluationCache)
+        {
+            if (!weakOutagesList.TryGetTarget(out _))
+            {
+                EvaluationCache.Remove(configuration, out _);
+            }
+        }
+
         return RaiseEvent(current.Configuration?.TotalGenerations - 1 <= current.GenerationIndex
             ? new TrainingCompletedEvent(current.Version)
             : new GenerationCompletedEvent(current.Version));
@@ -258,16 +269,29 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         var events = current.WaitingEvaluation
             .AsParallel()
             .WithCancellation(cancellationToken)
-            .Select(alertConfiguration => new
+            .Select(configuration =>
             {
-                Outages = current.Alert!.Evaluate(current.TimeSeries!, alertConfiguration).ToList(),
-                Configuration = alertConfiguration
+                var cachedOutages = EvaluationCache.GetOrAdd(configuration, alertConfiguration => new WeakReference<IReadOnlyList<Outage>>(ValueFactory(alertConfiguration).ToList()));
+
+                if (!cachedOutages.TryGetTarget(out var outages))
+                {
+                    outages = ValueFactory(configuration);
+                }
+
+                return new
+                {
+                    Outages = outages,
+                    Configuration = configuration
+                };
             })
             .AsSequential()
-            .Select(tuple => RaiseEvent(new EvaluationCompletedEvent<T>(tuple.Configuration, tuple.Outages, current.Version)))
+            .Select(tuple =>
+                RaiseEvent(new EvaluationCompletedEvent<T>(tuple.Configuration, tuple.Outages, current.Version)))
             .Select(tuple => tuple.Item2);
 
         return (true, EventBag.Merge(events));
+
+        List<Outage> ValueFactory(T cfg) => current.Alert!.Evaluate(current.TimeSeries!, cfg).ToList();
     }
 
     private (bool, EventBag) Reconfigure(OptimizationConfiguration optimizationConfiguration)

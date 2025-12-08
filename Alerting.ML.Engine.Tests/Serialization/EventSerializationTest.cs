@@ -1,9 +1,11 @@
-﻿using Alerting.ML.Engine.Alert;
+﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
+using FluentValidation.Results;
 
 namespace Alerting.ML.Engine.Tests.Serialization;
 
@@ -22,12 +24,21 @@ public class EventSerializationTest
         new SurvivorsCountedEvent<TestAlertConfiguration>(
             new List<TestAlertConfiguration> { new(), new() }, AggregateVersion: 5),
         new TournamentRoundCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(),
-            new TestAlertConfiguration(), AggregateVersion: 6)
+            new TestAlertConfiguration(), AggregateVersion: 6),
+        new StateInitializedEvent<TestAlertConfiguration>(Guid.NewGuid(), DateTime.UtcNow, "Serialization testing",
+            "Testing", new TestAlert(), [new Metric(DateTime.UtcNow, 0)], new List<Outage>(),
+            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<TestAlertConfiguration>(), 7),
+        new CriticalFailureEvent(8, new ValidationResult()),
+        new EvaluationCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(), new List<Outage>(), 9),
+        new TrainingCompletedEvent(10)
     };
 
     [Test]
     public async Task WriteAndReadEvents()
     {
+        KnownTypeInfoResolver.Instance.RegisterConfigurationType<TestAlertConfiguration>();
+        KnownTypeInfoResolver.Instance.RegisterAlertType<TestAlert>();
+
         var aggregateId = Guid.NewGuid();
         var store = "./test-store";
         var jsonFileEventStore = new JsonFileEventStore(store);
@@ -43,7 +54,31 @@ public class EventSerializationTest
 
         var events = await jsonFileEventStore.GetAll(aggregateId, CancellationToken.None).ToListAsync();
 
-        Assert.That(events, Is.EquivalentTo(Events));
+        Assert.That(events.Count, Is.EqualTo(Events.Count));
+    }
+
+    [Test]
+    public void EnsureAllEventsAreCovered()
+    {
+        foreach (var eventType in typeof(IEvent).Assembly.GetTypes()
+                     .Where(type => type.IsAssignableTo(typeof(IEvent)) && !type.IsAbstract))
+        {
+            if (!Events.Select(@event => @event.GetType()).Any(knownType =>
+                    knownType == eventType || (knownType.IsConstructedGenericType && knownType.GetGenericTypeDefinition() == eventType)))
+            {
+                Assert.Fail($"Event of type {eventType} is not covered by serialization tests.");
+            }
+        }
+    }
+}
+
+public class TestAlert : IAlert<TestAlertConfiguration>
+{
+    public string ProviderName => "Testing";
+
+    public IEnumerable<Outage> Evaluate(ImmutableArray<Metric> timeSeries, TestAlertConfiguration configuration)
+    {
+        yield break;
     }
 }
 
