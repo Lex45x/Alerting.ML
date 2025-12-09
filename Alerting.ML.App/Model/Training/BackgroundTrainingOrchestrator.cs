@@ -24,7 +24,7 @@ public class BackgroundTrainingOrchestrator : IBackgroundTrainingOrchestrator
 
     public ITrainingSession StartNew(IGeneticOptimizer optimizer)
     {
-        var trainingSession = new TrainingSession(optimizer);
+        var trainingSession = new TrainingSession(optimizer, this);
 
         AllSessions.Add(trainingSession);
 
@@ -50,7 +50,7 @@ public class BackgroundTrainingOrchestrator : IBackgroundTrainingOrchestrator
 
             var geneticOptimizer = DefaultBuilder.CreateEmpty(configurationType);
 
-            var trainingSession = new TrainingSession(geneticOptimizer);
+            var trainingSession = new TrainingSession(geneticOptimizer, this);
 
             AllSessions.Add(trainingSession);
 

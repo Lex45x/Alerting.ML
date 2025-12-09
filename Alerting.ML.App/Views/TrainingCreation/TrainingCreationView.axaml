@@ -52,9 +52,9 @@
         </Border>
 
         <Grid Grid.Row="3" Margin="24" VerticalAlignment="Top">
-            <Button Theme="{StaticResource ArrowButton}" Classes="left" Content="Cancel" HorizontalAlignment="Left"
+            <Button Theme="{StaticResource IconButton}" Classes="left" Content="Cancel" HorizontalAlignment="Left"
                     Command="{Binding GoBackCommand}" />
-            <Button Theme="{StaticResource ArrowButton}" Classes="accent right" Content="Continue"
+            <Button Theme="{StaticResource IconButton}" Classes="accent right" Content="Continue"
                     HorizontalAlignment="Right" Command="{Binding ContinueCommand}" IsVisible="{Binding IsNotLastStep}" />
             <Button Theme="{StaticResource GradientButton}" Classes="check" Content="Start Optimization"
                     HorizontalAlignment="Right" Command="{Binding StartOptimizationCommand}"

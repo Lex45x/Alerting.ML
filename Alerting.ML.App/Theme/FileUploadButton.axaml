@@ -15,7 +15,7 @@
 
                         <TextBlock Classes="p" Text="Drag and drop or click to browse" HorizontalAlignment="Center" />
 
-                        <Button Theme="{StaticResource ArrowButton}" Content="Select File" />
+                        <Button Theme="{StaticResource IconButton}" Content="Select File" />
                     </StackPanel>
                 </Button>
             </StackPanel>

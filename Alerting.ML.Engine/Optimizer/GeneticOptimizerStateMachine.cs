@@ -5,6 +5,7 @@ using Alerting.ML.Engine.Data;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Scoring;
 using Alerting.ML.Engine.Storage;
+using FluentValidation.Results;
 
 namespace Alerting.ML.Engine.Optimizer;
 
@@ -72,13 +73,13 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     ///     Creates a new instance of Genetic Optimizer with a new training.
     /// </summary>
     /// <param name="alert">Alert rule to be optimized.</param>
-    /// <param name="timeSeriesProvider">Provider of the relevant metric.</param>
-    /// <param name="knownOutagesProvider">Provider of known outages.</param>
+    /// <param name="timeSeries">An array with relevant metric.</param>
+    /// <param name="knownOutages">A list of known outages.</param>
     /// <param name="alertScoreCalculator">Calculates alert score based on detected outages.</param>
     /// <param name="configurationFactory">A relevant factory for <typeparamref name="T" /></param>
     /// <param name="store">An event store to persist all events.</param>
-    public GeneticOptimizerStateMachine(IAlert<T> alert, ITimeSeriesProvider timeSeriesProvider,
-        IKnownOutagesProvider knownOutagesProvider, IAlertScoreCalculator alertScoreCalculator,
+    public GeneticOptimizerStateMachine(IAlert<T> alert, ImmutableArray<Metric> timeSeries,
+        IReadOnlyList<Outage> knownOutages, IAlertScoreCalculator alertScoreCalculator,
         IConfigurationFactory<T> configurationFactory, IEventStore store)
     {
         this.store = store;
@@ -90,8 +91,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             $"{alert.ProviderName}: {Adjectives[random.Next(Adjectives.Length)]} {Nouns[random.Next(Nouns.Length)]} #{random.Next(minValue: 100, maxValue: 999)}";
 
         RaiseEvent(new StateInitializedEvent<T>(aggregateId, DateTime.UtcNow, name, alert.ProviderName, alert,
-            timeSeriesProvider.GetTimeSeries(),
-            knownOutagesProvider.GetKnownOutages(),
+            timeSeries,
+            knownOutages,
             alertScoreCalculator,
             configurationFactory, AggregateVersion: 0), aggregateId);
     }
@@ -162,19 +163,23 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
                 GeneticOptimizerStateEnum.CompletingGeneration => CompleteGeneration(),
                 GeneticOptimizerStateEnum.SurvivorsCounting => CountSurvivors(),
                 GeneticOptimizerStateEnum.Tournament => RunTournament(),
-                GeneticOptimizerStateEnum.Completed => (false, null!),
+                GeneticOptimizerStateEnum.Completed => (false, EventBag.Empty),
                 GeneticOptimizerStateEnum.Created => throw new InvalidOperationException(),
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            if (canContinue)
+            foreach (var @event in bag.Events)
             {
-                foreach (var @event in bag.Events)
-                {
-                    yield return @event!;
-                }
+                yield return @event!;
             }
         } while (canContinue && !cancellationToken.IsCancellationRequested);
+    }
+
+    /// <inheritdoc />
+    public IGeneticOptimizer Clone()
+    {
+        return new GeneticOptimizerStateMachine<T>(current.Alert, current.TimeSeries,
+            current.KnownOutages, current.AlertScoreCalculator, current.ConfigurationFactory, store);
     }
 
     private (bool, EventBag) RaiseEvent<TEvent>(TEvent @event, Guid? aggregateId = null) where TEvent : IEvent
@@ -323,4 +328,6 @@ internal class EventBag
     {
         return new EventBag([@event]);
     }
+
+    public static EventBag Empty { get; } = new([]);
 }

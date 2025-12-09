@@ -3,18 +3,21 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
-                <Button Theme="{StaticResource ArrowButton}" Content="Some Text" />
-                <Button Classes="left" Theme="{StaticResource ArrowButton}" Content="Some Text" />
-                <Button Classes="right" Theme="{StaticResource ArrowButton}" Content="Some Text" />
-                <Button Classes="accent left" Theme="{StaticResource ArrowButton}" Content="Some Text" />
-                <Button Classes="accent right" Theme="{StaticResource ArrowButton}" Content="Some Text" />
+                <Button Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="left" Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="right" Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="accent left" Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="accent chart" Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="accent pause" Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="accent start" Theme="{StaticResource IconButton}" Content="Some Text" />
+                <Button Classes="accent pulse" Theme="{StaticResource IconButton}" Content="Some Text" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
     <SolidColorBrush x:Key="Color.ArrowButtonBorder" Color="#262626" />
     <SolidColorBrush x:Key="Color.ArrowButtonAccentBackground" Color="#155DFC" />
     <SolidColorBrush x:Key="Color.ArrowButtonAccentHoverBackground" Color="#1447E6" />
-    <ControlTheme x:Key="ArrowButton" TargetType="Button">
+    <ControlTheme x:Key="IconButton" TargetType="Button">
         <Setter Property="FontSize" Value="{StaticResource Text.Base}" />
         <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
         <Setter Property="FontWeight" Value="Medium" />
@@ -34,8 +37,7 @@
                         CornerRadius="{TemplateBinding CornerRadius}">
                     <StackPanel Orientation="Horizontal" Margin="{TemplateBinding Padding}" Spacing="8"
                                 HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Svg x:Name="PART_ArrowLeft" Width="16" Height="16"
-                             Path="avares://Alerting.ML.App/Assets/goback-icon.svg"
+                        <Svg x:Name="PART_IconLeft" Width="16" Height="16"
                              Svg.Css=".lucide { stroke: #FAFAFA; }" />
                         <ContentPresenter x:Name="PART_ContentPresenter"
                                           Foreground="{TemplateBinding Foreground}"
@@ -43,12 +45,8 @@
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        <Svg x:Name="PART_ArrowRight" Width="16" Height="16"
-                             Path="avares://Alerting.ML.App/Assets/goback-icon.svg"
+                        <Svg x:Name="PART_IconRight" Width="16" Height="16"
                              Svg.Css=".lucide { stroke: #FAFAFA; }">
-                            <Svg.RenderTransform>
-                                <RotateTransform Angle="180" />
-                            </Svg.RenderTransform>
                         </Svg>
                     </StackPanel>
                 </Border>
@@ -60,12 +58,37 @@
             <Setter Property="Background" Value="{StaticResource Color.ArrowButtonAccentBackground}" />
         </Style>
 
-        <Style Selector="^.left /template/ Svg#PART_ArrowLeft">
+        <Style Selector="^.left /template/ Svg#PART_IconLeft">
             <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Path" Value="avares://Alerting.ML.App/Assets/goback-icon.svg" />
         </Style>
 
-        <Style Selector="^.right /template/ Svg#PART_ArrowRight">
+        <Style Selector="^.pause /template/ Svg#PART_IconLeft">
             <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Path" Value="avares://Alerting.ML.App/Assets/pause-icon.svg" />
+        </Style>
+
+        <Style Selector="^.start /template/ Svg#PART_IconLeft">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Path" Value="avares://Alerting.ML.App/Assets/play-icon.svg" />
+        </Style>
+
+        <Style Selector="^.pulse /template/ Svg#PART_IconLeft">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Path" Value="avares://Alerting.ML.App/Assets/pulse-icon.svg" />
+        </Style>
+
+        <Style Selector="^.chart /template/ Svg#PART_IconLeft">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Path" Value="avares://Alerting.ML.App/Assets/chart-icon.svg" />
+        </Style>
+
+        <Style Selector="^.right /template/ Svg#PART_IconRight">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Path" Value="avares://Alerting.ML.App/Assets/goback-icon.svg" />
+            <Setter Property="RenderTransform">
+                <RotateTransform Angle="180" />
+            </Setter>
         </Style>
 
         <Style Selector="^ /template/ Svg">

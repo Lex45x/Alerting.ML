@@ -43,4 +43,10 @@ public interface IGeneticOptimizer
     /// <param name="cancellationToken">Allows to pause optimization run.</param>
     /// <returns>A stream of events generated during the simulation.</returns>
     public IEnumerable<IEvent> Optimize(OptimizationConfiguration configuration, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Creates a new genetic optimizer instance with a copy of current optimizer configuration.
+    /// </summary>
+    /// <returns></returns>
+    IGeneticOptimizer Clone();
 }

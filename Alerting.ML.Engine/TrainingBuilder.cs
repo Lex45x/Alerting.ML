@@ -182,8 +182,8 @@ public class TrainingBuilder
     private IGeneticOptimizer GenericBuild<T>() where T : AlertConfiguration, new()
     {
         return new GeneticOptimizerStateMachine<T>(Alert as IAlert<T> ?? throw new ArgumentNullException(nameof(Alert)),
-            TimeSeriesProvider ?? throw new ArgumentNullException(nameof(TimeSeriesProvider)),
-            KnownOutagesProvider ?? throw new ArgumentNullException(nameof(KnownOutagesProvider)),
+            TimeSeriesProvider?.GetTimeSeries() ?? throw new ArgumentNullException(nameof(TimeSeriesProvider)),
+            KnownOutagesProvider?.GetKnownOutages() ?? throw new ArgumentNullException(nameof(KnownOutagesProvider)),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
             ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
             EventStore ?? new InMemoryEventStore());

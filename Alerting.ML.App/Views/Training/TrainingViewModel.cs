@@ -153,5 +153,12 @@ internal class DesignTimeTrainingSession : ITrainingSession
         throw new NotImplementedException();
     }
 
+    public IBackgroundTrainingOrchestrator OwningOrchestrator { get; }
+
+    public ITrainingSession CloneAndStart()
+    {
+        throw new NotImplementedException();
+    }
+
     public TrainingState State => TrainingState.Paused;
 }
