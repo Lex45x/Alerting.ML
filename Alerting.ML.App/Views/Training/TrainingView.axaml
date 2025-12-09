@@ -38,7 +38,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Button Margin="24, 16" Theme="{StaticResource ArrowButton}" Grid.Column="1" Content="View Results"
+                <Button Margin="24, 16" Classes="chart" Theme="{StaticResource IconButton}" Grid.Column="1" Content="View Results"
                         Command="{Binding ViewResultsCommand}" />
 
             </Grid>
@@ -133,7 +133,7 @@
                             </StackPanel>
 
                             <!-- Progress -->
-                            <StackPanel>
+                            <StackPanel Spacing="4">
                                 <Grid ColumnDefinitions="*,Auto">
 
                                     <TextBlock Text="Progress"
@@ -150,6 +150,8 @@
                                              Height="8"
                                              Foreground="{Binding Session.ProgressPercentage, Converter={StaticResource ColorConverter}}" />
                             </StackPanel>
+
+                            <Border Background="{StaticResource Color.Border}" Height="1"/>
 
                             <!-- Stats -->
                             <StackPanel Spacing="4">
@@ -199,6 +201,8 @@
                                 </Grid>
                             </StackPanel>
 
+                            <Border Background="{StaticResource Color.Border}" Height="1"/>
+
                             <!-- Paused badge -->
                             <Border Margin="0,8,0,0"
                                     Padding="4"
@@ -211,9 +215,11 @@
 
                     <!-- Action Buttons -->
                     <StackPanel Spacing="8">
-                        <Button Classes="accent" Theme="{StaticResource ArrowButton}" Content="Resume Training"
+                        <Button Classes="accent start" Theme="{StaticResource IconButton}" 
+                                IsVisible="{Binding ResumeCommand.CanExecute^}" Content="Resume Training"
                                 HorizontalAlignment="Stretch" Command="{Binding ResumeCommand}" />
-                        <Button Theme="{StaticResource ArrowButton}" Content="Pause Training"
+                        <Button Classes="pause" Theme="{StaticResource IconButton}" Content="Pause Training"
+                                IsVisible="{Binding PauseCommand.CanExecute^}"
                                 Command="{Binding PauseCommand}"
                                 HorizontalAlignment="Stretch" />
                     </StackPanel>

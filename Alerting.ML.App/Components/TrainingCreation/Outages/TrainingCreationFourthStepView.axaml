@@ -38,7 +38,7 @@
 
                         <TextBlock Classes="p" Text="{Binding UploadSubTitle}" HorizontalAlignment="Center" />
 
-                        <Button Theme="{StaticResource ArrowButton}" Content="Select File"
+                        <Button Theme="{StaticResource IconButton}" Content="Select File"
                                 Command="{Binding PickFileCommand}" CommandParameter="{Binding $self}" />
                     </StackPanel>
                 </Button>

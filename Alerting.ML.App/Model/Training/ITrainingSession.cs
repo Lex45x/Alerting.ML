@@ -29,6 +29,8 @@ public interface ITrainingSession
     void Start(OptimizationConfiguration configuration);
     void Stop();
     Task Hydrate(Guid aggregateId);
+    IBackgroundTrainingOrchestrator OwningOrchestrator { get; }
+    ITrainingSession CloneAndStart();
 }
 
 public enum TrainingState

@@ -28,9 +28,10 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     private TrainingState? eventBasedState;
     private Task? optimizationTask;
 
-    public TrainingSession(IGeneticOptimizer optimizer)
+    public TrainingSession(IGeneticOptimizer optimizer, IBackgroundTrainingOrchestrator owningOrchestrator)
     {
         this.optimizer = optimizer;
+        OwningOrchestrator = owningOrchestrator;
         this.WhenAnyValue(trainingSession => trainingSession.CurrentGeneration,
                 trainingSession => trainingSession.CurrentConfiguration)
             .Subscribe(_ =>
@@ -145,6 +146,15 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         }
 
         State = eventBasedState ?? State;
+    }
+
+    public IBackgroundTrainingOrchestrator OwningOrchestrator { get; }
+
+    public ITrainingSession CloneAndStart()
+    {
+        var newSession = OwningOrchestrator.StartNew(optimizer.Clone());
+
+        return newSession;
     }
 
     public TrainingState State

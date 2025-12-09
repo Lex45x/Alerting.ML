@@ -20,6 +20,7 @@ public class TrainingResultsViewModel : RoutableViewModelBase
     {
         Session = session;
         GoBackCommand = ReactiveCommand.CreateFromTask(GoBack, IsOnTopOfNavigation);
+        RetrainCommand = ReactiveCommand.CreateFromTask(Retrain, IsOnTopOfNavigation);
         this.WhenAnyValue(model => model.Session.TopConfigurations)
             .Where(cards => cards.Any())
             .Subscribe(cards =>
@@ -38,7 +39,20 @@ public class TrainingResultsViewModel : RoutableViewModelBase
             .DisposeWith(Disposables);
     }
 
+    private async Task Retrain()
+    {
+        var trainingViewModel = new TrainingViewModel(HostScreen, Session.CloneAndStart());
+
+        while (HostScreen.Router.NavigationStack.Count > 1)
+        {
+            await HostScreen.Router.NavigateBack.Execute();
+        }
+        
+        await HostScreen.Router.Navigate.Execute(trainingViewModel);
+    }
+
     public ReactiveCommand<Unit, Unit> GoBackCommand { get; }
+    public ReactiveCommand<Unit, Unit> RetrainCommand { get; }
 
     public ITrainingSession Session
     {

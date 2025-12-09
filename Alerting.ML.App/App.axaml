@@ -10,7 +10,7 @@
                 <ResourceInclude Source="Theme/TransparentButton.axaml" />
                 <ResourceInclude Source="Theme/DataSourceRadioButton.axaml" />
                 <ResourceInclude Source="Theme/FilterRadioButton.axaml" />
-                <ResourceInclude Source="Theme/ArrowButton.axaml" />
+                <ResourceInclude Source="Theme/IconButton.axaml" />
                 <ResourceInclude Source="Theme/SearchBox.axaml" />
                 <ResourceInclude Source="Theme/FileUploadButton.axaml" />
                 <ResourceInclude Source="Theme/TableListBox.axaml" />
