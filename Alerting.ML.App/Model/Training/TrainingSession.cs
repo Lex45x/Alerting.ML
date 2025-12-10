@@ -216,7 +216,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
                 var firstConfiguration = currentGenerationScores[i].Configuration;
                 var secondConfiguration = currentGenerationScores[j].Configuration;
 
-                diversitySum = firstConfiguration.Distance(secondConfiguration);
+                diversitySum += firstConfiguration.Distance(secondConfiguration);
             }
         }
 
@@ -290,7 +290,10 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     {
         if (scoreCard.Precision > 0.7 || scoreCard.Recall > 0.7 || scoreCard.Fitness > 0.9)
         {
-            TopConfigurations.Add(scoreCard);
+            if (!TopConfigurations.Contains(scoreCard))
+            {
+                TopConfigurations.Add(scoreCard);
+            }
         }
 
         if (TopConfigurations.Count > 15)

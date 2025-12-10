@@ -29,5 +29,5 @@ public record OptimizationConfiguration(
     ///     Provides a reasonably good default configuration for the optimization process.
     /// </summary>
     public static OptimizationConfiguration Default { get; } = new(PopulationSize: 300, SurvivorPercentage: 0.1,
-        CrossoverProbability: 0.3, MutationProbability: 0.05, TotalGenerations: 100, TournamentsCount: 3);
+        CrossoverProbability: 0.7, MutationProbability: 0.3, TotalGenerations: 200, TournamentsCount: 3);
 }

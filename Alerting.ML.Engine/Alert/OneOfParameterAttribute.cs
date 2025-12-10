@@ -13,7 +13,7 @@ public abstract class OneOfParameterAttribute<TValue> : ConfigurationParameterAt
     protected abstract IReadOnlyList<TValue> AllowedValues { get; }
 
     /// <inheritdoc />
-    public sealed override object GetRandomValue(AlertConfiguration appliedTo)
+    public sealed override object GetRandomValue(AlertConfiguration appliedTo, TimeSeriesStatistics statistics)
     {
         var randomIndex = Random.Shared.Next(minValue: 0, AllowedValues.Count);
 
@@ -21,7 +21,7 @@ public abstract class OneOfParameterAttribute<TValue> : ConfigurationParameterAt
     }
 
     /// <inheritdoc />
-    public sealed override object Nudge(object value, AlertConfiguration appliedTo)
+    public sealed override object Nudge(object value, AlertConfiguration appliedTo, TimeSeriesStatistics statistics)
     {
         var targetIndex = 0;
         for (var i = 0; i < AllowedValues.Count; i++)

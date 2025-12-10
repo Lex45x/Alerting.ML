@@ -21,7 +21,7 @@ public class ScheduledQueryRuleConfiguration : AlertConfiguration
     /// <summary>
     ///     Threshold value for comparison in evaluation period.
     /// </summary>
-    [IntParameter(min: -100, max: 100, step: 2)]
+    [ThresholdParameter]
     public int Threshold { get; init; }
 
     /// <summary>

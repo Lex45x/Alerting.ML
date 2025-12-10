@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using FluentValidation.Results;
 
@@ -42,6 +43,10 @@ public class SampleTimeSeriesProvider : ITimeSeriesProvider
     {
         return series;
     }
+
+    /// <inheritdoc />
+    public TimeSeriesStatistics Statistics =>
+        new(series.Min(metric => metric.Value), series.Max(metric => metric.Value));
 
     /// <inheritdoc />
     public Task<ValidationResult> ImportAndValidate()

@@ -29,7 +29,7 @@ public class StateInitializedEventSerialization
 
         Event = new StateInitializedEvent<SampleConfiguration>(Guid.NewGuid(), DateTime.UtcNow, "Benchmarking", "None",
             new SampleAlert(), csvTimeSeriesProvider.GetTimeSeries(), csvOutagesProvider.GetKnownOutages(),
-            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<SampleConfiguration>(),
+            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<SampleConfiguration>(csvTimeSeriesProvider.Statistics),
             AggregateVersion: 0);
     }
 

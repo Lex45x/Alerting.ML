@@ -11,13 +11,13 @@ internal class FailedPeriodsToAlertAttribute : ConfigurationParameterAttribute
         this.step = step;
     }
 
-    public override object GetRandomValue(AlertConfiguration appliedTo)
+    public override object GetRandomValue(AlertConfiguration appliedTo, TimeSeriesStatistics statistics)
     {
         var configuration = (ScheduledQueryRuleConfiguration)appliedTo;
         return Random.Shared.Next(minValue: 1, configuration.NumberOfEvaluationPeriods + 1);
     }
 
-    public override object Nudge(object value, AlertConfiguration appliedTo)
+    public override object Nudge(object value, AlertConfiguration appliedTo, TimeSeriesStatistics statistics)
     {
         if (Random.Shared.NextDouble() > 0.5)
         {

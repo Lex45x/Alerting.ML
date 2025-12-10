@@ -25,19 +25,14 @@ public class IntParameterAttribute : ConfigurationParameterAttribute
     }
 
     /// <inheritdoc />
-    public override object Nudge(object value, AlertConfiguration appliedTo)
+    public override object Nudge(object value, AlertConfiguration appliedTo, TimeSeriesStatistics statistics)
     {
-        if (Random.Shared.NextDouble() > 0.5)
-        {
-            return value;
-        }
-
         var newValue = (int)value + Random.Shared.Next(-step, step);
         return Math.Min(Math.Max(newValue, min), max);
     }
 
     /// <inheritdoc />
-    public override object GetRandomValue(AlertConfiguration appliedTo)
+    public override object GetRandomValue(AlertConfiguration appliedTo, TimeSeriesStatistics statistics)
     {
         return Random.Shared.Next(min, max);
     }
