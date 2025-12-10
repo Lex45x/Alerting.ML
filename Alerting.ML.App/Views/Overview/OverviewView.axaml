@@ -24,9 +24,6 @@
                         <Label Content="Fine-tune alert detection rules" />
                     </StackPanel>
                 </StackPanel>
-                <Button Grid.Column="1" Theme="{StaticResource TransparentButton}" HorizontalAlignment="Right"
-                        Width="36" Height="36" Content="⚙" VerticalContentAlignment="Center"
-                        HorizontalContentAlignment="Center" Padding="0" />
             </Grid>
         </Border>
         <!-- Filters -->

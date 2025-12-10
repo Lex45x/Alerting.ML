@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Alerting.ML.App.DesignTimeExtensions;
 using Alerting.ML.App.Model.Enums;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
 using Alerting.ML.App.Views.Training;
 using Alerting.ML.App.Views.TrainingCreation;
 using Avalonia.Controls;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Alerting.ML.App.Views.Overview;
 
 public class OverviewViewModel : RoutableViewModelBase
 {
+    private readonly ReadOnlyObservableCollection<ITrainingSession> cards;
+
     public OverviewViewModel(IScreen hostScreen, IBackgroundTrainingOrchestrator trainingOrchestrator) :
         base(hostScreen)
     {
@@ -29,27 +35,34 @@ public class OverviewViewModel : RoutableViewModelBase
 
         OpenSessionCommand = ReactiveCommand.CreateFromTask<ITrainingSession>(OpenSession, IsOnTopOfNavigation);
 
-        this.WhenAnyValue(model => model.TrainingOrchestrator.AllSessions,
-                model => model.IsAllProvidersSelected,
-                model => model.IsAzureProviderSelected,
-                model => model.IsAwsProviderSelected,
-                model => model.IsGcpProviderSelected,
-                model => model.SearchPhrase)
-            .Subscribe(tuple => this.RaisePropertyChanged(nameof(Cards)))
+        var searchPhraseFilter = this.WhenAnyValue(model => model.SearchPhrase)
+            .Select<string?, Func<ITrainingSession, bool>>(s => session =>
+                string.IsNullOrWhiteSpace(s) ||
+                (session.Name?.Contains(s, StringComparison.OrdinalIgnoreCase) ?? true));
+
+        var providerFilter = this.WhenAnyValue(model => model.IsAllProvidersSelected,
+                model => model.IsAzureProviderSelected, model => model.IsAwsProviderSelected,
+                model => model.IsGcpProviderSelected)
+            .Select<(bool IsAllProvidersSelected, bool IsAzureProviderSelected, bool IsAwsProviderSelected, bool IsGcpProviderSelected), Func<ITrainingSession, bool>>(tuple => session =>
+                session.AlertProvider switch
+                {
+                    CloudProvider.Azure => tuple.IsAllProvidersSelected || tuple.IsAzureProviderSelected,
+                    CloudProvider.Amazon => tuple.IsAllProvidersSelected || tuple.IsAwsProviderSelected,
+                    CloudProvider.Google => tuple.IsAllProvidersSelected || tuple.IsGcpProviderSelected,
+                    _ => tuple.IsAllProvidersSelected
+                });
+
+        TrainingOrchestrator.AllSessions
+            .ToObservableChangeSet()
+            .Filter(providerFilter)
+            .Filter(searchPhraseFilter)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out cards)
+            .Subscribe()
             .DisposeWith(Disposables);
     }
 
-    public virtual IReadOnlyList<ITrainingSession> Cards =>
-        TrainingOrchestrator.AllSessions
-            .Where(session => string.IsNullOrWhiteSpace(SearchPhrase) ||
-                              session.Name.Contains(SearchPhrase, StringComparison.OrdinalIgnoreCase)).Where(session =>
-                session.AlertProvider switch
-                {
-                    CloudProvider.Azure => IsAllProvidersSelected || IsAzureProviderSelected,
-                    CloudProvider.Amazon => IsAllProvidersSelected || IsAwsProviderSelected,
-                    CloudProvider.Google => IsAllProvidersSelected || IsGcpProviderSelected,
-                    _ => IsAllProvidersSelected
-                }).ToList();
+    public virtual ReadOnlyObservableCollection<ITrainingSession> Cards => cards;
 
     public string? SearchPhrase
     {
@@ -119,6 +132,7 @@ public class OverviewViewModel : RoutableViewModelBase
     {
         switch (session.State)
         {
+            case TrainingState.Loading:
             case TrainingState.Training:
             case TrainingState.Paused:
                 await HostScreen.Router.Navigate.Execute(new TrainingViewModel(HostScreen, session));
@@ -141,18 +155,18 @@ public class OverviewViewModel : RoutableViewModelBase
 
 public class OverviewViewModelDesignTime : OverviewViewModel
 {
-    public OverviewViewModelDesignTime() : base(null!, null!)
+    public OverviewViewModelDesignTime() : base(DesignTime.MockScreen, DesignTime.MockOrchestrator)
     {
     }
 
-    public override IReadOnlyList<ITrainingSession> Cards { get; } =
-    [
-        new DesignTimeTrainingSession(),
-        new DesignTimeTrainingSession(),
-        new DesignTimeTrainingSession(),
-        new DesignTimeTrainingSession(),
-        new DesignTimeTrainingSession(),
-        new DesignTimeTrainingSession(),
-        new DesignTimeTrainingSession()
-    ];
+    public override ReadOnlyObservableCollection<ITrainingSession> Cards { get; } =
+        new([
+            new DesignTimeTrainingSession(),
+            new DesignTimeTrainingSession(),
+            new DesignTimeTrainingSession(),
+            new DesignTimeTrainingSession(),
+            new DesignTimeTrainingSession(),
+            new DesignTimeTrainingSession(),
+            new DesignTimeTrainingSession()
+        ]);
 }

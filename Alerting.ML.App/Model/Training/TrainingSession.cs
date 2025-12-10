@@ -55,14 +55,28 @@ public class TrainingSession : ViewModelBase, ITrainingSession
         private set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    public Guid Id => optimizer.Id;
-    public string Name => optimizer.Name;
+    public Guid Id
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+    public string? Name
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
-    public CloudProvider AlertProvider => Enum.TryParse<CloudProvider>(optimizer.ProviderName, out var value)
-        ? value
-        : CloudProvider.Unknown;
+    public CloudProvider AlertProvider
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
-    public DateTime CreatedAt => optimizer.CreatedAt;
+    public DateTime CreatedAt
+    {
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
     public void Start(OptimizationConfiguration configuration)
     {
@@ -140,12 +154,14 @@ public class TrainingSession : ViewModelBase, ITrainingSession
 
     public async Task Hydrate(Guid aggregateId)
     {
+        State = TrainingState.Loading;
+
         await foreach (var @event in optimizer.Hydrate(aggregateId))
         {
             Apply(@event);
         }
 
-        State = eventBasedState ?? State;
+        State = eventBasedState ?? TrainingState.Paused;
     }
 
     public IBackgroundTrainingOrchestrator OwningOrchestrator { get; }
@@ -170,7 +186,7 @@ public class TrainingSession : ViewModelBase, ITrainingSession
             Apply(@event);
         }
 
-        Dispatcher.UIThread.Invoke(Stop);
+        Stop();
     }
 
     protected override void Dispose(bool disposing)
@@ -221,6 +237,12 @@ public class TrainingSession : ViewModelBase, ITrainingSession
     {
         switch (@event)
         {
+            case StateInitializedEvent stateInitialized:
+                Id = stateInitialized.Id;
+                Name = stateInitialized.Name;
+                AlertProvider = Enum.Parse<CloudProvider>(stateInitialized.ProviderName);
+                CreatedAt = stateInitialized.CreatedAt;
+                break;
             case CriticalFailureEvent:
                 eventBasedState = TrainingState.Failed;
                 break;
@@ -230,10 +252,18 @@ public class TrainingSession : ViewModelBase, ITrainingSession
                     eventBasedState = TrainingState.Completed;
                 }
 
-                PopulationDiversity.Add(GetCurrentPopulationDiversity());
-                AverageGenerationFitness.Add(GetAverageGenerationFitness());
+                var currentPopulationDiversity = GetCurrentPopulationDiversity();
                 var bestGenerationFitness = GetBestGenerationFitness();
-                BestGenerationFitness.Add(bestGenerationFitness);
+                var averageGenerationFitness = GetAverageGenerationFitness();
+                
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    BestGenerationFitness.Add(bestGenerationFitness);
+                    PopulationDiversity.Add(currentPopulationDiversity);
+                    AverageGenerationFitness.Add(averageGenerationFitness);
+                });
+                
+                
                 if (BestFirstGenerationFitness == 0)
                 {
                     BestFirstGenerationFitness = bestGenerationFitness;

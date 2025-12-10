@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 
 namespace Alerting.ML.Engine.Storage;
@@ -14,6 +16,7 @@ public class JsonFileEventStore : IEventStore, IDisposable
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         TypeInfoResolver = KnownTypeInfoResolver.Instance,
+        WriteIndented = false, //this setting is critical as each new line considered as an end of event json.
         Converters = { new MetricsListConverter() }
     };
 
@@ -53,16 +56,20 @@ public class JsonFileEventStore : IEventStore, IDisposable
     public async IAsyncEnumerable<IEvent> GetAll(Guid aggregateId,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        using var streamReader = File.OpenText(GetAggregateFileName(aggregateId));
+        await using var fileStream = File.OpenRead(GetAggregateFileName(aggregateId));
 
-        var eventJson = await streamReader.ReadLineAsync(cancellationToken);
-
-        while (!string.IsNullOrWhiteSpace(eventJson) && !cancellationToken.IsCancellationRequested)
+        var eventsStream = JsonSerializer.DeserializeAsyncEnumerable<IEvent>(fileStream, topLevelValues: true, SerializerOptions, cancellationToken);
+        
+        await foreach (var @event in eventsStream)
         {
-            //todo: implement repair strategy. Offload all valid events into new file and purge old.
-            yield return JsonSerializer.Deserialize<IEvent>(eventJson, SerializerOptions) ??
-                         throw new InvalidOperationException($"Null event deserialized for aggregate {aggregateId}!");
-            eventJson = await streamReader.ReadLineAsync(cancellationToken);
+            if (@event != null)
+            {
+                yield return @event;
+            }
+            else
+            {
+                //todo: is that possible? If so - need to handle.
+            }
         }
     }
 
@@ -76,6 +83,8 @@ public class JsonFileEventStore : IEventStore, IDisposable
         }
     }
 
+    private static readonly ReadOnlyMemory<byte> NewLineBytes = Encoding.UTF8.GetBytes(Environment.NewLine);
+
     private async Task Flush()
     {
         foreach (var (aggregateId, events) in publishingQueue)
@@ -87,10 +96,13 @@ public class JsonFileEventStore : IEventStore, IDisposable
                     continue;
                 }
 
-                var serializedEvents =
-                    DequeueAll().Select(@event => JsonSerializer.Serialize(@event, SerializerOptions));
+                await using var eventsStream = File.Open(GetAggregateFileName(aggregateId), FileMode.Append);
 
-                await File.AppendAllLinesAsync(GetAggregateFileName(aggregateId), serializedEvents);
+                foreach (var @event in DequeueAll())
+                {
+                    await JsonSerializer.SerializeAsync(eventsStream, @event, SerializerOptions);
+                    await eventsStream.WriteAsync(NewLineBytes);
+                }
 
                 IEnumerable<IEvent> DequeueAll()
                 {

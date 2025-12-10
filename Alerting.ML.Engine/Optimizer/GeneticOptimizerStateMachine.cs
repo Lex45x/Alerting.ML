@@ -108,18 +108,6 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     }
 
     /// <inheritdoc />
-    public Guid Id => current.Id;
-
-    /// <inheritdoc />
-    public string Name => current?.Name ?? "Uninitialized";
-
-    /// <inheritdoc />
-    public string ProviderName => current.ProviderName ?? "Uninitialized";
-
-    /// <inheritdoc />
-    public DateTime CreatedAt => current.CreatedAt;
-
-    /// <inheritdoc />
     public async IAsyncEnumerable<IEvent> Hydrate(Guid aggregateId)
     {
         await foreach (var @event in store.GetAll(aggregateId, CancellationToken.None))

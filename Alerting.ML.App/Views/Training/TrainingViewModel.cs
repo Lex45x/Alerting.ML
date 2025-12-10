@@ -32,11 +32,13 @@ public class TrainingViewModel : RoutableViewModelBase
             })
             .DisposeWith(Disposables);
 
-        ResumeCommand =
-            ReactiveCommand.Create(() => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration!)),
-                this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Paused));
+        ResumeCommand = ReactiveCommand.Create(
+            () => session.Start(ConfigurationBuilder.Apply(session.CurrentConfiguration!)),
+            this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Paused)
+                .ObserveOn(RxApp.MainThreadScheduler));
         PauseCommand = ReactiveCommand.Create(session.Stop,
-            this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Training));
+            this.WhenAnyValue(model => model.Session.State, state => state == TrainingState.Training)
+                .ObserveOn(RxApp.MainThreadScheduler));
     }
 
     public ReactiveCommand<Unit, Unit> ViewResultsCommand { get; }
