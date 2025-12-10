@@ -102,7 +102,7 @@ public sealed class AlertScoreCard : IEquatable<AlertScoreCard>
     private static double LatencyToFitness(TimeSpan latency)
     {
         const double k = 0.010536; // calibrated so 10 min -> 0.9 and 20 min -> 0.8
-        return Math.Exp(-k * latency.TotalMinutes);
+        return Math.Exp(-k * Math.Abs(latency.TotalMinutes));
     }
 
     /// <summary>

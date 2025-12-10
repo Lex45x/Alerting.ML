@@ -8,8 +8,8 @@ namespace Alerting.ML.Engine.Scoring;
 /// </summary>
 public class DefaultAlertScoreCalculator : IAlertScoreCalculator
 {
-    private const double PrecisionFeasibilityLimit = 0.1;
-    private const double RecallFeasibilityLimit = 0.1;
+    private const double PrecisionFeasibilityLimit = 0.01;
+    private const double RecallFeasibilityLimit = 0.01;
 
     /// <inheritdoc />
     public AlertScoreCard CalculateScore(IEnumerable<Outage> alertOutages, IReadOnlyList<Outage> knownOutages,
@@ -19,7 +19,6 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
         var truePositiveCount = 0;
         var totalCount = 0;
         var detectedOutages = new HashSet<Outage>();
-
 
         foreach (var alertOutage in alertOutages)
         {
@@ -33,7 +32,7 @@ public class DefaultAlertScoreCalculator : IAlertScoreCalculator
                 continue;
             }
 
-            var detectionLatency = matchingOutage.StartTime - alertOutage.StartTime;
+            var detectionLatency = alertOutage.StartTime - matchingOutage.StartTime;
             latencies.Add(detectionLatency);
             truePositiveCount++;
             detectedOutages.Add(matchingOutage);

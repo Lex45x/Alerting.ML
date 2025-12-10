@@ -68,6 +68,7 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
 
     private readonly ConcurrentDictionary<T, WeakReference<IReadOnlyList<Outage>>> EvaluationCache = new();
     private readonly IEventStore store;
+    private StateInitializedEvent<T>? initializedEvent;
 
     /// <summary>
     ///     Creates a new instance of Genetic Optimizer with a new training.
@@ -90,11 +91,11 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
         var name =
             $"{alert.ProviderName}: {Adjectives[random.Next(Adjectives.Length)]} {Nouns[random.Next(Nouns.Length)]} #{random.Next(minValue: 100, maxValue: 999)}";
 
-        RaiseEvent(new StateInitializedEvent<T>(aggregateId, DateTime.UtcNow, name, alert.ProviderName, alert,
+        initializedEvent = new StateInitializedEvent<T>(aggregateId, DateTime.UtcNow, name, alert.ProviderName, alert,
             timeSeries,
             knownOutages,
             alertScoreCalculator,
-            configurationFactory, AggregateVersion: 0), aggregateId);
+            configurationFactory, AggregateVersion: 0);
     }
 
     /// <summary>
@@ -129,7 +130,27 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
             yield break;
         }
 
-        var (canContinue, bag) = Reconfigure(configuration);
+        bool canContinue;
+        EventBag bag;
+
+        if (initializedEvent != null)
+        {
+            (canContinue, bag) = RaiseEvent(initializedEvent, initializedEvent.Id);
+
+            initializedEvent = null;
+
+            if (!canContinue)
+            {
+                yield break;
+            }
+
+            foreach (var @event in bag.Events)
+            {
+                yield return @event;
+            }
+        }
+
+        (canContinue, bag) = Reconfigure(configuration);
 
         if (!canContinue)
         {
@@ -166,8 +187,8 @@ public class GeneticOptimizerStateMachine<T> : IGeneticOptimizer
     /// <inheritdoc />
     public IGeneticOptimizer Clone()
     {
-        return new GeneticOptimizerStateMachine<T>(current.Alert, current.TimeSeries,
-            current.KnownOutages, current.AlertScoreCalculator, current.ConfigurationFactory, store);
+        return new GeneticOptimizerStateMachine<T>(current.Alert!, current.TimeSeries,
+            current.KnownOutages, current.AlertScoreCalculator!, current.ConfigurationFactory!, store);
     }
 
     private (bool, EventBag) RaiseEvent<TEvent>(TEvent @event, Guid? aggregateId = null) where TEvent : IEvent

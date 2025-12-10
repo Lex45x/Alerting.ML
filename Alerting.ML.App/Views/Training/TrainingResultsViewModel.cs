@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Alerting.ML.App.Model.Training;
 using Alerting.ML.App.ViewModels;
@@ -31,7 +32,7 @@ public class TrainingResultsViewModel : RoutableViewModelBase
                         new RankedScoreCard(i + 1, card,
                             JsonSerializer.Serialize(card.Configuration,
                                 new JsonSerializerOptions
-                                    { WriteIndented = true, TypeInfoResolver = KnownTypeInfoResolver.Instance }))));
+                                    { WriteIndented = true, TypeInfoResolver = KnownTypeInfoResolver.Instance, Converters = { new JsonStringEnumConverter() }}))));
                 BestFitness = cards.Max(card => card.Fitness);
                 AveragePrecision = cards.Average(card => card.Precision);
                 AverageRecall = cards.Average(card => card.Recall);

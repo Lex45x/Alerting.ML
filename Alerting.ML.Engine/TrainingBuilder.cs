@@ -185,7 +185,7 @@ public class TrainingBuilder
             TimeSeriesProvider?.GetTimeSeries() ?? throw new ArgumentNullException(nameof(TimeSeriesProvider)),
             KnownOutagesProvider?.GetKnownOutages() ?? throw new ArgumentNullException(nameof(KnownOutagesProvider)),
             AlertScoreCalculator ?? new DefaultAlertScoreCalculator(),
-            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(),
+            ConfigurationFactory as IConfigurationFactory<T> ?? new DefaultConfigurationFactory<T>(TimeSeriesProvider.Statistics),
             EventStore ?? new InMemoryEventStore());
     }
 

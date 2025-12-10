@@ -13,7 +13,7 @@
             <InvokeCommandAction Command="{Binding DisposeCommand}" />
         </DetachedFromVisualTreeTrigger>
     </Interaction.Behaviors>
-    <Grid RowDefinitions="Auto, Auto">
+    <Grid RowDefinitions="Auto, *">
 
         <Border Grid.Row="0" Grid.ColumnSpan="2" Classes="header">
             <Grid ColumnDefinitions="*, Auto">
@@ -30,11 +30,12 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Button Margin="24, 16" Classes="pulse" Theme="{StaticResource IconButton}" Grid.Column="1" Content="Re-train"
+                <Button Margin="24, 16" Classes="pulse" Theme="{StaticResource IconButton}" Grid.Column="1"
+                        Content="Re-train"
                         Command="{Binding RetrainCommand}" />
 
             </Grid>
-            
+
         </Border>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" RowDefinitions="Auto, *" RowSpacing="24" Margin="24"
@@ -99,9 +100,9 @@
             </Border>
 
             <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4" Classes="panel">
-                <StackPanel Spacing="12">
-                    <TextBlock Classes="h4" Text="Top Configurations" Margin="24" />
-                    <DataGrid Theme="{StaticResource TableDataGrid}" Margin="-1"
+                <Grid RowDefinitions="Auto, *, Auto" RowSpacing="12">
+                    <TextBlock Grid.Row="0" Classes="h4" Text="Top Configurations" Margin="24" />
+                    <DataGrid Grid.Row="1" Theme="{StaticResource TableDataGrid}" Margin="-1"
                               ItemsSource="{Binding RankedScoreCards}"
                               AutoGenerateColumns="False"
                               CanUserResizeColumns="True"
@@ -129,8 +130,8 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Classes="p" Text="Use actions to review and export configuration details" Margin="12" />
-                </StackPanel>
+                    <TextBlock Grid.Row="2" Classes="p" Text="Use actions to review and export configuration details" Margin="12" />
+                </Grid>
             </Border>
 
         </Grid>

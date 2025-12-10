@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Alerting.ML.Engine.Data;
 
 namespace Alerting.ML.Engine.Alert;
 
@@ -7,7 +8,7 @@ namespace Alerting.ML.Engine.Alert;
 ///     <see cref="ConfigurationParameterAttribute" />.
 /// </summary>
 /// <typeparam name="T">Type of AlertConfiguration</typeparam>
-public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
+public class DefaultConfigurationFactory<T>(TimeSeriesStatistics seriesStatistics) : IConfigurationFactory<T>
     where T : AlertConfiguration, new()
 {
     private const double FiftyPercentProbability = 0.5;
@@ -19,6 +20,11 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
             new Parameter(info, info.GetCustomAttributes().OfType<ConfigurationParameterAttribute>().Single()))
         .OrderBy(arg => arg.Attribute.Order)
         .ToList();
+
+    /// <summary>
+    /// Indicates statistics of the time series used to configure current factory instance.
+    /// </summary>
+    public TimeSeriesStatistics SeriesStatistics { get; } = seriesStatistics;
 
 
     /// <inheritdoc />
@@ -32,7 +38,7 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
 
             if (Random.Shared.NextDouble() > 1 - mutationProbability)
             {
-                newValue = parameter.Attribute.Nudge(newValue, result);
+                newValue = parameter.Attribute.Nudge(newValue, result, SeriesStatistics);
             }
 
             parameter.Property.SetValue(result, newValue);
@@ -69,7 +75,7 @@ public class DefaultConfigurationFactory<T> : IConfigurationFactory<T>
 
         foreach (var parameter in Parameters)
         {
-            parameter.Property.SetValue(result, parameter.Attribute.GetRandomValue(result));
+            parameter.Property.SetValue(result, parameter.Attribute.GetRandomValue(result, SeriesStatistics));
         }
 
         return result;

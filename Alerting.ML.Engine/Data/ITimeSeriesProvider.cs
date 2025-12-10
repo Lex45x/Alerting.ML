@@ -11,10 +11,14 @@ public interface ITimeSeriesProvider
 {
     /// <summary>
     ///     Returns an ordered (earliest to latest) array of metric values.
-    ///     todo: returned value must be immutable and at the same time compatible with Span
     /// </summary>
     /// <returns></returns>
     ImmutableArray<Metric> GetTimeSeries();
+
+    /// <summary>
+    ///     Represents calculated statistics from the TimeSeries Values
+    /// </summary>
+    TimeSeriesStatistics Statistics { get; }
 
     /// <summary>
     ///     Initializes provider with known outages. Returns failed <see cref="ValidationResult" /> if import failed.

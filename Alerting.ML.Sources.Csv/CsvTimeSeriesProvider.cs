@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Alerting.ML.Engine.Alert;
 using Alerting.ML.Engine.Data;
 using FluentValidation.Results;
 
@@ -11,6 +12,7 @@ namespace Alerting.ML.Sources.Csv;
 public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
 {
     private ImmutableArray<Metric>? metrics;
+    private TimeSeriesStatistics? statistics;
 
     /// <summary>
     ///     <see cref="Path.GetFileName(string?)" /> applied to <see cref="FilePath" />
@@ -28,6 +30,10 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
         return metrics ?? throw new InvalidOperationException(
             $"{nameof(CsvTimeSeriesProvider)} is not initialized or invalid! Make sure to call {nameof(ImportAndValidate)} before attempting to retrieve time-series.");
     }
+
+    /// <inheritdoc />
+    public TimeSeriesStatistics Statistics => statistics ?? throw new InvalidOperationException(
+        $"{nameof(CsvTimeSeriesProvider)} is not initialized or invalid! Make sure to call {nameof(ImportAndValidate)} before attempting to retrieve time-series.");
 
     /// <inheritdoc />
     public async Task<ValidationResult> ImportAndValidate()
@@ -145,6 +151,10 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
 
         // proceed to CSV parsing
         var errorList = new List<ValidationFailure>();
+
+        double? minMetricValue = null;
+        double? maxMetricValue = null;
+
         while (!string.IsNullOrWhiteSpace(currentLine))
         {
             var rowParts = currentLine.Split(csvSeparator);
@@ -162,6 +172,9 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
                     errorList.Add(new ValidationFailure(nameof(FilePath),
                         $"Line #{lineIndex + 1} contains invalid double at position {valueIndex}."));
                 }
+
+                minMetricValue = minMetricValue.HasValue ? Math.Min(minMetricValue.Value, value) : value;
+                maxMetricValue = maxMetricValue.HasValue ? Math.Max(maxMetricValue.Value, value) : value;
 
                 result.Add(new Metric(timestamp, value));
             }
@@ -181,6 +194,7 @@ public class CsvTimeSeriesProvider(string filePath) : ITimeSeriesProvider
         }
 
         metrics = [..result.OrderBy(metric => metric.Timestamp)];
+        statistics = new TimeSeriesStatistics(minMetricValue!.Value, maxMetricValue!.Value);
 
         return new ValidationResult();
     }

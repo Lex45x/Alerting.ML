@@ -27,7 +27,7 @@ public class EventSerializationTest
             new TestAlertConfiguration(), AggregateVersion: 6),
         new StateInitializedEvent<TestAlertConfiguration>(Guid.NewGuid(), DateTime.UtcNow, "Serialization testing",
             "Testing", new TestAlert(), [new Metric(DateTime.UtcNow, value: 0)], new List<Outage>(),
-            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<TestAlertConfiguration>(),
+            new DefaultAlertScoreCalculator(), new DefaultConfigurationFactory<TestAlertConfiguration>(new TimeSeriesStatistics(0, 1)),
             AggregateVersion: 7),
         new CriticalFailureEvent(AggregateVersion: 8, new ValidationResult()),
         new EvaluationCompletedEvent<TestAlertConfiguration>(new TestAlertConfiguration(), new List<Outage>(),
