@@ -31,7 +31,12 @@ public record StateInitializedEvent<T>(
     IAlertScoreCalculator AlertScoreCalculator,
     IConfigurationFactory<T> ConfigurationFactory,
     int AggregateVersion)
-    : IEvent
-    where T : AlertConfiguration
-{
-}
+    : StateInitializedEvent(Id, CreatedAt, Name, ProviderName, AggregateVersion)
+    where T : AlertConfiguration;
+
+public record StateInitializedEvent(
+    Guid Id,
+    DateTime CreatedAt,
+    string Name,
+    string ProviderName,
+    int AggregateVersion) : IEvent;

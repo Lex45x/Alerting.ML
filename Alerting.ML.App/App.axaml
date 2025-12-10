@@ -139,6 +139,11 @@
                 <Setter Property="Foreground" Value="{StaticResource Color.FailureForeground}" />
                 <Setter Property="BorderBrush" Value="{StaticResource Color.FailurePanelBorder}" />
             </Style>
+            <Style Selector="^[Content=Loading]">
+                <Setter Property="Background" Value="{StaticResource Color.FailurePanel}" />
+                <Setter Property="Foreground" Value="{StaticResource Color.FailureForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Color.FailurePanelBorder}" />
+            </Style>
         </Style>
 
     </Application.Styles>

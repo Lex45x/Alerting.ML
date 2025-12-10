@@ -10,7 +10,7 @@ namespace Alerting.ML.App.Model.Training;
 public interface ITrainingSession
 {
     Guid Id { get; }
-    string Name { get; }
+    string? Name { get; }
     ObservableCollection<double> PopulationDiversity { get; }
     ObservableCollection<double> AverageGenerationFitness { get; }
     ObservableCollection<double> BestGenerationFitness { get; }
@@ -38,5 +38,6 @@ public enum TrainingState
     Training = 1,
     Paused = 2,
     Completed = 3,
-    Failed = 4
+    Failed = 4,
+    Loading = 5
 }

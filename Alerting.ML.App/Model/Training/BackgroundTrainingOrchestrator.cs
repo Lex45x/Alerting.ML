@@ -7,6 +7,7 @@ using Alerting.ML.Engine;
 using Alerting.ML.Engine.Optimizer;
 using Alerting.ML.Engine.Optimizer.Events;
 using Alerting.ML.Engine.Storage;
+using Avalonia.Threading;
 
 namespace Alerting.ML.App.Model.Training;
 
