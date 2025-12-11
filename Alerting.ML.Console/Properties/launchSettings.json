@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Alerting.ML.Console": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    }
+  }
+}
