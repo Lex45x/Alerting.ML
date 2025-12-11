@@ -8,9 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Alerting.ML.Engine\Alerting.ML.Engine.csproj" />
     <ProjectReference Include="..\Alerting.ML.Sources.Azure\Alerting.ML.Sources.Azure.csproj" />
+    <ProjectReference Include="..\Alerting.ML.Sources.Csv\Alerting.ML.Sources.Csv.csproj" />
     <ProjectReference Include="..\Alerting.ML.TimeSeries.Sample\Alerting.ML.TimeSeries.Sample.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SubCommands\" />
   </ItemGroup>
 
 </Project>
